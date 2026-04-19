@@ -217,37 +217,40 @@ export function SupportChat() {
 
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+            {messages.map((m, i) => {
+              const isLast = i === messages.length - 1;
+              return (
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-                    m.role === "user"
-                      ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
-                      : "bg-muted/60 text-foreground rounded-bl-sm"
-                  }`}
+                  key={i}
+                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {m.role === "assistant" ? (
-                    <div className="prose prose-sm prose-invert max-w-none prose-p:my-1.5 prose-a:text-primary prose-a:underline prose-strong:text-foreground">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkBreaks]}
-                        components={{
-                          a: ({ node, ...props }) => (
-                            <a {...props} target="_blank" rel="noopener noreferrer" />
-                          ),
-                        }}
-                      >
-                        {m.content}
-                      </ReactMarkdown>
-                    </div>
-                  ) : (
-                    <p className="whitespace-pre-wrap">{m.content}</p>
-                  )}
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
+                      m.role === "user"
+                        ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
+                        : "bg-muted/60 text-foreground rounded-bl-sm"
+                    }`}
+                  >
+                    {m.role === "assistant" ? (
+                      <div className="prose prose-sm prose-invert max-w-none prose-p:my-1.5 prose-a:text-primary prose-a:underline prose-strong:text-foreground">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkBreaks]}
+                          components={{
+                            a: ({ node, ...props }) => (
+                              <a {...props} target="_blank" rel="noopener noreferrer" />
+                            ),
+                          }}
+                        >
+                          {renderContent(m, isLast)}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="whitespace-pre-wrap">{m.content}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {loading && messages[messages.length - 1]?.role === "user" && (
               <div className="flex justify-start">
                 <div className="bg-muted/60 rounded-2xl rounded-bl-sm px-3 py-2">
@@ -258,10 +261,12 @@ export function SupportChat() {
             {!loading && yesNoPrompt && (
               <div className="flex gap-2 pl-1 animate-fade-in">
                 <button
-                  onClick={() => send("Sim, pode perguntar")}
+                  onClick={() =>
+                    send(yesNoPrompt === "offer" ? "Sim, quero ver" : "Sim, pode perguntar")
+                  }
                   className="flex-1 text-sm rounded-xl bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity px-3 py-2 font-medium"
                 >
-                  Sim, pode perguntar
+                  {yesNoPrompt === "offer" ? "Sim, quero ver" : "Sim, pode perguntar"}
                 </button>
                 <button
                   onClick={() => send("Agora não")}
