@@ -32,15 +32,17 @@ export function SupportChat() {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
+  const lastAssistant = messages[messages.length - 1];
+  const lastIsAssistant = lastAssistant?.role === "assistant";
+
   // Extract quiz options (1️⃣..4️⃣) from the last assistant message
   const quizOptions = useMemo(() => {
-    const last = messages[messages.length - 1];
-    if (!last || last.role !== "assistant") return [];
+    if (!lastIsAssistant) return [];
     const numberEmojis: Record<string, number> = {
       "1️⃣": 1, "2️⃣": 2, "3️⃣": 3, "4️⃣": 4,
     };
     const found: { number: number; label: string; reply: string }[] = [];
-    const lines = last.content.split("\n");
+    const lines = lastAssistant!.content.split("\n");
     for (const raw of lines) {
       const line = raw.trim();
       for (const [emoji, num] of Object.entries(numberEmojis)) {
@@ -54,20 +56,35 @@ export function SupportChat() {
       }
     }
     return found.length >= 2 ? found.sort((a, b) => a.number - b.number) : [];
-  }, [messages]);
+  }, [lastAssistant, lastIsAssistant]);
 
-  // Detect Yes/No prompt (acceptance question to start quiz)
-  const yesNoPrompt = useMemo(() => {
-    const last = messages[messages.length - 1];
-    if (!last || last.role !== "assistant") return false;
-    if (quizOptions.length > 0) return false;
-    const t = last.content.toLowerCase();
-    return (
-      t.includes("posso te fazer") &&
-      t.includes("perguntas rápidas") &&
-      t.includes("faturamento")
-    );
-  }, [messages, quizOptions]);
+  // Detect Yes/No prompt — initial acceptance ("posso te fazer 2 perguntas")
+  // OR final offer ("você daria uma olhada?")
+  const yesNoPrompt = useMemo<null | "initial" | "offer">(() => {
+    if (!lastIsAssistant || quizOptions.length > 0) return null;
+    const t = lastAssistant!.content.toLowerCase();
+    if (t.includes("posso te fazer") && t.includes("perguntas rápidas")) return "initial";
+    if (t.includes("você daria uma olhada") || t.includes("voce daria uma olhada")) return "offer";
+    return null;
+  }, [lastAssistant, lastIsAssistant, quizOptions]);
+
+  // Strip option/CTA lines from the assistant content when we render buttons,
+  // so the bubble shows only the question.
+  const renderContent = useCallback(
+    (m: Msg, isLast: boolean) => {
+      if (m.role !== "assistant" || !isLast) return m.content;
+      if (quizOptions.length > 0) {
+        return m.content
+          .split("\n")
+          .filter((l) => !/^\s*[1-4]️⃣/.test(l))
+          .join("\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+      }
+      return m.content;
+    },
+    [quizOptions],
+  );
 
   const send = useCallback(
     async (override?: string) => {
@@ -200,37 +217,40 @@ export function SupportChat() {
 
           {/* Messages */}
           <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+            {messages.map((m, i) => {
+              const isLast = i === messages.length - 1;
+              return (
                 <div
-                  className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-                    m.role === "user"
-                      ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
-                      : "bg-muted/60 text-foreground rounded-bl-sm"
-                  }`}
+                  key={i}
+                  className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
                 >
-                  {m.role === "assistant" ? (
-                    <div className="prose prose-sm prose-invert max-w-none prose-p:my-1.5 prose-a:text-primary prose-a:underline prose-strong:text-foreground">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkBreaks]}
-                        components={{
-                          a: ({ node, ...props }) => (
-                            <a {...props} target="_blank" rel="noopener noreferrer" />
-                          ),
-                        }}
-                      >
-                        {m.content}
-                      </ReactMarkdown>
-                    </div>
-                  ) : (
-                    <p className="whitespace-pre-wrap">{m.content}</p>
-                  )}
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
+                      m.role === "user"
+                        ? "bg-gradient-primary text-primary-foreground rounded-br-sm"
+                        : "bg-muted/60 text-foreground rounded-bl-sm"
+                    }`}
+                  >
+                    {m.role === "assistant" ? (
+                      <div className="prose prose-sm prose-invert max-w-none prose-p:my-1.5 prose-a:text-primary prose-a:underline prose-strong:text-foreground">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkBreaks]}
+                          components={{
+                            a: ({ node, ...props }) => (
+                              <a {...props} target="_blank" rel="noopener noreferrer" />
+                            ),
+                          }}
+                        >
+                          {renderContent(m, isLast)}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="whitespace-pre-wrap">{m.content}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {loading && messages[messages.length - 1]?.role === "user" && (
               <div className="flex justify-start">
                 <div className="bg-muted/60 rounded-2xl rounded-bl-sm px-3 py-2">
@@ -241,10 +261,12 @@ export function SupportChat() {
             {!loading && yesNoPrompt && (
               <div className="flex gap-2 pl-1 animate-fade-in">
                 <button
-                  onClick={() => send("Sim, pode perguntar")}
+                  onClick={() =>
+                    send(yesNoPrompt === "offer" ? "Sim, quero ver" : "Sim, pode perguntar")
+                  }
                   className="flex-1 text-sm rounded-xl bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity px-3 py-2 font-medium"
                 >
-                  Sim, pode perguntar
+                  {yesNoPrompt === "offer" ? "Sim, quero ver" : "Sim, pode perguntar"}
                 </button>
                 <button
                   onClick={() => send("Agora não")}
