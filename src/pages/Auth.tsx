@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, ExternalLink, ShieldCheck } from "lucide-react";
+import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import logoUrl from "@/assets/logo.png";
 
 export default function Auth() {
@@ -24,6 +25,14 @@ export default function Auth() {
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+
+  // Primeiro acesso (verificação Hotmart)
+  const [firstAccessOpen, setFirstAccessOpen] = useState(false);
+  const [firstAccessEmail, setFirstAccessEmail] = useState("");
+  const [firstAccessChecking, setFirstAccessChecking] = useState(false);
+  const [firstAccessResult, setFirstAccessResult] = useState<
+    { ok: true } | { ok: false; msg: string } | null
+  >(null);
 
   if (loading) {
     return (
@@ -52,6 +61,43 @@ export default function Auth() {
     setSubmitting(false);
     if (error) setError(error);
     else setSuccess("Conta criada! Você já pode acessar a plataforma.");
+  }
+
+  async function handleFirstAccessCheck(e: FormEvent) {
+    e.preventDefault();
+    setFirstAccessResult(null);
+    setFirstAccessChecking(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("check-approved-email", {
+        body: { email: firstAccessEmail },
+      });
+      if (error) throw error;
+      if (data?.approved) {
+        setFirstAccessResult({ ok: true });
+        // Pré-preenche aba de criar conta
+        setSignupEmail(firstAccessEmail.trim().toLowerCase());
+      } else {
+        setFirstAccessResult({
+          ok: false,
+          msg: "E-mail ainda não aprovado. Verifique se é o mesmo da compra na Hotmart ou aguarde alguns minutos.",
+        });
+      }
+    } catch (err: any) {
+      setFirstAccessResult({
+        ok: false,
+        msg: "Não foi possível verificar agora. Tente novamente em instantes.",
+      });
+    } finally {
+      setFirstAccessChecking(false);
+    }
+  }
+
+  function goCreateAccount() {
+    setTab("signup");
+    setFirstAccessOpen(false);
+    setFirstAccessResult(null);
+    setError(null);
+    setSuccess(null);
   }
 
   return (
