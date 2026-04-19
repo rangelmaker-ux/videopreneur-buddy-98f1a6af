@@ -50,6 +50,42 @@ export type Database = {
         }
         Relationships: []
       }
+      professional_data: {
+        Row: {
+          business_name: string | null
+          cnpj: string | null
+          created_at: string
+          email: string | null
+          id: string
+          logo_url: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_name?: string | null
+          cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_name?: string | null
+          cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          logo_url?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -74,6 +110,78 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      video_configs: {
+        Row: {
+          adv_mult: number
+          audio_cost: number
+          base_rate: number
+          basic_mult: number
+          color_cost: number
+          created_at: string
+          drone_cost: number
+          freelancer_cost: number
+          id: string
+          inter_mult: number
+          location_cost: number
+          motion_cost: number
+          multi_cost: number
+          script_cost: number
+          sort_order: number
+          story_cost: number
+          subs_cost: number
+          updated_at: string
+          user_id: string
+          video_type_key: string
+          video_type_label: string
+        }
+        Insert: {
+          adv_mult?: number
+          audio_cost?: number
+          base_rate?: number
+          basic_mult?: number
+          color_cost?: number
+          created_at?: string
+          drone_cost?: number
+          freelancer_cost?: number
+          id?: string
+          inter_mult?: number
+          location_cost?: number
+          motion_cost?: number
+          multi_cost?: number
+          script_cost?: number
+          sort_order?: number
+          story_cost?: number
+          subs_cost?: number
+          updated_at?: string
+          user_id: string
+          video_type_key: string
+          video_type_label: string
+        }
+        Update: {
+          adv_mult?: number
+          audio_cost?: number
+          base_rate?: number
+          basic_mult?: number
+          color_cost?: number
+          created_at?: string
+          drone_cost?: number
+          freelancer_cost?: number
+          id?: string
+          inter_mult?: number
+          location_cost?: number
+          motion_cost?: number
+          multi_cost?: number
+          script_cost?: number
+          sort_order?: number
+          story_cost?: number
+          subs_cost?: number
+          updated_at?: string
+          user_id?: string
+          video_type_key?: string
+          video_type_label?: string
         }
         Relationships: []
       }
