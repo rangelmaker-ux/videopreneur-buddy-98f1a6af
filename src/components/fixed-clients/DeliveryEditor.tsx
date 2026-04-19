@@ -92,6 +92,9 @@ export default function DeliveryEditor({
     mode.kind === "edit" ? mode.delivery : (mode.defaults as Partial<Delivery>);
 
   const [clientId, setClientId] = useState(initial?.fixed_client_id || "");
+  const [quoteId, setQuoteId] = useState<string | null>(
+    initial?.quote_id || null
+  );
   const [title, setTitle] = useState(initial?.title || "");
   const [recording, setRecording] = useState(
     toDateTimeLocal(initial?.recording_at || null)
@@ -114,7 +117,11 @@ export default function DeliveryEditor({
       mode.kind === "edit"
         ? mode.delivery
         : (mode.defaults as Partial<Delivery>);
-    setClientId(init?.fixed_client_id || clients[0]?.id || "");
+    const incomingQuote = init?.quote_id || null;
+    setQuoteId(incomingQuote);
+    setClientId(
+      init?.fixed_client_id || (incomingQuote ? "" : clients[0]?.id || "")
+    );
     setTitle(init?.title || "");
     setRecording(toDateTimeLocal(init?.recording_at || null));
     setDeliveryDate(init?.delivery_date || "");
@@ -125,11 +132,14 @@ export default function DeliveryEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, mode]);
 
+  const isQuoteSourced = !!quoteId && !clientId;
+
   const handleSave = async () => {
-    if (!clientId) return;
+    if (!clientId && !quoteId) return;
     setSaving(true);
     await onSave({
-      fixed_client_id: clientId,
+      fixed_client_id: clientId || null,
+      quote_id: quoteId,
       title: title.trim(),
       recording_at: fromDateTimeLocal(recording),
       delivery_date: deliveryDate || null,
