@@ -8,6 +8,7 @@ import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plu
 import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
 import { ParticlesBg } from "@/components/ParticlesBg";
+import logoUrl from "@/assets/logo.png";
 
 function IndexInner() {
   const { user, signOut } = useAuth();
@@ -24,9 +25,7 @@ function IndexInner() {
         <ParticlesBg />
         <div className="container relative flex h-16 items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-primary shadow-[var(--shadow-elegant)]">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
-            </div>
+            <img src={logoUrl} alt="Videomaker Inteligente" className="h-10 w-10 shrink-0 rounded-xl object-contain drop-shadow-[0_4px_12px_hsl(222_75%_45%/0.35)]" />
             <div className="min-w-0">
               <p className="font-display text-sm font-semibold leading-tight truncate tracking-tight">Videomaker Inteligente</p>
               <div className="hidden sm:block leading-tight">
