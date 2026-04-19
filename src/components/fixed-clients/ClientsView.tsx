@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Delivery,
   FixedClient,
+  QuoteClient,
   useFixedClients,
 } from "@/hooks/useFixedClients";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,7 @@ import {
   ChevronRight,
   CalendarPlus,
   Sparkles,
+  FileText,
 } from "lucide-react";
 import { brl } from "@/lib/pricing";
 import { clientColor } from "@/lib/clientColors";
@@ -221,7 +223,105 @@ export default function ClientsView({
           ))}
         </div>
       )}
+
+      {hook.quoteClients.length > 0 && (
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center gap-2 px-1">
+            <FileText className="h-4 w-4 text-muted-foreground" />
+            <h3 className="text-sm font-display font-semibold">
+              Clientes de orçamento
+            </h3>
+            <span className="text-[11px] text-muted-foreground">
+              ({hook.quoteClients.length})
+            </span>
+          </div>
+          <div className="grid gap-3">
+            {hook.quoteClients.map((qc) => (
+              <QuoteClientCard
+                key={qc.quote_id}
+                quoteClient={qc}
+                hook={hook}
+                onOpenDelivery={onOpenDelivery}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
+  );
+}
+
+function QuoteClientCard({
+  quoteClient,
+  hook,
+  onOpenDelivery,
+}: {
+  quoteClient: QuoteClient;
+  hook: ReturnType<typeof useFixedClients>;
+  onOpenDelivery: (d: Delivery) => void;
+}) {
+  const color = clientColor(quoteClient.quote_id);
+  const total = quoteClient.deliveries.length;
+  const delivered = quoteClient.deliveries.filter((d) =>
+    ["delivered", "posted"].includes(d.status)
+  ).length;
+  const pct = total > 0 ? (delivered / total) * 100 : 0;
+
+  return (
+    <article
+      className="glass rounded-xl p-4 space-y-3 border-l-4"
+      style={{ borderLeftColor: color.dot }}
+    >
+      <header className="flex items-start gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="font-display font-semibold text-base truncate">
+              {quoteClient.customer_name}
+            </p>
+            <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">
+              Orçamento
+            </span>
+          </div>
+          {quoteClient.project_name && (
+            <p className="text-xs text-muted-foreground truncate">
+              {quoteClient.project_name}
+            </p>
+          )}
+        </div>
+        <div className="text-right shrink-0">
+          <p className="font-display text-base font-bold tabular-nums">
+            {brl(quoteClient.total)}
+          </p>
+          <p className="text-[11px] text-muted-foreground">valor fechado</p>
+        </div>
+      </header>
+
+      <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">Vídeos entregues</span>
+          <span className="font-medium tabular-nums">
+            {delivered} / {total}
+          </span>
+        </div>
+        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+          <div
+            className="h-full bg-gradient-primary transition-all"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      </div>
+
+      <div className="pt-2 border-t border-border/60 space-y-2">
+        {quoteClient.deliveries.map((d) => (
+          <DeliveryCard
+            key={d.id}
+            delivery={d}
+            onClick={() => onOpenDelivery(d)}
+            onToggleDelivered={() => hook.markDelivered(d.id)}
+          />
+        ))}
+      </div>
+    </article>
   );
 }
 

@@ -41,6 +41,16 @@ export type Delivery = {
   created_at: string;
   // Hidratado em runtime quando origem é orçamento
   quote_customer_name?: string | null;
+  quote_project_name?: string | null;
+  quote_total?: number | null;
+};
+
+export type QuoteClient = {
+  quote_id: string;
+  customer_name: string;
+  project_name: string;
+  total: number;
+  deliveries: Delivery[];
 };
 
 export type DeliveryInput = Partial<
@@ -88,22 +98,31 @@ export function useFixedClients() {
       // Carrega nomes dos clientes dos orçamentos para hidratar entregas avulsas
       supabase
         .from("quotes")
-        .select("id, customer_name, project_name"),
+        .select("id, customer_name, project_name, total, status"),
     ]);
-    const quotesMap = new Map<string, { customer_name: string; project_name: string }>();
+    const quotesMap = new Map<
+      string,
+      { customer_name: string; project_name: string; total: number; status: string }
+    >();
     ((qs as any[]) || []).forEach((q) =>
       quotesMap.set(q.id, {
         customer_name: q.customer_name || "",
         project_name: q.project_name || "",
+        total: Number(q.total || 0),
+        status: q.status || "",
       })
     );
     setClients(((cs as any[]) || []).map(normalizeClient));
     setDeliveries(
       ((ds as any[]) || []).map((row) => {
         const d = normalizeDelivery(row);
-        if (d.quote_id && !d.fixed_client_id) {
+        if (d.quote_id) {
           const q = quotesMap.get(d.quote_id);
-          if (q) d.quote_customer_name = q.customer_name;
+          if (q) {
+            d.quote_customer_name = q.customer_name;
+            d.quote_project_name = q.project_name;
+            d.quote_total = q.total;
+          }
         }
         return d;
       })
@@ -360,8 +379,32 @@ export function useFixedClients() {
     [deliveries]
   );
 
+  // Agrupa entregas vindas de orçamentos (clientes "por projeto")
+  const quoteClients: QuoteClient[] = (() => {
+    const map = new Map<string, QuoteClient>();
+    deliveries.forEach((d) => {
+      if (!d.quote_id) return;
+      const existing = map.get(d.quote_id);
+      if (existing) {
+        existing.deliveries.push(d);
+      } else {
+        map.set(d.quote_id, {
+          quote_id: d.quote_id,
+          customer_name: d.quote_customer_name || "Cliente",
+          project_name: d.quote_project_name || "",
+          total: d.quote_total || 0,
+          deliveries: [d],
+        });
+      }
+    });
+    return Array.from(map.values()).sort((a, b) =>
+      a.customer_name.localeCompare(b.customer_name)
+    );
+  })();
+
   return {
     clients,
+    quoteClients,
     deliveries,
     loading,
     createClient,
