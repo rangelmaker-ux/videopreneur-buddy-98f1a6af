@@ -313,12 +313,18 @@ function DayCell({
           </div>
           <div className="flex flex-col gap-0.5 flex-1">
             {visible.map((d) => {
-              const c = clientMap.get(d.fixed_client_id);
-              const col = c ? clientColor(c.id) : null;
+              const c = d.fixed_client_id ? clientMap.get(d.fixed_client_id) : null;
+              const isQuote = !!d.quote_id && !c;
+              const col = isQuote ? QUOTE_COLOR : c ? clientColor(c.id) : null;
+              const label =
+                d.title ||
+                c?.name ||
+                d.quote_customer_name ||
+                (isQuote ? "Orçamento" : "Entrega");
               return (
                 <span
                   key={d.id}
-                  className="text-[9px] sm:text-[10px] leading-tight px-1 py-0.5 rounded truncate border"
+                  className="text-[9px] sm:text-[10px] leading-tight px-1 py-0.5 rounded truncate border inline-flex items-center gap-0.5"
                   style={
                     col
                       ? {
@@ -328,9 +334,14 @@ function DayCell({
                         }
                       : undefined
                   }
-                  title={`${c?.name || ""} · ${d.title || "Sem título"} · ${STATUS_META[d.status].label}`}
+                  title={`${
+                    c?.name || d.quote_customer_name || ""
+                  } · ${d.title || "Sem título"} · ${STATUS_META[d.status].label}`}
                 >
-                  {d.title || c?.name || "Entrega"}
+                  {isQuote && (
+                    <DollarSign className="h-2 w-2 shrink-0" aria-hidden />
+                  )}
+                  <span className="truncate">{label}</span>
                 </span>
               );
             })}
