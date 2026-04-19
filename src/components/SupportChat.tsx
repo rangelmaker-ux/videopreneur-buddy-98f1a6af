@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
@@ -31,6 +31,30 @@ export function SupportChat() {
   useEffect(() => {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
+
+  // Extract quiz options (1️⃣..4️⃣) from the last assistant message
+  const quizOptions = useMemo(() => {
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant") return [];
+    const numberEmojis: Record<string, number> = {
+      "1️⃣": 1, "2️⃣": 2, "3️⃣": 3, "4️⃣": 4,
+    };
+    const found: { number: number; label: string; reply: string }[] = [];
+    const lines = last.content.split("\n");
+    for (const raw of lines) {
+      const line = raw.trim();
+      for (const [emoji, num] of Object.entries(numberEmojis)) {
+        if (line.startsWith(emoji)) {
+          const label = line.slice(emoji.length).replace(/^[\s:.\-—)]+/, "").trim();
+          if (label && !found.find((o) => o.number === num)) {
+            found.push({ number: num, label, reply: `${num} - ${label}` });
+          }
+          break;
+        }
+      }
+    }
+    return found.length >= 2 ? found.sort((a, b) => a.number - b.number) : [];
+  }, [messages]);
 
   const send = useCallback(
     async (override?: string) => {
