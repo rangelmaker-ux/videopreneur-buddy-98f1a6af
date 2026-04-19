@@ -25,7 +25,8 @@ export type DeliveryStatus =
 
 export type Delivery = {
   id: string;
-  fixed_client_id: string;
+  fixed_client_id: string | null;
+  quote_id: string | null;
   user_id: string;
   title: string;
   script: string;
@@ -38,12 +39,15 @@ export type Delivery = {
   cycle_year: number;
   cycle_month: number;
   created_at: string;
+  // Hidratado em runtime quando origem é orçamento
+  quote_customer_name?: string | null;
 };
 
 export type DeliveryInput = Partial<
   Omit<Delivery, "id" | "user_id" | "created_at" | "cycle_year" | "cycle_month">
 > & {
-  fixed_client_id: string;
+  fixed_client_id?: string | null;
+  quote_id?: string | null;
 };
 
 export const STATUS_META: Record<
@@ -72,19 +76,38 @@ export function useFixedClients() {
   const load = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const [{ data: cs }, { data: ds }] = await Promise.all([
+    const [{ data: cs }, { data: ds }, { data: qs }] = await Promise.all([
       supabase
         .from("fixed_clients")
         .select("*")
         .order("created_at", { ascending: false }),
-      // Carrega TODAS as entregas do usuário — necessário para o calendário global.
       supabase
         .from("fixed_client_deliveries")
         .select("*")
         .order("recording_at", { ascending: true, nullsFirst: false }),
+      // Carrega nomes dos clientes dos orçamentos para hidratar entregas avulsas
+      supabase
+        .from("quotes")
+        .select("id, customer_name, project_name"),
     ]);
+    const quotesMap = new Map<string, { customer_name: string; project_name: string }>();
+    ((qs as any[]) || []).forEach((q) =>
+      quotesMap.set(q.id, {
+        customer_name: q.customer_name || "",
+        project_name: q.project_name || "",
+      })
+    );
     setClients(((cs as any[]) || []).map(normalizeClient));
-    setDeliveries(((ds as any[]) || []).map(normalizeDelivery));
+    setDeliveries(
+      ((ds as any[]) || []).map((row) => {
+        const d = normalizeDelivery(row);
+        if (d.quote_id && !d.fixed_client_id) {
+          const q = quotesMap.get(d.quote_id);
+          if (q) d.quote_customer_name = q.customer_name;
+        }
+        return d;
+      })
+    );
     setLoading(false);
   }, [user]);
 
@@ -153,6 +176,10 @@ export function useFixedClients() {
   const createDelivery = useCallback(
     async (input: DeliveryInput) => {
       if (!user) return null;
+      if (!input.fixed_client_id && !input.quote_id) {
+        toast.error("Selecione um cliente fixo ou um orçamento");
+        return null;
+      }
       const ref = input.recording_at
         ? new Date(input.recording_at)
         : input.delivery_date
@@ -162,7 +189,8 @@ export function useFixedClients() {
         .from("fixed_client_deliveries")
         .insert({
           user_id: user.id,
-          fixed_client_id: input.fixed_client_id,
+          fixed_client_id: input.fixed_client_id || null,
+          quote_id: input.quote_id || null,
           title: input.title || "",
           script: input.script || "",
           location: input.location || "",
@@ -172,7 +200,7 @@ export function useFixedClients() {
           delivery_date: input.delivery_date || null,
           cycle_year: ref.getFullYear(),
           cycle_month: ref.getMonth() + 1,
-        })
+        } as any)
         .select()
         .single();
       if (error || !data) {
@@ -196,6 +224,7 @@ export function useFixedClients() {
       delete cleaned.created_at;
       delete cleaned.cycle_year;
       delete cleaned.cycle_month;
+      delete cleaned.quote_customer_name;
 
       const { data, error } = await supabase
         .from("fixed_client_deliveries")
@@ -209,7 +238,7 @@ export function useFixedClients() {
         return null;
       }
       const d = normalizeDelivery(data);
-      setDeliveries((p) => p.map((x) => (x.id === id ? d : x)));
+      setDeliveries((p) => p.map((x) => (x.id === id ? { ...x, ...d } : x)));
       return d;
     },
     []
@@ -235,6 +264,7 @@ export function useFixedClients() {
       if (!src) return;
       await createDelivery({
         fixed_client_id: src.fixed_client_id,
+        quote_id: null, // não duplica o vínculo de orçamento
         title: src.title ? `${src.title} (cópia)` : "",
         script: src.script,
         location: src.location,
@@ -247,7 +277,66 @@ export function useFixedClients() {
     [deliveries, createDelivery]
   );
 
-  // Conta entregas concluídas (delivered/posted) num ciclo específico.
+  // Marca rapidamente como entregue (ou desmarca, voltando para 'scheduled').
+  const markDelivered = useCallback(
+    async (id: string) => {
+      const cur = deliveries.find((d) => d.id === id);
+      if (!cur) return;
+      const next: DeliveryStatus = DELIVERED_STATUSES.includes(cur.status)
+        ? "scheduled"
+        : "delivered";
+      await updateDelivery(id, { status: next });
+    },
+    [deliveries, updateDelivery]
+  );
+
+  // Gera N slots vazios para o ciclo, completando até atingir videos_per_month do cliente.
+  const generateMonthSlots = useCallback(
+    async (clientId: string, year: number, month: number) => {
+      if (!user) return;
+      const client = clients.find((c) => c.id === clientId);
+      if (!client) return;
+      const existing = deliveries.filter(
+        (d) =>
+          d.fixed_client_id === clientId &&
+          d.cycle_year === year &&
+          d.cycle_month === month
+      ).length;
+      const target = client.videos_per_month;
+      const toCreate = Math.max(0, target - existing);
+      if (toCreate === 0) {
+        toast.info("Ciclo já tem todos os vídeos planejados");
+        return;
+      }
+      const rows = Array.from({ length: toCreate }).map((_, i) => ({
+        user_id: user.id,
+        fixed_client_id: clientId,
+        title: `Vídeo ${existing + i + 1}/${target}`,
+        script: "",
+        location: "",
+        notes: "",
+        status: "scheduled" as DeliveryStatus,
+        recording_at: null,
+        delivery_date: null,
+        cycle_year: year,
+        cycle_month: month,
+      }));
+      const { data, error } = await supabase
+        .from("fixed_client_deliveries")
+        .insert(rows as any)
+        .select();
+      if (error || !data) {
+        console.error(error);
+        toast.error("Erro ao gerar slots");
+        return;
+      }
+      const created = (data as any[]).map(normalizeDelivery);
+      setDeliveries((p) => [...p, ...created]);
+      toast.success(`${toCreate} vídeo(s) adicionado(s) ao ciclo`);
+    },
+    [user, clients, deliveries]
+  );
+
   const countDeliveredInCycle = useCallback(
     (clientId: string, year: number, month: number) =>
       deliveries.filter(
@@ -282,6 +371,8 @@ export function useFixedClients() {
     updateDelivery,
     removeDelivery,
     duplicateDelivery,
+    markDelivered,
+    generateMonthSlots,
     countDeliveredInCycle,
     deliveriesInCycle,
     cycleYear: cy,
@@ -308,7 +399,8 @@ function normalizeClient(row: any): FixedClient {
 function normalizeDelivery(row: any): Delivery {
   return {
     id: row.id,
-    fixed_client_id: row.fixed_client_id,
+    fixed_client_id: row.fixed_client_id || null,
+    quote_id: row.quote_id || null,
     user_id: row.user_id,
     title: row.title || "",
     script: row.script || "",
