@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, Sparkles, ExternalLink, ShieldCheck } from "lucide-react";
+import { Loader2, ExternalLink, ShieldCheck } from "lucide-react";
+import logoUrl from "@/assets/logo.png";
 
 export default function Auth() {
   const { user, loading, signIn, signUp } = useAuth();
@@ -65,8 +66,13 @@ export default function Auth() {
       <div className="relative z-10 w-full max-w-md animate-slide-up">
         {/* Brand */}
         <div className="mb-8 text-center">
-          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary shadow-[var(--shadow-glow)] animate-pulse-glow">
-            <Sparkles className="h-7 w-7 text-primary-foreground" />
+          <div className="relative mx-auto mb-5 inline-block">
+            <div className="absolute inset-0 -z-10 rounded-[28%] bg-primary/30 blur-2xl animate-pulse-glow" />
+            <img
+              src={logoUrl}
+              alt="Videomaker Inteligente"
+              className="h-24 w-24 sm:h-28 sm:w-28 object-contain drop-shadow-[0_12px_30px_hsl(222_75%_45%/0.45)]"
+            />
           </div>
           <h1 className="font-display text-3xl font-bold tracking-tight">
             <span className="gradient-text">Videomaker</span>{" "}
