@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.john-wick-chat]
 verify_jwt = false
+
+[functions.check-approved-email]
+verify_jwt = false
