@@ -379,8 +379,32 @@ export function useFixedClients() {
     [deliveries]
   );
 
+  // Agrupa entregas vindas de orçamentos (clientes "por projeto")
+  const quoteClients: QuoteClient[] = (() => {
+    const map = new Map<string, QuoteClient>();
+    deliveries.forEach((d) => {
+      if (!d.quote_id) return;
+      const existing = map.get(d.quote_id);
+      if (existing) {
+        existing.deliveries.push(d);
+      } else {
+        map.set(d.quote_id, {
+          quote_id: d.quote_id,
+          customer_name: d.quote_customer_name || "Cliente",
+          project_name: d.quote_project_name || "",
+          total: d.quote_total || 0,
+          deliveries: [d],
+        });
+      }
+    });
+    return Array.from(map.values()).sort((a, b) =>
+      a.customer_name.localeCompare(b.customer_name)
+    );
+  })();
+
   return {
     clients,
+    quoteClients,
     deliveries,
     loading,
     createClient,
