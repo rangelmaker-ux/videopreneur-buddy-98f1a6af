@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import johnWickAvatar from "@/assets/john-wick-avatar.png";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
