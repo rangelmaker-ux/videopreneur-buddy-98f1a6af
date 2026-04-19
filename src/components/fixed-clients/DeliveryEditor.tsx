@@ -315,7 +315,7 @@ export default function DeliveryEditor({
             </Button>
             <Button
               onClick={handleSave}
-              disabled={!clientId || saving}
+              disabled={(!clientId && !quoteId) || saving}
               className="bg-gradient-primary text-primary-foreground"
             >
               <Save className="h-4 w-4 mr-1.5" />
