@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Delivery,
   FixedClient,
+  QuoteClient,
   useFixedClients,
 } from "@/hooks/useFixedClients";
 import { Button } from "@/components/ui/button";
