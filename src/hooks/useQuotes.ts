@@ -49,6 +49,7 @@ export function useQuotes() {
     const dbPatch: any = { ...patch };
     if (patch.services) dbPatch.services = patch.services as any;
     if (patch.breakdown) dbPatch.breakdown = patch.breakdown as any;
+    const prev = quotes.find((x) => x.id === id);
     const { data, error } = await supabase
       .from("quotes").update(dbPatch).eq("id", id).select().single();
     if (error || !data) {
@@ -56,7 +57,13 @@ export function useQuotes() {
     }
     const q = normalize(data);
     setQuotes((p) => p.map((x) => (x.id === id ? q : x)));
-  }, []);
+    // Se o status virou "approved", o trigger no banco cria uma entrega
+    // vinculada. Avisa a aba de Clientes pra recarregar e mostrar.
+    if (q.status === "approved" && prev?.status !== "approved") {
+      window.dispatchEvent(new CustomEvent("quote-approved", { detail: { id } }));
+      toast.success("Orçamento aprovado · cliente disponível na aba Clientes");
+    }
+  }, [quotes]);
 
   const setStatus = useCallback((id: string, status: QuoteStatus) => updateQuote(id, { status }), [updateQuote]);
 
