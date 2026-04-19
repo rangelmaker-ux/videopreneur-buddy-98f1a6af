@@ -4,13 +4,14 @@ import { VideoConfigsProvider, useVideoConfigs } from "@/contexts/VideoConfigsCo
 import { SyncBadge } from "@/components/SyncBadge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, MessageCircle } from "lucide-react";
+import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus } from "lucide-react";
 import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
 import QuotesTab from "@/components/tabs/QuotesTab";
 import FixedClientsTab from "@/components/tabs/FixedClientsTab";
 import ResultsTab from "@/components/tabs/ResultsTab";
 import { ParticlesBg } from "@/components/ParticlesBg";
+import { SupportChat } from "@/components/SupportChat";
 import logoUrl from "@/assets/logo.png";
 
 function IndexInner() {
@@ -87,15 +88,7 @@ function IndexInner() {
       </section>
 
       {/* FABs */}
-      <a
-        href="https://instagram.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 left-6 flex h-12 w-12 items-center justify-center rounded-full glass-strong text-foreground hover:text-primary transition-colors shadow-[var(--shadow-elegant)]"
-        aria-label="Suporte"
-      >
-        <MessageCircle className="h-5 w-5" />
-      </a>
+      <SupportChat />
       <button
         onClick={() => setTab("calculator")}
         className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-[var(--shadow-glow)] hover:scale-105 transition-transform"
