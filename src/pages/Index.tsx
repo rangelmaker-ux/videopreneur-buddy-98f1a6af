@@ -9,6 +9,7 @@ import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
 import QuotesTab from "@/components/tabs/QuotesTab";
 import FixedClientsTab from "@/components/tabs/FixedClientsTab";
+import ResultsTab from "@/components/tabs/ResultsTab";
 import { ParticlesBg } from "@/components/ParticlesBg";
 import logoUrl from "@/assets/logo.png";
 
@@ -80,9 +81,7 @@ function IndexInner() {
             <ConfigTab />
           </TabsContent>
           <TabsContent value="results" className="mt-6">
-            <div className="glass rounded-2xl p-8 text-center">
-              <p className="text-sm text-muted-foreground">Será construída na próxima etapa.</p>
-            </div>
+            <ResultsTab />
           </TabsContent>
         </Tabs>
       </section>
