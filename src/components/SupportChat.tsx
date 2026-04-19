@@ -56,6 +56,19 @@ export function SupportChat() {
     return found.length >= 2 ? found.sort((a, b) => a.number - b.number) : [];
   }, [messages]);
 
+  // Detect Yes/No prompt (acceptance question to start quiz)
+  const yesNoPrompt = useMemo(() => {
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant") return false;
+    if (quizOptions.length > 0) return false;
+    const t = last.content.toLowerCase();
+    return (
+      t.includes("posso te fazer") &&
+      t.includes("perguntas rápidas") &&
+      t.includes("faturamento")
+    );
+  }, [messages, quizOptions]);
+
   const send = useCallback(
     async (override?: string) => {
       const text = (override ?? input).trim();
