@@ -64,18 +64,20 @@ export function VideoConfigsProvider({ children }: { children: ReactNode }) {
     try {
       const tasks: Promise<any>[] = [];
       for (const [id, patch] of cfgPatches) {
-        tasks.push(supabase.from("video_configs").update(patch).eq("id", id));
+        tasks.push(Promise.resolve(supabase.from("video_configs").update(patch).eq("id", id)));
       }
       if (proPatch) {
         tasks.push(
-          supabase.from("professional_data").upsert(
-            { user_id: user.id, ...proPatch },
-            { onConflict: "user_id" }
+          Promise.resolve(
+            supabase.from("professional_data").upsert(
+              { user_id: user.id, ...proPatch },
+              { onConflict: "user_id" }
+            )
           )
         );
       }
       const results = await Promise.all(tasks);
-      const err = results.find((r) => r?.error);
+      const err = results.find((r: any) => r?.error);
       if (err?.error) { console.error(err.error); setSyncStatus("error"); return; }
       setSyncStatus("saved");
       window.setTimeout(() => setSyncStatus((s) => (s === "saved" ? "idle" : s)), 1800);
