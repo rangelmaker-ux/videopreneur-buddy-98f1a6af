@@ -382,8 +382,9 @@ function DayCell({
         ) : (
           <ul className="space-y-1.5 max-h-72 overflow-auto">
             {items.map((d) => {
-              const c = clientMap.get(d.fixed_client_id);
-              const col = c ? clientColor(c.id) : null;
+              const c = d.fixed_client_id ? clientMap.get(d.fixed_client_id) : null;
+              const isQuote = !!d.quote_id && !c;
+              const col = isQuote ? QUOTE_COLOR : c ? clientColor(c.id) : null;
               return (
                 <li key={d.id}>
                   <button
@@ -401,7 +402,10 @@ function DayCell({
                           style={{ background: col.dot }}
                         />
                       )}
-                      <span className="text-xs font-medium truncate flex-1">
+                      <span className="text-xs font-medium truncate flex-1 inline-flex items-center gap-1">
+                        {isQuote && (
+                          <DollarSign className="h-3 w-3 shrink-0" />
+                        )}
                         {d.title || "Sem título"}
                       </span>
                       <span className="text-[9px] uppercase text-muted-foreground">
@@ -409,7 +413,11 @@ function DayCell({
                       </span>
                     </div>
                     <div className="text-[10px] text-muted-foreground truncate mt-0.5">
-                      {c?.name}
+                      {c?.name ||
+                        (isQuote &&
+                          (d.quote_customer_name
+                            ? `Orçamento · ${d.quote_customer_name}`
+                            : "Orçamento aprovado"))}
                       {d.recording_at &&
                         " · " +
                           new Date(d.recording_at).toLocaleTimeString("pt-BR", {
