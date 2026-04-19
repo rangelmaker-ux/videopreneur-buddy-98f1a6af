@@ -7,6 +7,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, MessageCircle } from "lucide-react";
 import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
+import QuotesTab from "@/components/tabs/QuotesTab";
+import FixedClientsTab from "@/components/tabs/FixedClientsTab";
 import { ParticlesBg } from "@/components/ParticlesBg";
 import logoUrl from "@/assets/logo.png";
 
@@ -66,18 +68,22 @@ function IndexInner() {
           </TabsList>
 
           <TabsContent value="calculator" className="mt-6">
-            <CalculatorTab />
+            <CalculatorTab onSaved={() => setTab("quotes")} />
+          </TabsContent>
+          <TabsContent value="quotes" className="mt-6">
+            <QuotesTab />
+          </TabsContent>
+          <TabsContent value="clients" className="mt-6">
+            <FixedClientsTab />
           </TabsContent>
           <TabsContent value="config" className="mt-6">
             <ConfigTab />
           </TabsContent>
-          {["quotes", "clients", "results"].map((key) => (
-            <TabsContent key={key} value={key} className="mt-6">
-              <div className="glass rounded-2xl p-8 text-center">
-                <p className="text-sm text-muted-foreground">Será construída na próxima etapa.</p>
-              </div>
-            </TabsContent>
-          ))}
+          <TabsContent value="results" className="mt-6">
+            <div className="glass rounded-2xl p-8 text-center">
+              <p className="text-sm text-muted-foreground">Será construída na próxima etapa.</p>
+            </div>
+          </TabsContent>
         </Tabs>
       </section>
 

@@ -50,6 +50,89 @@ export type Database = {
         }
         Relationships: []
       }
+      fixed_client_deliveries: {
+        Row: {
+          created_at: string
+          cycle_month: number
+          cycle_year: number
+          delivered_at: string
+          fixed_client_id: string
+          id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          cycle_month: number
+          cycle_year: number
+          delivered_at?: string
+          fixed_client_id: string
+          id?: string
+          title?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          cycle_month?: number
+          cycle_year?: number
+          delivered_at?: string
+          fixed_client_id?: string
+          id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fixed_client_deliveries_fixed_client_id_fkey"
+            columns: ["fixed_client_id"]
+            isOneToOne: false
+            referencedRelation: "fixed_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fixed_clients: {
+        Row: {
+          active: boolean
+          contact: string | null
+          created_at: string
+          id: string
+          monthly_value: number
+          name: string
+          notes: string | null
+          renewal_day: number
+          updated_at: string
+          user_id: string
+          videos_per_month: number
+        }
+        Insert: {
+          active?: boolean
+          contact?: string | null
+          created_at?: string
+          id?: string
+          monthly_value?: number
+          name: string
+          notes?: string | null
+          renewal_day?: number
+          updated_at?: string
+          user_id: string
+          videos_per_month?: number
+        }
+        Update: {
+          active?: boolean
+          contact?: string | null
+          created_at?: string
+          id?: string
+          monthly_value?: number
+          name?: string
+          notes?: string | null
+          renewal_day?: number
+          updated_at?: string
+          user_id?: string
+          videos_per_month?: number
+        }
+        Relationships: []
+      }
       professional_data: {
         Row: {
           business_name: string | null
@@ -110,6 +193,69 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          breakdown: Json
+          created_at: string
+          customer_name: string
+          dur_minutes: number
+          dur_seconds: number
+          editing_level: string
+          fixed_client_id: string | null
+          id: string
+          locations: number
+          notes: string | null
+          project_name: string
+          services: Json
+          status: string
+          total: number
+          updated_at: string
+          user_id: string
+          video_type_key: string
+          video_type_label: string
+        }
+        Insert: {
+          breakdown?: Json
+          created_at?: string
+          customer_name: string
+          dur_minutes?: number
+          dur_seconds?: number
+          editing_level?: string
+          fixed_client_id?: string | null
+          id?: string
+          locations?: number
+          notes?: string | null
+          project_name: string
+          services?: Json
+          status?: string
+          total?: number
+          updated_at?: string
+          user_id: string
+          video_type_key: string
+          video_type_label: string
+        }
+        Update: {
+          breakdown?: Json
+          created_at?: string
+          customer_name?: string
+          dur_minutes?: number
+          dur_seconds?: number
+          editing_level?: string
+          fixed_client_id?: string | null
+          id?: string
+          locations?: number
+          notes?: string | null
+          project_name?: string
+          services?: Json
+          status?: string
+          total?: number
+          updated_at?: string
+          user_id?: string
+          video_type_key?: string
+          video_type_label?: string
         }
         Relationships: []
       }
