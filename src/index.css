@@ -32,8 +32,8 @@
     --accent: 160 84% 50%;
     --accent-foreground: 230 40% 8%;
 
-    --muted: 230 20% 16%;
-    --muted-foreground: 220 12% 65%;
+    --muted: 230 20% 20%;
+    --muted-foreground: 220 18% 80%;
 
     --destructive: 0 85% 62%;
     --destructive-foreground: 0 0% 100%;
@@ -44,16 +44,16 @@
     --warning: 38 95% 58%;
     --warning-foreground: 230 40% 8%;
 
-    --border: 230 25% 18%;
-    --input: 230 25% 14%;
-    --ring: 199 95% 58%;
+    --border: 220 40% 55% / 0.35;
+    --input: 230 25% 18%;
+    --ring: 199 95% 65%;
 
     --radius: 0.875rem;
 
-    /* Glass surfaces */
-    --glass-bg: 230 30% 12% / 0.55;
-    --glass-border: 220 30% 70% / 0.12;
-    --glass-highlight: 220 30% 90% / 0.06;
+    /* Glass surfaces — brighter edges */
+    --glass-bg: 230 30% 14% / 0.6;
+    --glass-border: 220 60% 80% / 0.28;
+    --glass-highlight: 220 60% 95% / 0.14;
 
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(199 95% 58%), hsl(260 90% 65%));
@@ -64,10 +64,10 @@
                    radial-gradient(ellipse 60% 50% at 50% 100%, hsl(260 90% 25% / 0.35), transparent 60%),
                    linear-gradient(180deg, hsl(230 35% 6%), hsl(230 40% 4%));
 
-    /* Shadows */
-    --shadow-glow: 0 0 0 1px hsl(199 95% 58% / 0.15), 0 8px 40px -8px hsl(199 95% 58% / 0.45);
+    /* Shadows — luminous edges */
+    --shadow-glow: 0 0 0 1px hsl(199 95% 65% / 0.35), 0 8px 40px -8px hsl(199 95% 60% / 0.6);
     --shadow-elegant: 0 10px 40px -10px hsl(230 50% 2% / 0.6), 0 2px 8px hsl(230 50% 2% / 0.4);
-    --shadow-glass: 0 8px 32px hsl(230 50% 2% / 0.45), inset 0 1px 0 hsl(220 30% 90% / 0.06);
+    --shadow-glass: 0 8px 32px hsl(230 50% 2% / 0.45), inset 0 1px 0 hsl(220 80% 95% / 0.18), 0 0 0 1px hsl(220 60% 80% / 0.18);
 
     /* Motion */
     --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
@@ -110,18 +110,44 @@
 @layer components {
   .glass {
     background: hsl(var(--glass-bg));
-    backdrop-filter: blur(20px) saturate(140%);
-    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
     border: 1px solid hsl(var(--glass-border));
     box-shadow: var(--shadow-glass);
+    position: relative;
+  }
+  .glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(199 95% 70% / 0.5), hsl(290 80% 70% / 0.25) 40%, transparent 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
   }
 
   .glass-strong {
-    background: hsl(230 30% 10% / 0.75);
-    backdrop-filter: blur(28px) saturate(160%);
-    -webkit-backdrop-filter: blur(28px) saturate(160%);
-    border: 1px solid hsl(var(--glass-border));
-    box-shadow: var(--shadow-glass);
+    background: hsl(230 30% 12% / 0.78);
+    backdrop-filter: blur(28px) saturate(180%);
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid hsl(220 60% 80% / 0.32);
+    box-shadow: var(--shadow-glass), 0 0 28px -8px hsl(199 95% 60% / 0.35);
+    position: relative;
+  }
+  .glass-strong::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, hsl(199 95% 75% / 0.7), hsl(290 80% 75% / 0.4) 50%, hsl(160 84% 60% / 0.3));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
   }
 
   .gradient-text {
