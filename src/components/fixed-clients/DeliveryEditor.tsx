@@ -33,6 +33,7 @@ import {
   Delivery,
   DeliveryStatus,
   FixedClient,
+  QuoteClient,
   STATUS_META,
 } from "@/hooks/useFixedClients";
 
@@ -45,6 +46,7 @@ export type DeliveryEditorProps = {
   onOpenChange: (v: boolean) => void;
   mode: Mode;
   clients: FixedClient[];
+  quoteClients?: QuoteClient[];
   onSave: (
     payload: Partial<Delivery> & {
       fixed_client_id?: string | null;
@@ -54,6 +56,11 @@ export type DeliveryEditorProps = {
   onDelete?: (id: string) => Promise<void>;
   onDuplicate?: (id: string) => Promise<void>;
 };
+
+// Valor único do <Select> que codifica origem + id
+// "fixed:<id>" ou "quote:<id>"
+const FIXED_PREFIX = "fixed:";
+const QUOTE_PREFIX = "quote:";
 
 const STATUSES: DeliveryStatus[] = [
   "scheduled",
