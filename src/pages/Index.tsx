@@ -12,15 +12,13 @@ import FixedClientsTab from "@/components/tabs/FixedClientsTab";
 import ResultsTab from "@/components/tabs/ResultsTab";
 import { ParticlesBg } from "@/components/ParticlesBg";
 import { SupportChat } from "@/components/SupportChat";
+import { UserAvatarMenu } from "@/components/UserAvatarMenu";
 import logoUrl from "@/assets/logo.png";
 
 function IndexInner() {
   const { user, signOut } = useAuth();
   const { syncStatus } = useVideoConfigs();
   const [tab, setTab] = useState("calculator");
-
-  const initials = (user?.user_metadata?.display_name || user?.email || "U")
-    .split(" ").map((p: string) => p[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <div className="min-h-screen pb-32 relative">
@@ -39,9 +37,7 @@ function IndexInner() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground border border-border">
-              {initials}
-            </div>
+            <UserAvatarMenu />
             <Button variant="ghost" size="icon" onClick={() => signOut()} aria-label="Sair">
               <LogOut className="h-4 w-4" />
             </Button>
