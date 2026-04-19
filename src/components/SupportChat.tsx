@@ -32,15 +32,17 @@ export function SupportChat() {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
+  const lastAssistant = messages[messages.length - 1];
+  const lastIsAssistant = lastAssistant?.role === "assistant";
+
   // Extract quiz options (1️⃣..4️⃣) from the last assistant message
   const quizOptions = useMemo(() => {
-    const last = messages[messages.length - 1];
-    if (!last || last.role !== "assistant") return [];
+    if (!lastIsAssistant) return [];
     const numberEmojis: Record<string, number> = {
       "1️⃣": 1, "2️⃣": 2, "3️⃣": 3, "4️⃣": 4,
     };
     const found: { number: number; label: string; reply: string }[] = [];
-    const lines = last.content.split("\n");
+    const lines = lastAssistant!.content.split("\n");
     for (const raw of lines) {
       const line = raw.trim();
       for (const [emoji, num] of Object.entries(numberEmojis)) {
@@ -54,20 +56,35 @@ export function SupportChat() {
       }
     }
     return found.length >= 2 ? found.sort((a, b) => a.number - b.number) : [];
-  }, [messages]);
+  }, [lastAssistant, lastIsAssistant]);
 
-  // Detect Yes/No prompt (acceptance question to start quiz)
-  const yesNoPrompt = useMemo(() => {
-    const last = messages[messages.length - 1];
-    if (!last || last.role !== "assistant") return false;
-    if (quizOptions.length > 0) return false;
-    const t = last.content.toLowerCase();
-    return (
-      t.includes("posso te fazer") &&
-      t.includes("perguntas rápidas") &&
-      t.includes("faturamento")
-    );
-  }, [messages, quizOptions]);
+  // Detect Yes/No prompt — initial acceptance ("posso te fazer 2 perguntas")
+  // OR final offer ("você daria uma olhada?")
+  const yesNoPrompt = useMemo<null | "initial" | "offer">(() => {
+    if (!lastIsAssistant || quizOptions.length > 0) return null;
+    const t = lastAssistant!.content.toLowerCase();
+    if (t.includes("posso te fazer") && t.includes("perguntas rápidas")) return "initial";
+    if (t.includes("você daria uma olhada") || t.includes("voce daria uma olhada")) return "offer";
+    return null;
+  }, [lastAssistant, lastIsAssistant, quizOptions]);
+
+  // Strip option/CTA lines from the assistant content when we render buttons,
+  // so the bubble shows only the question.
+  const renderContent = useCallback(
+    (m: Msg, isLast: boolean) => {
+      if (m.role !== "assistant" || !isLast) return m.content;
+      if (quizOptions.length > 0) {
+        return m.content
+          .split("\n")
+          .filter((l) => !/^\s*[1-4]️⃣/.test(l))
+          .join("\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+      }
+      return m.content;
+    },
+    [quizOptions],
+  );
 
   const send = useCallback(
     async (override?: string) => {
