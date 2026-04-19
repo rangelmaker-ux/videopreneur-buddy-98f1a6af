@@ -41,6 +41,16 @@ export type Delivery = {
   created_at: string;
   // Hidratado em runtime quando origem é orçamento
   quote_customer_name?: string | null;
+  quote_project_name?: string | null;
+  quote_total?: number | null;
+};
+
+export type QuoteClient = {
+  quote_id: string;
+  customer_name: string;
+  project_name: string;
+  total: number;
+  deliveries: Delivery[];
 };
 
 export type DeliveryInput = Partial<
