@@ -37,6 +37,7 @@ import {
   ChevronRight,
   CalendarPlus,
   Sparkles,
+  FileText,
 } from "lucide-react";
 import { brl } from "@/lib/pricing";
 import { clientColor } from "@/lib/clientColors";
