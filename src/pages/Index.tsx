@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { VideoConfigsProvider, useVideoConfigs } from "@/contexts/VideoConfigsContext";
+import { SyncBadge } from "@/components/SyncBadge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, MessageCircle, Cloud } from "lucide-react";
+import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, MessageCircle } from "lucide-react";
+import CalculatorTab from "@/components/tabs/CalculatorTab";
+import ConfigTab from "@/components/tabs/ConfigTab";
 
-export default function Index() {
+function IndexInner() {
   const { user, signOut } = useAuth();
+  const { syncStatus } = useVideoConfigs();
   const [tab, setTab] = useState("calculator");
 
   const initials = (user?.user_metadata?.display_name || user?.email || "U")
@@ -18,13 +23,13 @@ export default function Index() {
         <div className="container flex h-16 items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-primary">
-              <Sparkles className="h-4.5 w-4.5 text-primary-foreground" />
+              <Sparkles className="h-4 w-4 text-primary-foreground" />
             </div>
             <div className="min-w-0">
               <p className="font-display text-sm font-bold leading-tight truncate">Videomaker Inteligente</p>
-              <p className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground leading-tight">
-                <Cloud className="h-3 w-3 text-success" /> Salvo na nuvem
-              </p>
+              <div className="hidden sm:block leading-tight">
+                <SyncBadge status={syncStatus} />
+              </div>
             </div>
           </div>
 
@@ -39,21 +44,7 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Hero — etapa 1 placeholder */}
-      <section className="container mt-8 mb-6 animate-fade-in">
-        <div className="glass rounded-2xl p-6 sm:p-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-primary mb-2">Bem-vindo</p>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold mb-2">
-            Olá, <span className="gradient-text">{user?.user_metadata?.display_name || "videomaker"}</span> 👋
-          </h1>
-          <p className="text-sm text-muted-foreground max-w-prose">
-            Sua conta está ativa. Nas próximas etapas vamos liberar a calculadora de precificação, gestão de orçamentos, clientes fixos e dashboard de resultados.
-          </p>
-        </div>
-      </section>
-
-      {/* Tabs */}
-      <section className="container">
+      <section className="container mt-6">
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="grid w-full grid-cols-5 bg-muted/40 h-auto p-1">
             <TabsTrigger value="calculator" className="flex flex-col gap-1 py-2 text-[11px] sm:text-xs sm:flex-row">
@@ -73,12 +64,16 @@ export default function Index() {
             </TabsTrigger>
           </TabsList>
 
-          {["calculator", "quotes", "clients", "results", "config"].map((key) => (
+          <TabsContent value="calculator" className="mt-6">
+            <CalculatorTab />
+          </TabsContent>
+          <TabsContent value="config" className="mt-6">
+            <ConfigTab />
+          </TabsContent>
+          {["quotes", "clients", "results"].map((key) => (
             <TabsContent key={key} value={key} className="mt-6">
               <div className="glass rounded-2xl p-8 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Esta seção será construída na próxima etapa.
-                </p>
+                <p className="text-sm text-muted-foreground">Será construída na próxima etapa.</p>
               </div>
             </TabsContent>
           ))}
@@ -103,5 +98,13 @@ export default function Index() {
         <Plus className="h-6 w-6" />
       </button>
     </div>
+  );
+}
+
+export default function Index() {
+  return (
+    <VideoConfigsProvider>
+      <IndexInner />
+    </VideoConfigsProvider>
   );
 }
