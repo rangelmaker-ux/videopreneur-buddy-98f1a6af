@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, MessageCircle, CloudCheck } from "lucide-react";
+import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, MessageCircle, Cloud } from "lucide-react";
 
 export default function Index() {
   const { user, signOut } = useAuth();
@@ -23,7 +23,7 @@ export default function Index() {
             <div className="min-w-0">
               <p className="font-display text-sm font-bold leading-tight truncate">Videomaker Inteligente</p>
               <p className="hidden sm:flex items-center gap-1 text-[11px] text-muted-foreground leading-tight">
-                <CloudCheck className="h-3 w-3 text-success" /> Salvo na nuvem
+                <Cloud className="h-3 w-3 text-success" /> Salvo na nuvem
               </p>
             </div>
           </div>
