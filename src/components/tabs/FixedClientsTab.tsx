@@ -79,17 +79,15 @@ export default function FixedClientsTab() {
         </TabsContent>
       </Tabs>
 
-      {clients.length > 0 && (
-        <DeliveryEditor
-          open={editorOpen}
-          onOpenChange={setEditorOpen}
-          mode={editorMode}
-          clients={clients}
-          onSave={handleSave}
-          onDelete={removeDelivery}
-          onDuplicate={duplicateDelivery}
-        />
-      )}
+      <DeliveryEditor
+        open={editorOpen}
+        onOpenChange={setEditorOpen}
+        mode={editorMode}
+        clients={clients}
+        onSave={handleSave}
+        onDelete={removeDelivery}
+        onDuplicate={duplicateDelivery}
+      />
     </div>
   );
 }
