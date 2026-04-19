@@ -112,25 +112,58 @@
 }
 
 @layer components {
-  /* Topbar glass — único uso de glass, bem sutil */
+  /* Apple-style liquid glass — translúcido refinado */
   .glass {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    box-shadow: var(--shadow-card);
+    position: relative;
+    background: hsl(0 0% 100% / 0.55);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid hsl(0 0% 100% / 0.7);
+    box-shadow:
+      0 1px 0 hsl(0 0% 100% / 0.9) inset,
+      0 -1px 0 hsl(220 30% 80% / 0.25) inset,
+      0 1px 2px hsl(220 40% 20% / 0.04),
+      0 8px 32px -8px hsl(220 40% 20% / 0.12);
+  }
+  .glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, hsl(0 0% 100% / 0.5) 0%, transparent 35%, transparent 100%);
+    pointer-events: none;
+    opacity: 0.7;
   }
 
   .glass-strong {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border));
-    box-shadow: var(--shadow-elegant);
+    position: relative;
+    background: hsl(0 0% 100% / 0.72);
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border: 1px solid hsl(0 0% 100% / 0.85);
+    box-shadow:
+      0 1px 0 hsl(0 0% 100% / 1) inset,
+      0 -1px 0 hsl(220 30% 75% / 0.3) inset,
+      0 2px 4px hsl(220 40% 20% / 0.05),
+      0 12px 40px -10px hsl(220 40% 20% / 0.18);
+  }
+  .glass-strong::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, hsl(0 0% 100% / 0.6) 0%, transparent 30%, transparent 100%);
+    pointer-events: none;
+    opacity: 0.8;
   }
 
-  /* Topbar específico — leve translucidez para sticky */
+  /* Topbar — mais translúcido para sticky elegante */
   .topbar-glass {
-    background: hsl(var(--glass-bg));
-    backdrop-filter: blur(12px) saturate(140%);
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
-    border-bottom: 1px solid hsl(var(--border));
+    background: hsl(0 0% 100% / 0.68);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid hsl(220 18% 88% / 0.6);
+    box-shadow: 0 1px 0 hsl(0 0% 100% / 0.6) inset;
   }
 
   .gradient-text {
