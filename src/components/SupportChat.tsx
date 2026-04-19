@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -98,14 +99,30 @@ export function SupportChat() {
       setLoading(true);
 
       try {
+        // Exige usuário logado — assim os créditos só são gastos por compradores autenticados
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) {
+          toast.error("Faça login para usar o chat de suporte.");
+          setLoading(false);
+          setMessages(messages); // rollback
+          return;
+        }
+
         const resp = await fetch(CHAT_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${PUBLISHABLE_KEY}`,
+            apikey: PUBLISHABLE_KEY,
+            Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ messages: next }),
         });
+
+        if (resp.status === 401) {
+          toast.error("Sessão expirada. Faça login novamente.");
+          setLoading(false);
+          return;
+        }
 
         if (resp.status === 429) {
           toast.error("Muitas requisições. Aguarde um instante.");
