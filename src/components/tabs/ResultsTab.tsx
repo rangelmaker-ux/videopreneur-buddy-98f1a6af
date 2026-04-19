@@ -74,7 +74,7 @@ export default function ResultsTab() {
   const considered = approved.length + sent.length;
   const approvalRate = considered ? (approved.length / considered) * 100 : 0;
 
-  // Faturamento mensal (últimos 6 meses, baseado em aprovados)
+  // Faturamento mensal (6 meses reais + 3 meses de projeção)
   const monthly = useMemo(() => {
     const map = new Map<string, number>();
     const labels: { key: string; label: string }[] = [];
@@ -93,8 +93,31 @@ export default function ResultsTab() {
         const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
         if (map.has(key)) map.set(key, (map.get(key) || 0) + Number(q.total || 0));
       });
-    return labels.map(({ key, label }) => ({ month: label, total: map.get(key) || 0 }));
-  }, [quotes]);
+
+    const realRows = labels.map(({ key, label }) => ({
+      month: label,
+      total: map.get(key) || 0,
+      projection: null as number | null,
+    }));
+
+    // Média móvel dos últimos 3 meses reais + recorrente mensal
+    const last3 = realRows.slice(-3).map((r) => r.total);
+    const avg3 = last3.length ? last3.reduce((a, b) => a + b, 0) / last3.length : 0;
+    const projectedValue = avg3 + recurring;
+
+    // Ancora a linha no último mês real
+    if (realRows.length) {
+      realRows[realRows.length - 1].projection = realRows[realRows.length - 1].total;
+    }
+
+    const future: typeof realRows = [];
+    for (let i = 1; i <= 3; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      const label = d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+      future.push({ month: label, total: 0, projection: projectedValue });
+    }
+    return [...realRows, ...future];
+  }, [quotes, recurring]);
 
   // Top tipos de vídeo (por receita aprovada)
   const topTypes = useMemo(() => {
