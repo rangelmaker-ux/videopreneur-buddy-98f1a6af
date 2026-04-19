@@ -20,9 +20,6 @@ function IndexInner() {
   const { syncStatus } = useVideoConfigs();
   const [tab, setTab] = useState("calculator");
 
-  const initials = (user?.user_metadata?.display_name || user?.email || "U")
-    .split(" ").map((p: string) => p[0]).join("").slice(0, 2).toUpperCase();
-
   return (
     <div className="min-h-screen pb-32 relative">
       {/* Topbar */}
