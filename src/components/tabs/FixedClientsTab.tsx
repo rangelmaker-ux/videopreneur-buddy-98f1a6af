@@ -84,6 +84,7 @@ export default function FixedClientsTab() {
         onOpenChange={setEditorOpen}
         mode={editorMode}
         clients={clients}
+        quoteClients={quoteClients}
         onSave={handleSave}
         onDelete={removeDelivery}
         onDuplicate={duplicateDelivery}
