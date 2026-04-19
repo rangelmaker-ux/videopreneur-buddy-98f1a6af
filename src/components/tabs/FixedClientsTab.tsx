@@ -8,7 +8,7 @@ import DeliveryEditor from "@/components/fixed-clients/DeliveryEditor";
 
 export default function FixedClientsTab() {
   const hook = useFixedClients();
-  const { clients, deliveries, loading, createDelivery, updateDelivery, removeDelivery, duplicateDelivery } = hook;
+  const { clients, quoteClients, deliveries, loading, createDelivery, updateDelivery, removeDelivery, duplicateDelivery } = hook;
 
   const [view, setView] = useState<"calendar" | "clients">("calendar");
   const [editorOpen, setEditorOpen] = useState(false);
@@ -84,6 +84,7 @@ export default function FixedClientsTab() {
         onOpenChange={setEditorOpen}
         mode={editorMode}
         clients={clients}
+        quoteClients={quoteClients}
         onSave={handleSave}
         onDelete={removeDelivery}
         onDuplicate={duplicateDelivery}

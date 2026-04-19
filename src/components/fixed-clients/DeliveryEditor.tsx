@@ -33,6 +33,7 @@ import {
   Delivery,
   DeliveryStatus,
   FixedClient,
+  QuoteClient,
   STATUS_META,
 } from "@/hooks/useFixedClients";
 
@@ -45,6 +46,7 @@ export type DeliveryEditorProps = {
   onOpenChange: (v: boolean) => void;
   mode: Mode;
   clients: FixedClient[];
+  quoteClients?: QuoteClient[];
   onSave: (
     payload: Partial<Delivery> & {
       fixed_client_id?: string | null;
@@ -54,6 +56,11 @@ export type DeliveryEditorProps = {
   onDelete?: (id: string) => Promise<void>;
   onDuplicate?: (id: string) => Promise<void>;
 };
+
+// Valor único do <Select> que codifica origem + id
+// "fixed:<id>" ou "quote:<id>"
+const FIXED_PREFIX = "fixed:";
+const QUOTE_PREFIX = "quote:";
 
 const STATUSES: DeliveryStatus[] = [
   "scheduled",
@@ -84,6 +91,7 @@ export default function DeliveryEditor({
   onOpenChange,
   mode,
   clients,
+  quoteClients = [],
   onSave,
   onDelete,
   onDuplicate,
@@ -118,10 +126,22 @@ export default function DeliveryEditor({
         ? mode.delivery
         : (mode.defaults as Partial<Delivery>);
     const incomingQuote = init?.quote_id || null;
+    const incomingFixed = init?.fixed_client_id || "";
     setQuoteId(incomingQuote);
-    setClientId(
-      init?.fixed_client_id || (incomingQuote ? "" : clients[0]?.id || "")
-    );
+    // Default: usa o que veio; se não veio nada, escolhe primeiro cliente fixo;
+    // se não houver fixos mas houver de orçamento, usa o primeiro de orçamento.
+    if (incomingFixed) {
+      setClientId(incomingFixed);
+    } else if (incomingQuote) {
+      setClientId("");
+    } else if (clients[0]) {
+      setClientId(clients[0].id);
+    } else if (quoteClients[0]) {
+      setQuoteId(quoteClients[0].quote_id);
+      setClientId("");
+    } else {
+      setClientId("");
+    }
     setTitle(init?.title || "");
     setRecording(toDateTimeLocal(init?.recording_at || null));
     setDeliveryDate(init?.delivery_date || "");
@@ -132,7 +152,27 @@ export default function DeliveryEditor({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, mode]);
 
-  const isQuoteSourced = !!quoteId && !clientId;
+  const isEdit = mode.kind === "edit";
+  // Quando estamos editando uma entrega vinda de orçamento, não permitimos
+  // trocar a origem (a entrega já está vinculada ao quote_id existente).
+  const lockedToQuote = isEdit && !!quoteId;
+
+  // Valor combinado para o seletor de origem
+  const sourceValue = clientId
+    ? `${FIXED_PREFIX}${clientId}`
+    : quoteId
+    ? `${QUOTE_PREFIX}${quoteId}`
+    : "";
+
+  const handleSourceChange = (v: string) => {
+    if (v.startsWith(FIXED_PREFIX)) {
+      setClientId(v.slice(FIXED_PREFIX.length));
+      setQuoteId(null);
+    } else if (v.startsWith(QUOTE_PREFIX)) {
+      setQuoteId(v.slice(QUOTE_PREFIX.length));
+      setClientId("");
+    }
+  };
 
   const handleSave = async () => {
     if (!clientId && !quoteId) return;
@@ -152,8 +192,6 @@ export default function DeliveryEditor({
     onOpenChange(false);
   };
 
-  const isEdit = mode.kind === "edit";
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
@@ -167,25 +205,60 @@ export default function DeliveryEditor({
         </SheetHeader>
 
         <div className="space-y-4 py-4">
-          {isQuoteSourced ? (
+          {lockedToQuote ? (
             <Field label="Origem">
               <div className="rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-foreground/90 flex items-center gap-2">
                 <span className="inline-block h-2 w-2 rounded-full bg-warning" />
-                Entrega gerada a partir de um <strong>orçamento aprovado</strong>.
+                Entrega de <strong>orçamento aprovado</strong>
+                {(() => {
+                  const q = quoteClients.find((x) => x.quote_id === quoteId);
+                  return q ? ` · ${q.customer_name}` : "";
+                })()}
               </div>
             </Field>
           ) : (
-            <Field label="Cliente fixo">
-              <Select value={clientId} onValueChange={setClientId}>
+            <Field label="Cliente">
+              <Select value={sourceValue} onValueChange={handleSourceChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione um cliente" />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name} {!c.active && "(inativo)"}
-                    </SelectItem>
-                  ))}
+                  {clients.length > 0 && (
+                    <>
+                      <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                        Clientes fixos
+                      </div>
+                      {clients.map((c) => (
+                        <SelectItem
+                          key={c.id}
+                          value={`${FIXED_PREFIX}${c.id}`}
+                        >
+                          {c.name} {!c.active && "(inativo)"}
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
+                  {quoteClients.length > 0 && (
+                    <>
+                      <div className="px-2 py-1 mt-1 text-[10px] uppercase tracking-wider text-muted-foreground border-t border-border">
+                        Orçamentos aprovados
+                      </div>
+                      {quoteClients.map((q) => (
+                        <SelectItem
+                          key={q.quote_id}
+                          value={`${QUOTE_PREFIX}${q.quote_id}`}
+                        >
+                          {q.customer_name}
+                          {q.project_name ? ` · ${q.project_name}` : ""}
+                        </SelectItem>
+                      ))}
+                    </>
+                  )}
+                  {clients.length === 0 && quoteClients.length === 0 && (
+                    <div className="px-2 py-2 text-xs text-muted-foreground">
+                      Nenhum cliente disponível
+                    </div>
+                  )}
                 </SelectContent>
               </Select>
             </Field>
