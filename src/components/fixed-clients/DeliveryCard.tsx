@@ -11,7 +11,10 @@ import {
   MapPin,
   CalendarCheck,
   FileText,
+  Check,
+  Undo2,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const TONE_CLASSES: Record<string, string> = {
   muted: "bg-muted/60 text-muted-foreground border-border",
@@ -44,16 +47,19 @@ export default function DeliveryCard({
   delivery,
   client,
   onClick,
+  onToggleDelivered,
 }: {
   delivery: Delivery;
   client?: FixedClient;
   onClick: () => void;
+  onToggleDelivered?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const color = client ? clientColor(client.id) : null;
   const meta = STATUS_META[delivery.status];
   const recording = fmtDateTime(delivery.recording_at);
   const delivery_d = fmtDate(delivery.delivery_date);
+  const isDone = delivery.status === "delivered" || delivery.status === "posted";
 
   return (
     <article
