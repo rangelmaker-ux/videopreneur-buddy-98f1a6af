@@ -19,6 +19,8 @@ import {
   Cell,
   Line,
   LineChart,
+  ComposedChart,
+  Legend,
 } from "recharts";
 import {
   TrendingUp,
