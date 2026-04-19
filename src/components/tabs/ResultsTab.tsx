@@ -234,15 +234,18 @@ export default function ResultsTab() {
             Faturamento mensal
           </CardTitle>
           <p className="text-xs text-muted-foreground">
-            Últimos 6 meses (orçamentos aprovados)
+            6 meses reais + projeção (média 3M + recorrente)
           </p>
         </CardHeader>
         <CardContent>
           <ChartContainer
-            config={{ total: { label: "Faturamento", color: "hsl(var(--primary))" } }}
+            config={{
+              total: { label: "Aprovado", color: "hsl(var(--primary))" },
+              projection: { label: "Projeção", color: "hsl(var(--accent))" },
+            }}
             className="aspect-[16/9] w-full"
           >
-            <BarChart data={monthly}>
+            <ComposedChart data={monthly}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis
                 dataKey="month"
@@ -261,12 +264,34 @@ export default function ResultsTab() {
               <ChartTooltip
                 content={
                   <ChartTooltipContent
-                    formatter={(value) => BRL(Number(value))}
+                    formatter={(value, name) =>
+                      value == null ? "" : `${name === "projection" ? "Projeção: " : ""}${BRL(Number(value))}`
+                    }
                   />
                 }
               />
-              <Bar dataKey="total" fill="var(--color-total)" radius={[6, 6, 0, 0]} />
-            </BarChart>
+              <Legend
+                wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }}
+                iconType="circle"
+              />
+              <Bar
+                dataKey="total"
+                name="Aprovado"
+                fill="var(--color-total)"
+                radius={[6, 6, 0, 0]}
+              />
+              <Line
+                type="monotone"
+                dataKey="projection"
+                name="Projeção"
+                stroke="var(--color-projection)"
+                strokeWidth={2.5}
+                strokeDasharray="6 4"
+                dot={{ r: 3, fill: "var(--color-projection)" }}
+                activeDot={{ r: 5 }}
+                connectNulls
+              />
+            </ComposedChart>
           </ChartContainer>
         </CardContent>
       </Card>
