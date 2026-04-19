@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
 import { toast } from "sonner";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -172,8 +173,9 @@ export function SupportChat() {
                   }`}
                 >
                   {m.role === "assistant" ? (
-                    <div className="prose prose-sm prose-invert max-w-none prose-p:my-1 prose-a:text-primary prose-a:underline prose-strong:text-foreground">
+                    <div className="prose prose-sm prose-invert max-w-none prose-p:my-1.5 prose-a:text-primary prose-a:underline prose-strong:text-foreground">
                       <ReactMarkdown
+                        remarkPlugins={[remarkBreaks]}
                         components={{
                           a: ({ node, ...props }) => (
                             <a {...props} target="_blank" rel="noopener noreferrer" />
