@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
@@ -32,96 +32,123 @@ export function SupportChat() {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
-  const send = useCallback(async () => {
-    const text = input.trim();
-    if (!text || loading) return;
-
-    const userMsg: Msg = { role: "user", content: text };
-    const next = [...messages, userMsg];
-    setMessages(next);
-    setInput("");
-    setLoading(true);
-
-    try {
-      const resp = await fetch(CHAT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ messages: next }),
-      });
-
-      if (resp.status === 429) {
-        toast.error("Muitas requisições. Aguarde um instante.");
-        setLoading(false);
-        return;
-      }
-      if (resp.status === 402) {
-        toast.error("Limite de uso atingido. Tente mais tarde.");
-        setLoading(false);
-        return;
-      }
-      if (!resp.ok || !resp.body) throw new Error("Falha na conexão");
-
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let textBuffer = "";
-      let assistantSoFar = "";
-      let streamDone = false;
-      let started = false;
-
-      const flushAssistant = (chunk: string) => {
-        assistantSoFar += chunk;
-        setMessages((prev) => {
-          if (!started) {
-            started = true;
-            return [...prev, { role: "assistant", content: assistantSoFar }];
+  // Extract quiz options (1️⃣..4️⃣) from the last assistant message
+  const quizOptions = useMemo(() => {
+    const last = messages[messages.length - 1];
+    if (!last || last.role !== "assistant") return [];
+    const numberEmojis: Record<string, number> = {
+      "1️⃣": 1, "2️⃣": 2, "3️⃣": 3, "4️⃣": 4,
+    };
+    const found: { number: number; label: string; reply: string }[] = [];
+    const lines = last.content.split("\n");
+    for (const raw of lines) {
+      const line = raw.trim();
+      for (const [emoji, num] of Object.entries(numberEmojis)) {
+        if (line.startsWith(emoji)) {
+          const label = line.slice(emoji.length).replace(/^[\s:.\-—)]+/, "").trim();
+          if (label && !found.find((o) => o.number === num)) {
+            found.push({ number: num, label, reply: `${num} - ${label}` });
           }
-          const last = prev[prev.length - 1];
-          if (last?.role === "assistant") {
-            return prev.map((m, i) =>
-              i === prev.length - 1 ? { ...m, content: assistantSoFar } : m,
-            );
-          }
-          return [...prev, { role: "assistant", content: assistantSoFar }];
-        });
-      };
-
-      while (!streamDone) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
-
-        let nl: number;
-        while ((nl = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, nl);
-          textBuffer = textBuffer.slice(nl + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") {
-            streamDone = true;
-            break;
-          }
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) flushAssistant(content);
-          } catch {
-            textBuffer = line + "\n" + textBuffer;
-            break;
-          }
+          break;
         }
       }
-    } catch (e) {
-      console.error(e);
-      toast.error("Erro ao falar com o John Wick. Tente novamente.");
-    } finally {
-      setLoading(false);
     }
-  }, [input, loading, messages]);
+    return found.length >= 2 ? found.sort((a, b) => a.number - b.number) : [];
+  }, [messages]);
+
+  const send = useCallback(
+    async (override?: string) => {
+      const text = (override ?? input).trim();
+      if (!text || loading) return;
+
+      const userMsg: Msg = { role: "user", content: text };
+      const next = [...messages, userMsg];
+      setMessages(next);
+      if (!override) setInput("");
+      setLoading(true);
+
+      try {
+        const resp = await fetch(CHAT_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ messages: next }),
+        });
+
+        if (resp.status === 429) {
+          toast.error("Muitas requisições. Aguarde um instante.");
+          setLoading(false);
+          return;
+        }
+        if (resp.status === 402) {
+          toast.error("Limite de uso atingido. Tente mais tarde.");
+          setLoading(false);
+          return;
+        }
+        if (!resp.ok || !resp.body) throw new Error("Falha na conexão");
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let textBuffer = "";
+        let assistantSoFar = "";
+        let streamDone = false;
+        let started = false;
+
+        const flushAssistant = (chunk: string) => {
+          assistantSoFar += chunk;
+          setMessages((prev) => {
+            if (!started) {
+              started = true;
+              return [...prev, { role: "assistant", content: assistantSoFar }];
+            }
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant") {
+              return prev.map((m, i) =>
+                i === prev.length - 1 ? { ...m, content: assistantSoFar } : m,
+              );
+            }
+            return [...prev, { role: "assistant", content: assistantSoFar }];
+          });
+        };
+
+        while (!streamDone) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          textBuffer += decoder.decode(value, { stream: true });
+
+          let nl: number;
+          while ((nl = textBuffer.indexOf("\n")) !== -1) {
+            let line = textBuffer.slice(0, nl);
+            textBuffer = textBuffer.slice(nl + 1);
+            if (line.endsWith("\r")) line = line.slice(0, -1);
+            if (line.startsWith(":") || line.trim() === "") continue;
+            if (!line.startsWith("data: ")) continue;
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === "[DONE]") {
+              streamDone = true;
+              break;
+            }
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+              if (content) flushAssistant(content);
+            } catch {
+              textBuffer = line + "\n" + textBuffer;
+              break;
+            }
+          }
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error("Erro ao falar com o John Wick. Tente novamente.");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [input, loading, messages],
+  );
 
   const onKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -198,6 +225,20 @@ export function SupportChat() {
                 </div>
               </div>
             )}
+            {!loading && quizOptions.length > 0 && (
+              <div className="flex flex-col gap-1.5 pl-1 animate-fade-in">
+                {quizOptions.map((opt) => (
+                  <button
+                    key={opt.number}
+                    onClick={() => send(opt.reply)}
+                    className="text-left text-xs sm:text-sm rounded-xl border border-primary/40 bg-primary/5 hover:bg-primary/15 hover:border-primary/70 transition-colors px-3 py-2 text-foreground"
+                  >
+                    <span className="font-semibold text-primary mr-1.5">{opt.number}️⃣</span>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Input */}
@@ -216,7 +257,7 @@ export function SupportChat() {
               />
               <Button
                 size="icon"
-                onClick={send}
+                onClick={() => send()}
                 disabled={loading || !input.trim()}
                 className="bg-gradient-primary text-primary-foreground hover:opacity-90 shrink-0"
                 aria-label="Enviar"
