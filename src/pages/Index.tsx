@@ -19,16 +19,16 @@ function IndexInner() {
 
   return (
     <div className="min-h-screen pb-32 relative">
-      <ParticlesBg />
       {/* Topbar */}
-      <header className="sticky top-0 z-30 glass border-b border-border/50">
-        <div className="container flex h-16 items-center justify-between gap-3">
+      <header className="sticky top-0 z-30 topbar-glass overflow-hidden">
+        <ParticlesBg />
+        <div className="container relative flex h-16 items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-primary">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-primary shadow-[var(--shadow-elegant)]">
               <Sparkles className="h-4 w-4 text-primary-foreground" />
             </div>
             <div className="min-w-0">
-              <p className="font-display text-sm font-bold leading-tight truncate">Videomaker Inteligente</p>
+              <p className="font-display text-sm font-semibold leading-tight truncate tracking-tight">Videomaker Inteligente</p>
               <div className="hidden sm:block leading-tight">
                 <SyncBadge status={syncStatus} />
               </div>
@@ -36,7 +36,7 @@ function IndexInner() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-accent text-xs font-bold text-secondary-foreground shadow-[var(--shadow-elegant)]">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground border border-border">
               {initials}
             </div>
             <Button variant="ghost" size="icon" onClick={() => signOut()} aria-label="Sair">
