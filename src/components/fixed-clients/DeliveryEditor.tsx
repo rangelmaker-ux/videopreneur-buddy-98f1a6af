@@ -167,20 +167,29 @@ export default function DeliveryEditor({
         </SheetHeader>
 
         <div className="space-y-4 py-4">
-          <Field label="Cliente fixo">
-            <Select value={clientId} onValueChange={setClientId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione um cliente" />
-              </SelectTrigger>
-              <SelectContent>
-                {clients.map((c) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name} {!c.active && "(inativo)"}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </Field>
+          {isQuoteSourced ? (
+            <Field label="Origem">
+              <div className="rounded-md border border-warning/40 bg-warning/10 px-3 py-2 text-xs text-foreground/90 flex items-center gap-2">
+                <span className="inline-block h-2 w-2 rounded-full bg-warning" />
+                Entrega gerada a partir de um <strong>orçamento aprovado</strong>.
+              </div>
+            </Field>
+          ) : (
+            <Field label="Cliente fixo">
+              <Select value={clientId} onValueChange={setClientId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um cliente" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name} {!c.active && "(inativo)"}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
 
           <Field label="Título do vídeo">
             <Input
