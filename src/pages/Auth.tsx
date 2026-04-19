@@ -1,0 +1,196 @@
+import { useState, FormEvent } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth, HOTMART_CHECKOUT } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, Sparkles, ExternalLink, ShieldCheck } from "lucide-react";
+
+export default function Auth() {
+  const { user, loading, signIn, signUp } = useAuth();
+  const navigate = useNavigate();
+
+  const [tab, setTab] = useState<"signin" | "signup">("signin");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const [signinEmail, setSigninEmail] = useState("");
+  const [signinPassword, setSigninPassword] = useState("");
+
+  const [signupName, setSignupName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+  if (user) return <Navigate to="/" replace />;
+
+  const isPaywallError = error?.includes("não encontrado ou pagamento não aprovado");
+
+  async function handleSignIn(e: FormEvent) {
+    e.preventDefault();
+    setError(null); setSuccess(null); setSubmitting(true);
+    const { error } = await signIn(signinEmail, signinPassword);
+    setSubmitting(false);
+    if (error) setError(error);
+    else navigate("/", { replace: true });
+  }
+
+  async function handleSignUp(e: FormEvent) {
+    e.preventDefault();
+    setError(null); setSuccess(null); setSubmitting(true);
+    const { error } = await signUp(signupEmail, signupPassword, signupName);
+    setSubmitting(false);
+    if (error) setError(error);
+    else setSuccess("Conta criada! Você já pode acessar a plataforma.");
+  }
+
+  return (
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      {/* Animated ambient orbs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-primary/20 blur-[120px] animate-float" />
+        <div className="absolute -right-20 bottom-10 h-[28rem] w-[28rem] rounded-full bg-secondary/15 blur-[140px] animate-float" style={{ animationDelay: "2s" }} />
+        <div className="absolute left-1/2 top-1/2 h-[20rem] w-[20rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[100px] animate-float" style={{ animationDelay: "4s" }} />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md animate-slide-up">
+        {/* Brand */}
+        <div className="mb-8 text-center">
+          <div className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary shadow-[var(--shadow-glow)] animate-pulse-glow">
+            <Sparkles className="h-7 w-7 text-primary-foreground" />
+          </div>
+          <h1 className="font-display text-3xl font-bold tracking-tight">
+            <span className="gradient-text">Videomaker</span>{" "}
+            <span className="text-foreground">Inteligente</span>
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">Calculadora de Precificação</p>
+        </div>
+
+        <div className="glass rounded-2xl p-6 sm:p-8">
+          <Tabs value={tab} onValueChange={(v) => { setTab(v as any); setError(null); setSuccess(null); }} className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-muted/40">
+              <TabsTrigger value="signin">Entrar</TabsTrigger>
+              <TabsTrigger value="signup">Criar Conta</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="signin" className="mt-6 space-y-4">
+              <form onSubmit={handleSignIn} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signin-email">E-mail</Label>
+                  <Input
+                    id="signin-email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={signinEmail}
+                    onChange={(e) => setSigninEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signin-password">Senha</Label>
+                  <Input
+                    id="signin-password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={signinPassword}
+                    onChange={(e) => setSigninPassword(e.target.value)}
+                    required
+                    autoComplete="current-password"
+                  />
+                </div>
+                <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar"}
+                </Button>
+              </form>
+            </TabsContent>
+
+            <TabsContent value="signup" className="mt-6 space-y-4">
+              <form onSubmit={handleSignUp} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="signup-name">Seu nome</Label>
+                  <Input
+                    id="signup-name"
+                    type="text"
+                    placeholder="Como devemos te chamar"
+                    value={signupName}
+                    onChange={(e) => setSignupName(e.target.value)}
+                    required
+                    maxLength={80}
+                    autoComplete="name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-email">E-mail (mesmo da Hotmart)</Label>
+                  <Input
+                    id="signup-email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={signupEmail}
+                    onChange={(e) => setSignupEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="signup-password">Senha</Label>
+                  <Input
+                    id="signup-password"
+                    type="password"
+                    placeholder="Mínimo 6 caracteres"
+                    value={signupPassword}
+                    onChange={(e) => setSignupPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    autoComplete="new-password"
+                  />
+                </div>
+                <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Criar conta"}
+                </Button>
+              </form>
+            </TabsContent>
+          </Tabs>
+
+          {error && (
+            <Alert variant="destructive" className="mt-4 border-destructive/40 bg-destructive/10">
+              <AlertDescription className="text-sm">
+                {error}
+                {isPaywallError && (
+                  <a
+                    href={HOTMART_CHECKOUT}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-gradient-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+                  >
+                    Comprar agora na Hotmart <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {success && (
+            <Alert className="mt-4 border-success/40 bg-success/10">
+              <AlertDescription className="text-sm text-success-foreground">{success}</AlertDescription>
+            </Alert>
+          )}
+
+          <p className="mt-6 flex items-start gap-2 text-xs text-muted-foreground">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados na Hotmart.
+          </p>
+        </div>
+      </div>
+    </main>
+  );
+}
