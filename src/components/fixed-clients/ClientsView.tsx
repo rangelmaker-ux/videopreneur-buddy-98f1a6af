@@ -316,7 +316,6 @@ function QuoteClientCard({
           <DeliveryCard
             key={d.id}
             delivery={d}
-            client={null}
             onClick={() => onOpenDelivery(d)}
             onToggleDelivered={() => hook.markDelivered(d.id)}
           />
