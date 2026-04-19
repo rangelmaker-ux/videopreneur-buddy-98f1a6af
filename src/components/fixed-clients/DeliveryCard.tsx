@@ -117,15 +117,40 @@ export default function DeliveryCard({
             )}
           </div>
         </button>
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="text-muted-foreground hover:text-foreground p-1"
-          aria-label="Expandir"
-        >
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
-          />
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          {onToggleDelivered && (
+            <Button
+              variant={isDone ? "ghost" : "outline"}
+              size="icon"
+              className={`h-7 w-7 ${
+                isDone
+                  ? "text-success hover:text-success"
+                  : "text-muted-foreground hover:text-success"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleDelivered();
+              }}
+              title={isDone ? "Desmarcar entrega" : "Marcar como entregue"}
+              aria-label={isDone ? "Desmarcar entrega" : "Marcar como entregue"}
+            >
+              {isDone ? (
+                <Undo2 className="h-3.5 w-3.5" />
+              ) : (
+                <Check className="h-3.5 w-3.5" />
+              )}
+            </Button>
+          )}
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="text-muted-foreground hover:text-foreground p-1"
+            aria-label="Expandir"
+          >
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+            />
+          </button>
+        </div>
       </header>
 
       {open && (
