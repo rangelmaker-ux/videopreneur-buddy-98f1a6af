@@ -201,6 +201,20 @@ export function SupportChat() {
                 </div>
               </div>
             )}
+            {!loading && quizOptions.length > 0 && (
+              <div className="flex flex-col gap-1.5 pl-1 animate-fade-in">
+                {quizOptions.map((opt) => (
+                  <button
+                    key={opt.number}
+                    onClick={() => send(opt.reply)}
+                    className="text-left text-xs sm:text-sm rounded-xl border border-primary/40 bg-primary/5 hover:bg-primary/15 hover:border-primary/70 transition-colors px-3 py-2 text-foreground"
+                  >
+                    <span className="font-semibold text-primary mr-1.5">{opt.number}️⃣</span>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Input */}
@@ -219,7 +233,7 @@ export function SupportChat() {
               />
               <Button
                 size="icon"
-                onClick={send}
+                onClick={() => send()}
                 disabled={loading || !input.trim()}
                 className="bg-gradient-primary text-primary-foreground hover:opacity-90 shrink-0"
                 aria-label="Enviar"
