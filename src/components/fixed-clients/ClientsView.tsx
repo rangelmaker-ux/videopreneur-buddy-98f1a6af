@@ -35,6 +35,7 @@ import {
   ChevronLeft,
   ChevronRight,
   CalendarPlus,
+  Sparkles,
 } from "lucide-react";
 import { brl } from "@/lib/pricing";
 import { clientColor } from "@/lib/clientColors";
@@ -349,6 +350,19 @@ function ClientCard({
         <Button size="sm" variant="outline" onClick={onCreateDelivery}>
           <CalendarPlus className="h-3.5 w-3.5 mr-1" /> Nova entrega
         </Button>
+        {client.videos_per_month > 0 && items.length < client.videos_per_month && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() =>
+              hook.generateMonthSlots(client.id, cursor.year, cursor.month)
+            }
+            title="Gera os slots faltantes para o ciclo"
+          >
+            <Sparkles className="h-3.5 w-3.5 mr-1" />
+            Gerar {client.videos_per_month - items.length} vídeo(s)
+          </Button>
+        )}
         <div className="flex items-center gap-1.5 text-xs ml-auto">
           <span className="text-muted-foreground">Ativo</span>
           <Switch
@@ -396,6 +410,7 @@ function ClientCard({
                 delivery={d}
                 client={client}
                 onClick={() => onOpenDelivery(d)}
+                onToggleDelivered={() => hook.markDelivered(d.id)}
               />
             ))}
           </div>

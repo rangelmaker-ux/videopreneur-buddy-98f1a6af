@@ -7,7 +7,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronLeft, ChevronRight, Plus, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, CalendarDays, DollarSign } from "lucide-react";
+
+// Cor especial para entregas oriundas de orçamento aprovado
+const QUOTE_COLOR = {
+  bg: "hsl(45 90% 55% / 0.18)",
+  fg: "hsl(45 90% 35%)",
+  border: "hsl(45 90% 55% / 0.55)",
+  dot: "hsl(45 90% 55%)",
+};
 
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MONTHS = [
@@ -305,12 +313,18 @@ function DayCell({
           </div>
           <div className="flex flex-col gap-0.5 flex-1">
             {visible.map((d) => {
-              const c = clientMap.get(d.fixed_client_id);
-              const col = c ? clientColor(c.id) : null;
+              const c = d.fixed_client_id ? clientMap.get(d.fixed_client_id) : null;
+              const isQuote = !!d.quote_id && !c;
+              const col = isQuote ? QUOTE_COLOR : c ? clientColor(c.id) : null;
+              const label =
+                d.title ||
+                c?.name ||
+                d.quote_customer_name ||
+                (isQuote ? "Orçamento" : "Entrega");
               return (
                 <span
                   key={d.id}
-                  className="text-[9px] sm:text-[10px] leading-tight px-1 py-0.5 rounded truncate border"
+                  className="text-[9px] sm:text-[10px] leading-tight px-1 py-0.5 rounded truncate border inline-flex items-center gap-0.5"
                   style={
                     col
                       ? {
@@ -320,9 +334,14 @@ function DayCell({
                         }
                       : undefined
                   }
-                  title={`${c?.name || ""} · ${d.title || "Sem título"} · ${STATUS_META[d.status].label}`}
+                  title={`${
+                    c?.name || d.quote_customer_name || ""
+                  } · ${d.title || "Sem título"} · ${STATUS_META[d.status].label}`}
                 >
-                  {d.title || c?.name || "Entrega"}
+                  {isQuote && (
+                    <DollarSign className="h-2 w-2 shrink-0" aria-hidden />
+                  )}
+                  <span className="truncate">{label}</span>
                 </span>
               );
             })}
@@ -363,8 +382,9 @@ function DayCell({
         ) : (
           <ul className="space-y-1.5 max-h-72 overflow-auto">
             {items.map((d) => {
-              const c = clientMap.get(d.fixed_client_id);
-              const col = c ? clientColor(c.id) : null;
+              const c = d.fixed_client_id ? clientMap.get(d.fixed_client_id) : null;
+              const isQuote = !!d.quote_id && !c;
+              const col = isQuote ? QUOTE_COLOR : c ? clientColor(c.id) : null;
               return (
                 <li key={d.id}>
                   <button
@@ -382,7 +402,10 @@ function DayCell({
                           style={{ background: col.dot }}
                         />
                       )}
-                      <span className="text-xs font-medium truncate flex-1">
+                      <span className="text-xs font-medium truncate flex-1 inline-flex items-center gap-1">
+                        {isQuote && (
+                          <DollarSign className="h-3 w-3 shrink-0" />
+                        )}
                         {d.title || "Sem título"}
                       </span>
                       <span className="text-[9px] uppercase text-muted-foreground">
@@ -390,7 +413,11 @@ function DayCell({
                       </span>
                     </div>
                     <div className="text-[10px] text-muted-foreground truncate mt-0.5">
-                      {c?.name}
+                      {c?.name ||
+                        (isQuote &&
+                          (d.quote_customer_name
+                            ? `Orçamento · ${d.quote_customer_name}`
+                            : "Orçamento aprovado"))}
                       {d.recording_at &&
                         " · " +
                           new Date(d.recording_at).toLocaleTimeString("pt-BR", {

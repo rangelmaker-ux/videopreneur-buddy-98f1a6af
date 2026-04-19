@@ -11,7 +11,10 @@ import {
   MapPin,
   CalendarCheck,
   FileText,
+  Check,
+  Undo2,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const TONE_CLASSES: Record<string, string> = {
   muted: "bg-muted/60 text-muted-foreground border-border",
@@ -44,16 +47,19 @@ export default function DeliveryCard({
   delivery,
   client,
   onClick,
+  onToggleDelivered,
 }: {
   delivery: Delivery;
   client?: FixedClient;
   onClick: () => void;
+  onToggleDelivered?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const color = client ? clientColor(client.id) : null;
   const meta = STATUS_META[delivery.status];
   const recording = fmtDateTime(delivery.recording_at);
   const delivery_d = fmtDate(delivery.delivery_date);
+  const isDone = delivery.status === "delivered" || delivery.status === "posted";
 
   return (
     <article
@@ -111,15 +117,40 @@ export default function DeliveryCard({
             )}
           </div>
         </button>
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="text-muted-foreground hover:text-foreground p-1"
-          aria-label="Expandir"
-        >
-          <ChevronDown
-            className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
-          />
-        </button>
+        <div className="flex items-center gap-1 shrink-0">
+          {onToggleDelivered && (
+            <Button
+              variant={isDone ? "ghost" : "outline"}
+              size="icon"
+              className={`h-7 w-7 ${
+                isDone
+                  ? "text-success hover:text-success"
+                  : "text-muted-foreground hover:text-success"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleDelivered();
+              }}
+              title={isDone ? "Desmarcar entrega" : "Marcar como entregue"}
+              aria-label={isDone ? "Desmarcar entrega" : "Marcar como entregue"}
+            >
+              {isDone ? (
+                <Undo2 className="h-3.5 w-3.5" />
+              ) : (
+                <Check className="h-3.5 w-3.5" />
+              )}
+            </Button>
+          )}
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="text-muted-foreground hover:text-foreground p-1"
+            aria-label="Expandir"
+          >
+            <ChevronDown
+              className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+            />
+          </button>
+        </div>
       </header>
 
       {open && (
