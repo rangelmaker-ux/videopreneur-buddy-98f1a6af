@@ -238,6 +238,22 @@ export function SupportChat() {
                 </div>
               </div>
             )}
+            {!loading && yesNoPrompt && (
+              <div className="flex gap-2 pl-1 animate-fade-in">
+                <button
+                  onClick={() => send("Sim, pode perguntar")}
+                  className="flex-1 text-sm rounded-xl bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity px-3 py-2 font-medium"
+                >
+                  Sim, pode perguntar
+                </button>
+                <button
+                  onClick={() => send("Agora não")}
+                  className="flex-1 text-sm rounded-xl border border-border/60 bg-muted/40 hover:bg-muted/60 transition-colors px-3 py-2 text-foreground"
+                >
+                  Agora não
+                </button>
+              </div>
+            )}
             {!loading && quizOptions.length > 0 && (
               <div className="flex flex-col gap-1.5 pl-1 animate-fade-in">
                 {quizOptions.map((opt) => (
