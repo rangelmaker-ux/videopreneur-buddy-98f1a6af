@@ -55,9 +55,15 @@ export type Database = {
           created_at: string
           cycle_month: number
           cycle_year: number
-          delivered_at: string
+          delivered_at: string | null
+          delivery_date: string | null
           fixed_client_id: string
           id: string
+          location: string
+          notes: string
+          recording_at: string | null
+          script: string
+          status: string
           title: string
           user_id: string
         }
@@ -65,9 +71,15 @@ export type Database = {
           created_at?: string
           cycle_month: number
           cycle_year: number
-          delivered_at?: string
+          delivered_at?: string | null
+          delivery_date?: string | null
           fixed_client_id: string
           id?: string
+          location?: string
+          notes?: string
+          recording_at?: string | null
+          script?: string
+          status?: string
           title?: string
           user_id: string
         }
@@ -75,9 +87,15 @@ export type Database = {
           created_at?: string
           cycle_month?: number
           cycle_year?: number
-          delivered_at?: string
+          delivered_at?: string | null
+          delivery_date?: string | null
           fixed_client_id?: string
           id?: string
+          location?: string
+          notes?: string
+          recording_at?: string | null
+          script?: string
+          status?: string
           title?: string
           user_id?: string
         }
