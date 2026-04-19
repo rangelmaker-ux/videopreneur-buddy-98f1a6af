@@ -46,7 +46,10 @@ export type DeliveryEditorProps = {
   mode: Mode;
   clients: FixedClient[];
   onSave: (
-    payload: Partial<Delivery> & { fixed_client_id: string }
+    payload: Partial<Delivery> & {
+      fixed_client_id?: string | null;
+      quote_id?: string | null;
+    }
   ) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
   onDuplicate?: (id: string) => Promise<void>;
