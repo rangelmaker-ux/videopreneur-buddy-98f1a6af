@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { useVideoConfigs } from "@/contexts/VideoConfigsContext";
+import { useQuotes } from "@/hooks/useQuotes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,8 +23,10 @@ const SERVICE_FIELDS: { key: keyof CalculatorInput["services"]; label: string }[
   { key: "multi", label: "Multi-Plataforma" },
 ];
 
-export default function CalculatorTab() {
+export default function CalculatorTab({ onSaved }: { onSaved?: () => void } = {}) {
   const { configs, loading } = useVideoConfigs();
+  const { createQuote } = useQuotes();
+  const [saving, setSaving] = useState(false);
   const [input, setInput] = useState<CalculatorInput>({
     ...EMPTY_INPUT,
     videoTypeKey: "",
@@ -40,12 +43,37 @@ export default function CalculatorTab() {
   const setService = (k: keyof CalculatorInput["services"], v: boolean) =>
     setInput((p) => ({ ...p, services: { ...p.services, [k]: v } }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!input.customerName || !input.projectName) {
       toast.error("Preencha nome do cliente e do projeto.");
       return;
     }
-    toast.success("Em breve: salvar orçamento (Etapa 3)");
+    if (!cfg) {
+      toast.error("Selecione um tipo de vídeo.");
+      return;
+    }
+    setSaving(true);
+    const created = await createQuote({
+      customer_name: input.customerName,
+      project_name: input.projectName,
+      notes: input.notes,
+      status: "draft",
+      video_type_key: cfg.video_type_key,
+      video_type_label: cfg.video_type_label,
+      editing_level: input.editingLevel,
+      dur_minutes: input.durMinutes,
+      dur_seconds: input.durSeconds,
+      locations: input.locations,
+      services: input.services,
+      breakdown,
+      total: breakdown.total,
+      fixed_client_id: null,
+    });
+    setSaving(false);
+    if (created) {
+      setInput({ ...EMPTY_INPUT, videoTypeKey: selectedKey });
+      onSaved?.();
+    }
   };
 
   if (loading) {
@@ -175,8 +203,8 @@ export default function CalculatorTab() {
           </div>
 
           <div className="flex gap-2">
-            <Button onClick={handleSave} className="flex-1 bg-gradient-primary text-primary-foreground hover:opacity-90">
-              <Save className="h-4 w-4 mr-1" /> Salvar Orçamento
+            <Button onClick={handleSave} disabled={saving} className="flex-1 bg-gradient-primary text-primary-foreground hover:opacity-90">
+              {saving ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <Save className="h-4 w-4 mr-1" />} Salvar Orçamento
             </Button>
             <Button variant="outline" size="icon" onClick={() => setInput({ ...EMPTY_INPUT, videoTypeKey: selectedKey })} aria-label="Limpar">
               <X className="h-4 w-4" />
