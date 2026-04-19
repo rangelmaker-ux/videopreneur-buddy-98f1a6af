@@ -98,22 +98,31 @@ export function useFixedClients() {
       // Carrega nomes dos clientes dos orçamentos para hidratar entregas avulsas
       supabase
         .from("quotes")
-        .select("id, customer_name, project_name"),
+        .select("id, customer_name, project_name, total, status"),
     ]);
-    const quotesMap = new Map<string, { customer_name: string; project_name: string }>();
+    const quotesMap = new Map<
+      string,
+      { customer_name: string; project_name: string; total: number; status: string }
+    >();
     ((qs as any[]) || []).forEach((q) =>
       quotesMap.set(q.id, {
         customer_name: q.customer_name || "",
         project_name: q.project_name || "",
+        total: Number(q.total || 0),
+        status: q.status || "",
       })
     );
     setClients(((cs as any[]) || []).map(normalizeClient));
     setDeliveries(
       ((ds as any[]) || []).map((row) => {
         const d = normalizeDelivery(row);
-        if (d.quote_id && !d.fixed_client_id) {
+        if (d.quote_id) {
           const q = quotesMap.get(d.quote_id);
-          if (q) d.quote_customer_name = q.customer_name;
+          if (q) {
+            d.quote_customer_name = q.customer_name;
+            d.quote_project_name = q.project_name;
+            d.quote_total = q.total;
+          }
         }
         return d;
       })
