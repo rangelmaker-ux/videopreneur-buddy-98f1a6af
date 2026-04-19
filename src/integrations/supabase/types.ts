@@ -57,10 +57,11 @@ export type Database = {
           cycle_year: number
           delivered_at: string | null
           delivery_date: string | null
-          fixed_client_id: string
+          fixed_client_id: string | null
           id: string
           location: string
           notes: string
+          quote_id: string | null
           recording_at: string | null
           script: string
           status: string
@@ -73,10 +74,11 @@ export type Database = {
           cycle_year: number
           delivered_at?: string | null
           delivery_date?: string | null
-          fixed_client_id: string
+          fixed_client_id?: string | null
           id?: string
           location?: string
           notes?: string
+          quote_id?: string | null
           recording_at?: string | null
           script?: string
           status?: string
@@ -89,10 +91,11 @@ export type Database = {
           cycle_year?: number
           delivered_at?: string | null
           delivery_date?: string | null
-          fixed_client_id?: string
+          fixed_client_id?: string | null
           id?: string
           location?: string
           notes?: string
+          quote_id?: string | null
           recording_at?: string | null
           script?: string
           status?: string
@@ -105,6 +108,13 @@ export type Database = {
             columns: ["fixed_client_id"]
             isOneToOne: false
             referencedRelation: "fixed_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fixed_client_deliveries_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "quotes"
             referencedColumns: ["id"]
           },
         ]
