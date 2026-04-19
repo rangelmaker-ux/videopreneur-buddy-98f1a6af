@@ -222,9 +222,14 @@ export function SupportChat() {
         >
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-border/50 px-4 py-3 bg-gradient-primary/10">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground font-display font-bold text-sm">
-              JW
-            </div>
+            <img
+              src={johnWickAvatar}
+              alt="John Wick"
+              width={36}
+              height={36}
+              loading="lazy"
+              className="h-9 w-9 rounded-full object-cover ring-2 ring-primary/40 shadow-[0_0_12px_hsl(var(--primary)/0.4)]"
+            />
             <div className="flex-1 min-w-0">
               <p className="font-display text-sm font-semibold leading-tight">John Wick</p>
               <p className="text-[11px] text-muted-foreground leading-tight">
