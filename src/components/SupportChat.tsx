@@ -32,96 +32,99 @@ export function SupportChat() {
     if (open) setTimeout(() => inputRef.current?.focus(), 100);
   }, [open]);
 
-  const send = useCallback(async () => {
-    const text = input.trim();
-    if (!text || loading) return;
+  const send = useCallback(
+    async (override?: string) => {
+      const text = (override ?? input).trim();
+      if (!text || loading) return;
 
-    const userMsg: Msg = { role: "user", content: text };
-    const next = [...messages, userMsg];
-    setMessages(next);
-    setInput("");
-    setLoading(true);
+      const userMsg: Msg = { role: "user", content: text };
+      const next = [...messages, userMsg];
+      setMessages(next);
+      if (!override) setInput("");
+      setLoading(true);
 
-    try {
-      const resp = await fetch(CHAT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({ messages: next }),
-      });
-
-      if (resp.status === 429) {
-        toast.error("Muitas requisições. Aguarde um instante.");
-        setLoading(false);
-        return;
-      }
-      if (resp.status === 402) {
-        toast.error("Limite de uso atingido. Tente mais tarde.");
-        setLoading(false);
-        return;
-      }
-      if (!resp.ok || !resp.body) throw new Error("Falha na conexão");
-
-      const reader = resp.body.getReader();
-      const decoder = new TextDecoder();
-      let textBuffer = "";
-      let assistantSoFar = "";
-      let streamDone = false;
-      let started = false;
-
-      const flushAssistant = (chunk: string) => {
-        assistantSoFar += chunk;
-        setMessages((prev) => {
-          if (!started) {
-            started = true;
-            return [...prev, { role: "assistant", content: assistantSoFar }];
-          }
-          const last = prev[prev.length - 1];
-          if (last?.role === "assistant") {
-            return prev.map((m, i) =>
-              i === prev.length - 1 ? { ...m, content: assistantSoFar } : m,
-            );
-          }
-          return [...prev, { role: "assistant", content: assistantSoFar }];
+      try {
+        const resp = await fetch(CHAT_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${PUBLISHABLE_KEY}`,
+          },
+          body: JSON.stringify({ messages: next }),
         });
-      };
 
-      while (!streamDone) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        textBuffer += decoder.decode(value, { stream: true });
+        if (resp.status === 429) {
+          toast.error("Muitas requisições. Aguarde um instante.");
+          setLoading(false);
+          return;
+        }
+        if (resp.status === 402) {
+          toast.error("Limite de uso atingido. Tente mais tarde.");
+          setLoading(false);
+          return;
+        }
+        if (!resp.ok || !resp.body) throw new Error("Falha na conexão");
 
-        let nl: number;
-        while ((nl = textBuffer.indexOf("\n")) !== -1) {
-          let line = textBuffer.slice(0, nl);
-          textBuffer = textBuffer.slice(nl + 1);
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") {
-            streamDone = true;
-            break;
-          }
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) flushAssistant(content);
-          } catch {
-            textBuffer = line + "\n" + textBuffer;
-            break;
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let textBuffer = "";
+        let assistantSoFar = "";
+        let streamDone = false;
+        let started = false;
+
+        const flushAssistant = (chunk: string) => {
+          assistantSoFar += chunk;
+          setMessages((prev) => {
+            if (!started) {
+              started = true;
+              return [...prev, { role: "assistant", content: assistantSoFar }];
+            }
+            const last = prev[prev.length - 1];
+            if (last?.role === "assistant") {
+              return prev.map((m, i) =>
+                i === prev.length - 1 ? { ...m, content: assistantSoFar } : m,
+              );
+            }
+            return [...prev, { role: "assistant", content: assistantSoFar }];
+          });
+        };
+
+        while (!streamDone) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          textBuffer += decoder.decode(value, { stream: true });
+
+          let nl: number;
+          while ((nl = textBuffer.indexOf("\n")) !== -1) {
+            let line = textBuffer.slice(0, nl);
+            textBuffer = textBuffer.slice(nl + 1);
+            if (line.endsWith("\r")) line = line.slice(0, -1);
+            if (line.startsWith(":") || line.trim() === "") continue;
+            if (!line.startsWith("data: ")) continue;
+            const jsonStr = line.slice(6).trim();
+            if (jsonStr === "[DONE]") {
+              streamDone = true;
+              break;
+            }
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+              if (content) flushAssistant(content);
+            } catch {
+              textBuffer = line + "\n" + textBuffer;
+              break;
+            }
           }
         }
+      } catch (e) {
+        console.error(e);
+        toast.error("Erro ao falar com o John Wick. Tente novamente.");
+      } finally {
+        setLoading(false);
       }
-    } catch (e) {
-      console.error(e);
-      toast.error("Erro ao falar com o John Wick. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  }, [input, loading, messages]);
+    },
+    [input, loading, messages],
+  );
 
   const onKey = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
