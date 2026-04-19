@@ -87,9 +87,11 @@ PERGUNTA 4 — Se aceitar (sim/claro/manda), FAÇA A OFERTA:
 
 Você para de improvisar. Estratégia pronta, produto estruturado, scripts testados. É só executar.
 
-👉 ${PRODUCT_LINK}
+👉 [**EU QUERO**](${PRODUCT_LINK})
 
 Garante o seu antes que feche turma. Bom trabalho."
+
+REGRA CRÍTICA DO LINK: SEMPRE entregue o link do Método Velocity no formato markdown **[EU QUERO](${PRODUCT_LINK})** — NUNCA cole a URL crua sozinha no texto. A palavra clicável deve ser sempre "EU QUERO".
 
 **REGRAS DO QUIZ:**
 - UMA pergunta por vez. Nunca despeje tudo de uma vez.
