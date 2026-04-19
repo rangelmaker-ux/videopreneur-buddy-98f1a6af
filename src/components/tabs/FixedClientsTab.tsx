@@ -27,12 +27,15 @@ export default function FixedClientsTab() {
   };
 
   const handleSave = async (
-    payload: Partial<Delivery> & { fixed_client_id: string }
+    payload: Partial<Delivery> & {
+      fixed_client_id?: string | null;
+      quote_id?: string | null;
+    }
   ) => {
     if (editorMode.kind === "edit") {
       await updateDelivery(editorMode.delivery.id, payload);
     } else {
-      await createDelivery(payload);
+      await createDelivery(payload as any);
     }
   };
 
