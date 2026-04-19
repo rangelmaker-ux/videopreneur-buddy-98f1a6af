@@ -7,6 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, MessageCircle } from "lucide-react";
 import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
+import { ParticlesBg } from "@/components/ParticlesBg";
 
 function IndexInner() {
   const { user, signOut } = useAuth();
@@ -17,7 +18,8 @@ function IndexInner() {
     .split(" ").map((p: string) => p[0]).join("").slice(0, 2).toUpperCase();
 
   return (
-    <div className="min-h-screen pb-32">
+    <div className="min-h-screen pb-32 relative">
+      <ParticlesBg />
       {/* Topbar */}
       <header className="sticky top-0 z-30 glass border-b border-border/50">
         <div className="container flex h-16 items-center justify-between gap-3">
