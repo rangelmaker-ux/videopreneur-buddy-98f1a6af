@@ -126,6 +126,8 @@ export default function ResultsTab() {
       .map(([k, v]) => ({ name: labels[k] || k, value: v, key: k }));
   }, [filtered]);
 
+  const monthlyCount = useMonthlyCount(quotes);
+
   if (loading) {
     return (
       <div className="glass rounded-2xl p-8 text-center text-sm text-muted-foreground">
@@ -361,7 +363,7 @@ export default function ResultsTab() {
             config={{ count: { label: "Orçamentos", color: "hsl(var(--accent))" } }}
             className="aspect-[16/6] w-full"
           >
-            <LineChart data={useMonthlyCount(quotes)}>
+            <LineChart data={monthlyCount}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
               <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
               <YAxis tickLine={false} axisLine={false} width={30} allowDecimals={false} />
