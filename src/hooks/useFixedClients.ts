@@ -134,6 +134,14 @@ export function useFixedClients() {
     void load();
   }, [load]);
 
+  // Recarrega quando um orçamento for aprovado em outra aba (o trigger no
+  // banco cria a entrega vinculada e ela precisa aparecer aqui).
+  useEffect(() => {
+    const handler = () => void load();
+    window.addEventListener("quote-approved", handler);
+    return () => window.removeEventListener("quote-approved", handler);
+  }, [load]);
+
   const createClient = useCallback(
     async (payload: Partial<FixedClient> & { name: string }) => {
       if (!user) return;
