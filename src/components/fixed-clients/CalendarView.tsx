@@ -7,7 +7,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ChevronLeft, ChevronRight, Plus, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, CalendarDays, DollarSign } from "lucide-react";
+
+// Cor especial para entregas oriundas de orçamento aprovado
+const QUOTE_COLOR = {
+  bg: "hsl(45 90% 55% / 0.18)",
+  fg: "hsl(45 90% 35%)",
+  border: "hsl(45 90% 55% / 0.55)",
+  dot: "hsl(45 90% 55%)",
+};
 
 const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MONTHS = [
