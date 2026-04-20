@@ -237,10 +237,10 @@ export default function Auth() {
                       </Alert>
                     )}
 
-                    {firstAccessResult && !firstAccessResult.ok && (
+                    {firstAccessResult && firstAccessResult.ok === false && (
                       <Alert variant="destructive" className="border-destructive/40 bg-destructive/10">
                         <AlertDescription className="text-sm">
-                          {firstAccessResult.msg}
+                          {(firstAccessResult as { ok: false; msg: string }).msg}
                           <a
                             href={HOTMART_CHECKOUT}
                             target="_blank"
