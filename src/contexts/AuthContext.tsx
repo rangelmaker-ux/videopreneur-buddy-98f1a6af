@@ -13,7 +13,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/"; // Substitua pela URL real do seu checkout
+const HOTMART_CHECKOUT_URL = "https://hotmart.com/pt-br/marketplace/produtos/calculadora-videomaker-inteligente/X105461947Q";
 
 export const HOTMART_CHECKOUT = HOTMART_CHECKOUT_URL;
 
