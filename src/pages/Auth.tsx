@@ -163,6 +163,97 @@ export default function Auth() {
                 <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar"}
                 </Button>
+
+                <div className="relative py-1">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-border/60" />
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="bg-background/40 px-2 text-muted-foreground">ou</span>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setFirstAccessOpen((v) => !v);
+                    setFirstAccessResult(null);
+                    setError(null);
+                  }}
+                  className="w-full gap-2"
+                >
+                  <KeyRound className="h-4 w-4" />
+                  {firstAccessOpen ? "Cancelar primeiro acesso" : "Primeiro acesso (verificar Hotmart)"}
+                </Button>
+
+                {firstAccessOpen && (
+                  <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3">
+                    <p className="text-xs text-muted-foreground">
+                      Digite o e-mail usado na compra da Hotmart. Vamos verificar se o pagamento foi aprovado.
+                    </p>
+                    <div className="space-y-2">
+                      <Label htmlFor="first-access-email" className="text-xs">E-mail da compra</Label>
+                      <Input
+                        id="first-access-email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        value={firstAccessEmail}
+                        onChange={(e) => setFirstAccessEmail(e.target.value)}
+                        autoComplete="email"
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handleFirstAccessCheck}
+                      disabled={firstAccessChecking || !firstAccessEmail}
+                      className="w-full"
+                      size="sm"
+                    >
+                      {firstAccessChecking ? <Loader2 className="h-4 w-4 animate-spin" /> : "Verificar acesso"}
+                    </Button>
+
+                    {firstAccessResult?.ok && (
+                      <Alert className="border-success/40 bg-success/10">
+                        <AlertDescription className="text-sm">
+                          <div className="flex items-start gap-2">
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-success" />
+                            <div className="flex-1">
+                              <p className="font-medium text-foreground">Compra aprovada! 🎉</p>
+                              <p className="mt-1 text-xs text-muted-foreground">
+                                Agora crie sua senha para acessar a plataforma.
+                              </p>
+                              <Button
+                                type="button"
+                                size="sm"
+                                onClick={goCreateAccount}
+                                className="mt-2 bg-gradient-primary text-primary-foreground hover:opacity-90"
+                              >
+                                Criar minha senha
+                              </Button>
+                            </div>
+                          </div>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
+                    {firstAccessResult && !firstAccessResult.ok && (
+                      <Alert variant="destructive" className="border-destructive/40 bg-destructive/10">
+                        <AlertDescription className="text-sm">
+                          {firstAccessResult.msg}
+                          <a
+                            href={HOTMART_CHECKOUT}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-gradient-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+                          >
+                            Comprar na Hotmart <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                )}
               </form>
             </TabsContent>
 
