@@ -288,10 +288,10 @@ export default function Admin() {
                     <TableHead>Email</TableHead>
                     <TableHead>Nome</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead>Gateway</TableHead>
                     <TableHead>Conta</TableHead>
+                    <TableHead>Início</TableHead>
+                    <TableHead>Vence em</TableHead>
                     <TableHead>Último login</TableHead>
-                    <TableHead>Atualizado</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -309,7 +309,6 @@ export default function Admin() {
                           <TableCell className="font-medium">{row.email}</TableCell>
                           <TableCell className="text-muted-foreground">{row.buyer_name || "—"}</TableCell>
                           <TableCell><StatusBadge row={row} /></TableCell>
-                          <TableCell className="text-xs text-muted-foreground">{row.payment_gateway || "—"}</TableCell>
                           <TableCell>
                             {row.has_account ? (
                               <Badge variant="outline" className="text-emerald-600 border-emerald-600/40">Sim</Badge>
@@ -317,10 +316,16 @@ export default function Admin() {
                               <Badge variant="outline" className="text-muted-foreground">Não</Badge>
                             )}
                           </TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{formatDate(row.last_payment_at)}</TableCell>
+                          <TableCell className="text-xs text-muted-foreground">{row.subscription_expires_at ? formatDate(row.subscription_expires_at) : <span className="italic">sem vencimento</span>}</TableCell>
                           <TableCell className="text-xs text-muted-foreground">{formatDate(row.last_sign_in_at)}</TableCell>
-                          <TableCell className="text-xs text-muted-foreground">{formatDate(row.updated_at)}</TableCell>
                           <TableCell>
                             <div className="flex justify-end gap-1 flex-wrap">
+                              {!row.orphan && (
+                                <Button size="sm" variant="outline" disabled={busy} onClick={() => setReceiptRow(row)}>
+                                  <FileText className="h-3.5 w-3.5 mr-1" /> Comprovante
+                                </Button>
+                              )}
                               {!row.orphan && (
                                 isActive ? (
                                   <Button size="sm" variant="outline" disabled={busy} onClick={() => doAction("pause", row)}>
