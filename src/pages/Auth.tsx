@@ -79,7 +79,7 @@ export default function Auth() {
       } else {
         setFirstAccessResult({
           ok: false,
-          msg: "E-mail ainda não aprovado. Verifique se é o mesmo da compra na Cakto ou aguarde alguns minutos.",
+          msg: "E-mail ainda não aprovado. Verifique se é o mesmo da compra na Hotmart ou aguarde alguns minutos.",
         });
       }
     } catch (err: any) {
@@ -197,7 +197,7 @@ export default function Auth() {
                 {firstAccessOpen && (
                   <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3">
                 <p className="text-xs text-muted-foreground">
-                  Digite o e-mail usado na compra da Cakto. Vamos verificar se o pagamento foi aprovado.
+                  Digite o e-mail usado na compra da Hotmart. Vamos verificar se o pagamento foi aprovado.
                 </p>
                     <div className="space-y-2">
                       <Label htmlFor="first-access-email" className="text-xs">E-mail da compra</Label>
@@ -248,14 +248,14 @@ export default function Auth() {
                       <Alert variant="destructive" className="border-destructive/40 bg-destructive/10">
                         <AlertDescription className="text-sm">
                           {(firstAccessResult as { ok: false; msg: string }).msg}
-                      <a
-                        href="https://pay.cakto.com.br/fksx9vb_858166"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
-                      >
-                        Adquirir <ExternalLink className="h-3 w-3" />
-                      </a>
+                          <a
+                            href={HOTMART_CHECKOUT}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                          >
+                            Adquirir <ExternalLink className="h-3 w-3" />
+                          </a>
                         </AlertDescription>
                       </Alert>
                     )}
@@ -280,7 +280,7 @@ export default function Auth() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">E-mail (mesmo da Cakto)</Label>
+                  <Label htmlFor="signup-email">E-mail (mesmo da Hotmart)</Label>
                   <Input
                     id="signup-email"
                     type="email"
@@ -317,7 +317,7 @@ export default function Auth() {
                 {error}
                 {isPaywallError && (
                   <a
-                    href="https://pay.cakto.com.br/fksx9vb_858166"
+                    href={HOTMART_CHECKOUT}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
@@ -337,7 +337,7 @@ export default function Auth() {
 
         <p className="mt-6 flex items-start gap-2 text-xs text-muted-foreground">
           <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados na Cakto.
+          Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados na Hotmart.
         </p>
         </div>
       </div>

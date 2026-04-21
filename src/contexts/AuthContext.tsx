@@ -13,7 +13,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const HOTMART_CHECKOUT_URL = "https://go.hotmart.com/H105462348U";
+const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/H105462348U";
 
 export const HOTMART_CHECKOUT = HOTMART_CHECKOUT_URL;
 
