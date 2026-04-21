@@ -16,34 +16,43 @@ export type Database = {
     Tables: {
       compradores_aprovados: {
         Row: {
+          amount: number | null
           buyer_name: string | null
           created_at: string
           email: string
+          hoopay_order_id: number | null
           hotmart_product_id: string | null
           hotmart_transaction: string | null
           id: string
+          payment_gateway: string | null
           raw_payload: Json | null
           status_compra: string
           updated_at: string
         }
         Insert: {
+          amount?: number | null
           buyer_name?: string | null
           created_at?: string
           email: string
+          hoopay_order_id?: number | null
           hotmart_product_id?: string | null
           hotmart_transaction?: string | null
           id?: string
+          payment_gateway?: string | null
           raw_payload?: Json | null
           status_compra?: string
           updated_at?: string
         }
         Update: {
+          amount?: number | null
           buyer_name?: string | null
           created_at?: string
           email?: string
+          hoopay_order_id?: number | null
           hotmart_product_id?: string | null
           hotmart_transaction?: string | null
           id?: string
+          payment_gateway?: string | null
           raw_payload?: Json | null
           status_compra?: string
           updated_at?: string
