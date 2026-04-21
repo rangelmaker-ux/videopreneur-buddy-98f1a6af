@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import logoUrl from "@/assets/logo.png";
+import { Logo3D } from "@/components/Logo3D";
 
 export default function Auth() {
   const { user, loading, signIn, signUp } = useAuth();
@@ -109,25 +109,32 @@ export default function Auth() {
         <div className="absolute left-1/2 top-1/2 h-[20rem] w-[20rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[100px] animate-float" style={{ animationDelay: "4s" }} />
       </div>
 
-      <div className="relative z-10 w-full max-w-md animate-slide-up">
+      <div className="relative z-10 w-full max-w-md">
         {/* Brand */}
-        <div className="mb-8 text-center">
-          <div className="relative mx-auto mb-5 inline-block">
-            <div className="absolute inset-0 -z-10 rounded-[28%] bg-primary/30 blur-2xl animate-pulse-glow" />
-            <img
-              src={logoUrl}
-              alt="Videomaker Inteligente"
-              className="h-24 w-24 sm:h-28 sm:w-28 object-contain drop-shadow-[0_12px_30px_hsl(222_75%_45%/0.45)]"
-            />
+        <div className="mb-6 text-center animate-fade-in" style={{ animationDuration: "0.7s" }}>
+          <div className="relative mx-auto mb-3 flex items-center justify-center">
+            <div className="absolute inset-0 -z-10 mx-auto h-40 w-40 rounded-full bg-primary/30 blur-3xl animate-pulse-glow" />
+            <Logo3D size={170} spin />
           </div>
-          <h1 className="font-display text-3xl font-bold tracking-tight">
+          <h1
+            className="font-display text-3xl font-bold tracking-tight animate-fade-in"
+            style={{ animationDelay: "0.25s", animationFillMode: "backwards" }}
+          >
             <span className="gradient-text">Videomaker</span>{" "}
             <span className="text-foreground">Inteligente</span>
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">Calculadora de Precificação</p>
+          <p
+            className="mt-2 text-sm text-muted-foreground animate-fade-in"
+            style={{ animationDelay: "0.4s", animationFillMode: "backwards" }}
+          >
+            Calculadora de Precificação
+          </p>
         </div>
 
-        <div className="glass rounded-2xl p-6 sm:p-8">
+        <div
+          className="glass rounded-2xl p-6 sm:p-8 animate-scale-in"
+          style={{ animationDelay: "0.5s", animationFillMode: "backwards" }}
+        >
           <Tabs value={tab} onValueChange={(v) => { setTab(v as any); setError(null); setSuccess(null); }} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-muted/40">
               <TabsTrigger value="signin">Entrar</TabsTrigger>
