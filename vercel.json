@@ -8,7 +8,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://xlnzttdxmxuywxmwjmpd.supabase.co https://api.stripe.com https://*.google.com https://*.googleapis.com https://raw.githack.com https://raw.githubusercontent.com; frame-src https://js.stripe.com https://hooks.stripe.com; worker-src 'self' blob:;"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://apis.google.com https://use.typekit.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.typekit.net https://p.typekit.net; font-src 'self' data: https://fonts.gstatic.com https://use.typekit.net; img-src 'self' data: blob: https:; connect-src 'self' https://xlnzttdxmxuywxmwjmpd.supabase.co https://api.stripe.com https://*.google.com https://*.googleapis.com https://raw.githack.com https://raw.githubusercontent.com https://use.typekit.net https://p.typekit.net; frame-src https://js.stripe.com https://hooks.stripe.com; worker-src 'self' blob:;"
         },
         { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
