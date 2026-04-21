@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, Loader2, Trash2, User as UserIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Camera, Loader2, Shield, Trash2, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -10,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+
+const ADMIN_EMAIL = "rangelmaker@gmail.com";
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
