@@ -87,6 +87,7 @@ export default function Admin() {
   );
   const [addDialog, setAddDialog] = useState({ open: false, email: "", name: "" });
   const [confirmRemove, setConfirmRemove] = useState<Row | null>(null);
+  const [receiptRow, setReceiptRow] = useState<Row | null>(null);
 
   // Bloqueio de acesso
   useEffect(() => {
