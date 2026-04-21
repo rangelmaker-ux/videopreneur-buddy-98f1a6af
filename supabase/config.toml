@@ -3,6 +3,9 @@ project_id = "xlnzttdxmxuywxmwjmpd"
 [functions.hotmart-webhook]
 verify_jwt = false
 
+[functions.hoopay-webhook]
+verify_jwt = false
+
 [functions.john-wick-chat]
 verify_jwt = false
 
