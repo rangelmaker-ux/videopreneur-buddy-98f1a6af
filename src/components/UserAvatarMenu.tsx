@@ -172,6 +172,15 @@ export function UserAvatarMenu() {
               Remover foto
             </DropdownMenuItem>
           )}
+          {isAdmin && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/admin")}>
+                <Shield className="mr-2 h-4 w-4" />
+                Painel admin
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>
