@@ -24,9 +24,12 @@ export type Database = {
           hotmart_product_id: string | null
           hotmart_transaction: string | null
           id: string
+          last_payment_at: string | null
           payment_gateway: string | null
           raw_payload: Json | null
           status_compra: string
+          subscription_expires_at: string | null
+          subscription_status: string | null
           updated_at: string
         }
         Insert: {
@@ -38,9 +41,12 @@ export type Database = {
           hotmart_product_id?: string | null
           hotmart_transaction?: string | null
           id?: string
+          last_payment_at?: string | null
           payment_gateway?: string | null
           raw_payload?: Json | null
           status_compra?: string
+          subscription_expires_at?: string | null
+          subscription_status?: string | null
           updated_at?: string
         }
         Update: {
@@ -52,9 +58,12 @@ export type Database = {
           hotmart_product_id?: string | null
           hotmart_transaction?: string | null
           id?: string
+          last_payment_at?: string | null
           payment_gateway?: string | null
           raw_payload?: Json | null
           status_compra?: string
+          subscription_expires_at?: string | null
+          subscription_status?: string | null
           updated_at?: string
         }
         Relationships: []
