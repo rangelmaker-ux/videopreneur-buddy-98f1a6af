@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { Camera, Loader2, Trash2, User as UserIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Camera, Loader2, Shield, Trash2, User as UserIcon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -11,11 +12,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
+const ADMIN_EMAIL = "rangelmaker@gmail.com";
+
 const MAX_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
 export function UserAvatarMenu() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -168,6 +173,15 @@ export function UserAvatarMenu() {
               <Trash2 className="mr-2 h-4 w-4" />
               Remover foto
             </DropdownMenuItem>
+          )}
+          {isAdmin && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/admin")}>
+                <Shield className="mr-2 h-4 w-4" />
+                Painel admin
+              </DropdownMenuItem>
+            </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
