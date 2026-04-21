@@ -420,6 +420,83 @@ export default function Admin() {
         </DialogContent>
       </Dialog>
 
+      {/* Dialog: comprovante / detalhes do pagamento */}
+      <Dialog open={!!receiptRow} onOpenChange={(o) => !o && setReceiptRow(null)}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" /> Comprovante de pagamento
+            </DialogTitle>
+            <DialogDescription>
+              Detalhes do pagamento e da assinatura do usuário.
+            </DialogDescription>
+          </DialogHeader>
+          {receiptRow && (
+            <div className="space-y-3 text-sm">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="text-xs text-muted-foreground">Email</div>
+                  <div className="font-medium break-all">{receiptRow.email}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Nome</div>
+                  <div className="font-medium">{receiptRow.buyer_name || "—"}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Status</div>
+                  <div><StatusBadge row={receiptRow} /></div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Gateway</div>
+                  <div className="font-medium">{receiptRow.payment_gateway || "—"}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Valor</div>
+                  <div className="font-medium">
+                    {receiptRow.amount != null ? `R$ ${Number(receiptRow.amount).toFixed(2)}` : "—"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Transação</div>
+                  <div className="font-mono text-xs break-all">
+                    {receiptRow.hotmart_transaction || receiptRow.hoopay_order_id || "—"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Início (último pagamento)</div>
+                  <div className="font-medium">{formatDate(receiptRow.last_payment_at)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Vencimento</div>
+                  <div className="font-medium">
+                    {receiptRow.subscription_expires_at ? formatDate(receiptRow.subscription_expires_at) : "Sem vencimento"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Criado em</div>
+                  <div className="font-medium">{formatDate(receiptRow.created_at)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">Atualizado em</div>
+                  <div className="font-medium">{formatDate(receiptRow.updated_at)}</div>
+                </div>
+              </div>
+              {receiptRow.raw_payload && (
+                <details className="rounded border border-border p-2">
+                  <summary className="cursor-pointer text-xs text-muted-foreground">Payload bruto do gateway</summary>
+                  <pre className="mt-2 max-h-64 overflow-auto rounded bg-muted/40 p-2 text-[10px]">
+                    {JSON.stringify(receiptRow.raw_payload, null, 2)}
+                  </pre>
+                </details>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setReceiptRow(null)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       {/* Confirm remove */}
       <AlertDialog open={!!confirmRemove} onOpenChange={(o) => !o && setConfirmRemove(null)}>
         <AlertDialogContent>
