@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.check-approved-email]
 verify_jwt = false
+
+[functions.graphql-proxy]
+verify_jwt = false
