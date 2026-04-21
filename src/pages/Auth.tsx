@@ -252,9 +252,9 @@ export default function Auth() {
                         href="https://liviabruzzi.my.canva.site/pgvcalculadora"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-gradient-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                       >
-                        Comprar na Cakto <ExternalLink className="h-3 w-3" />
+                        Adquirir <ExternalLink className="h-3 w-3" />
                       </a>
                         </AlertDescription>
                       </Alert>
@@ -320,9 +320,9 @@ export default function Auth() {
                     href="https://liviabruzzi.my.canva.site/pgvcalculadora"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-gradient-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                   >
-                    Comprar agora na Cakto <ExternalLink className="h-3 w-3" />
+                    Adquirir <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
               </AlertDescription>
