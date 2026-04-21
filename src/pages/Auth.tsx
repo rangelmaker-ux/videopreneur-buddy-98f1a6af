@@ -34,6 +34,8 @@ export default function Auth() {
     { ok: true } | { ok: false; msg: string } | null
   >(null);
 
+  const [paused, setPaused] = useState(false);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -44,8 +46,6 @@ export default function Auth() {
   if (user) return <Navigate to="/" replace />;
 
   const isPaywallError = error?.includes("não encontrado ou pagamento não aprovado");
-
-  const [paused, setPaused] = useState(false);
 
   async function handleSignIn(e: FormEvent) {
     e.preventDefault();
