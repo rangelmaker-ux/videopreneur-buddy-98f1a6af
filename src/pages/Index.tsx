@@ -21,7 +21,14 @@ function IndexInner() {
   const [tab, setTab] = useState("calculator");
 
   return (
-    <div className="min-h-screen pb-32 relative">
+    <div className="min-h-screen pb-32 relative animate-fade-in">
+      {showWelcome && (
+        <WelcomeOverlay
+          name={(user?.user_metadata?.display_name as string) || user?.email || null}
+          onDone={() => setShowWelcome(false)}
+        />
+      )}
+
       {/* Topbar */}
       <header className="sticky top-0 z-30 topbar-glass overflow-hidden">
         <ParticlesBg />
