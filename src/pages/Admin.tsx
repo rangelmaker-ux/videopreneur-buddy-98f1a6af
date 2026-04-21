@@ -19,7 +19,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
-  ArrowLeft, KeyRound, Mail, Pause, Play, Plus, RefreshCw, Search, Trash2, UserPlus,
+  ArrowLeft, FileText, KeyRound, Mail, Pause, Play, Plus, RefreshCw, Search, Trash2, UserPlus,
 } from "lucide-react";
 
 const ADMIN_EMAIL = "rangelmaker@gmail.com";
@@ -31,7 +31,12 @@ type Row = {
   subscription_status: string | null;
   payment_gateway: string | null;
   hotmart_transaction?: string | null;
+  hotmart_product_id?: string | null;
+  hoopay_order_id?: number | null;
+  amount?: number | null;
   last_payment_at?: string | null;
+  subscription_expires_at?: string | null;
+  raw_payload?: any;
   created_at?: string | null;
   updated_at?: string | null;
   has_account: boolean;
