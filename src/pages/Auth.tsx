@@ -249,7 +249,7 @@ export default function Auth() {
                         <AlertDescription className="text-sm">
                           {(firstAccessResult as { ok: false; msg: string }).msg}
                       <a
-                        href="https://liviabruzzi.my.canva.site/pgvcalculadora"
+                        href="https://pay.cakto.com.br/fksx9vb_858166"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
@@ -317,7 +317,7 @@ export default function Auth() {
                 {error}
                 {isPaywallError && (
                   <a
-                    href="https://liviabruzzi.my.canva.site/pgvcalculadora"
+                    href="https://pay.cakto.com.br/fksx9vb_858166"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
