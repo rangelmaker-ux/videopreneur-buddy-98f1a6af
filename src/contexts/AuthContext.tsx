@@ -55,20 +55,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const cleanEmail = email.trim().toLowerCase();
     // Admin sempre passa
     const ADMIN = "rangelmaker@gmail.com";
+
+    // 1) Verifica aprovação ANTES de logar (evita race com onAuthStateChange/Navigate)
+    if (cleanEmail !== ADMIN) {
+      try {
+        const { data: approvedData } = await supabase.functions.invoke(
+          "check-approved-email",
+          { body: { email: cleanEmail } },
+        );
+        if (!approvedData?.approved) {
+          return { error: "SUBSCRIPTION_PAUSED" };
+        }
+      } catch {
+        // Se a verificação falhar, segue tentando logar (não bloqueia indevidamente)
+      }
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email: cleanEmail,
       password,
     });
     if (error) return { error: friendlyAuthError(error.message) };
 
-    if (cleanEmail !== ADMIN) {
-      // Verifica se o acesso está ativo (status_compra + subscription_status)
-      const { data: approved } = await supabase.rpc("is_email_approved", { _email: cleanEmail });
-      if (!approved) {
-        await supabase.auth.signOut();
-        return { error: "SUBSCRIPTION_PAUSED" };
-      }
-    }
     try { sessionStorage.setItem("vmi:justLoggedIn", "1"); } catch {}
     return { error: null };
   }
