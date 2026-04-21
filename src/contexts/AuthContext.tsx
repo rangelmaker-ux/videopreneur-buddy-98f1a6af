@@ -20,7 +20,7 @@ export const HOTMART_CHECKOUT = HOTMART_CHECKOUT_URL;
 function friendlyAuthError(message: string): string {
   const m = message.toLowerCase();
   if (m.includes("email_not_approved") || m.includes("email não foi encontrado")) {
-    return "E-mail não encontrado ou pagamento não aprovado. Certifique-se de usar o mesmo e-mail da compra na Hotmart.";
+    return "E-mail não encontrado ou pagamento não aprovado. Certifique-se de usar o mesmo e-mail da compra na HooPay.";
   }
   if (m.includes("invalid login credentials")) return "E-mail ou senha incorretos.";
   if (m.includes("user already registered")) return "Este e-mail já está cadastrado. Faça login.";

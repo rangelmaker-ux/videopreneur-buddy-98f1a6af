@@ -79,7 +79,7 @@ export default function Auth() {
       } else {
         setFirstAccessResult({
           ok: false,
-          msg: "E-mail ainda não aprovado. Verifique se é o mesmo da compra na Hotmart ou aguarde alguns minutos.",
+          msg: "E-mail ainda não aprovado. Verifique se é o mesmo da compra na HooPay ou aguarde alguns minutos.",
         });
       }
     } catch (err: any) {
@@ -191,13 +191,13 @@ export default function Auth() {
                   className="w-full gap-2"
                 >
                   <KeyRound className="h-4 w-4" />
-                  {firstAccessOpen ? "Cancelar primeiro acesso" : "Primeiro acesso (verificar Hotmart)"}
+                  {firstAccessOpen ? "Cancelar primeiro acesso" : "Primeiro acesso (verificar HooPay)"}
                 </Button>
 
                 {firstAccessOpen && (
                   <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3">
                     <p className="text-xs text-muted-foreground">
-                      Digite o e-mail usado na compra da Hotmart. Vamos verificar se o pagamento foi aprovado.
+                      Digite o e-mail usado na compra da HooPay. Vamos verificar se o pagamento foi aprovado.
                     </p>
                     <div className="space-y-2">
                       <Label htmlFor="first-access-email" className="text-xs">E-mail da compra</Label>
@@ -254,7 +254,7 @@ export default function Auth() {
                             rel="noopener noreferrer"
                             className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-gradient-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
                           >
-                            Comprar na Hotmart <ExternalLink className="h-3 w-3" />
+                            Comprar na HooPay <ExternalLink className="h-3 w-3" />
                           </a>
                         </AlertDescription>
                       </Alert>
@@ -280,7 +280,7 @@ export default function Auth() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">E-mail (mesmo da Hotmart)</Label>
+                  <Label htmlFor="signup-email">E-mail (mesmo da HooPay)</Label>
                   <Input
                     id="signup-email"
                     type="email"
@@ -322,7 +322,7 @@ export default function Auth() {
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-gradient-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90"
                   >
-                    Comprar agora na Hotmart <ExternalLink className="h-3 w-3" />
+                    Comprar agora na HooPay <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
               </AlertDescription>
@@ -337,7 +337,7 @@ export default function Auth() {
 
           <p className="mt-6 flex items-start gap-2 text-xs text-muted-foreground">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados na Hotmart.
+            Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados na HooPay.
           </p>
         </div>
       </div>
