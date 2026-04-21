@@ -52,11 +52,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function signIn(email: string, password: string) {
+    const cleanEmail = email.trim().toLowerCase();
+    // Admin sempre passa
+    const ADMIN = "rangelmaker@gmail.com";
     const { error } = await supabase.auth.signInWithPassword({
-      email: email.trim().toLowerCase(),
+      email: cleanEmail,
       password,
     });
     if (error) return { error: friendlyAuthError(error.message) };
+
+    if (cleanEmail !== ADMIN) {
+      // Verifica se o acesso está ativo (status_compra + subscription_status)
+      const { data: approved } = await supabase.rpc("is_email_approved", { _email: cleanEmail });
+      if (!approved) {
+        await supabase.auth.signOut();
+        return { error: "SUBSCRIPTION_PAUSED" };
+      }
+    }
     try { sessionStorage.setItem("vmi:justLoggedIn", "1"); } catch {}
     return { error: null };
   }

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2 } from "lucide-react";
+import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo3D } from "@/components/Logo3D";
 
@@ -45,11 +45,17 @@ export default function Auth() {
 
   const isPaywallError = error?.includes("não encontrado ou pagamento não aprovado");
 
+  const [paused, setPaused] = useState(false);
+
   async function handleSignIn(e: FormEvent) {
     e.preventDefault();
-    setError(null); setSuccess(null); setSubmitting(true);
+    setError(null); setSuccess(null); setPaused(false); setSubmitting(true);
     const { error } = await signIn(signinEmail, signinPassword);
     setSubmitting(false);
+    if (error === "SUBSCRIPTION_PAUSED") {
+      setPaused(true);
+      return;
+    }
     if (error) setError(error);
     else navigate("/", { replace: true });
   }
