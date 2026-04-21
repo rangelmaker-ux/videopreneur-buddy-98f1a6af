@@ -19,6 +19,8 @@ const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
 export function UserAvatarMenu() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
