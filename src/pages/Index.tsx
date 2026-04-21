@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { VideoConfigsProvider, useVideoConfigs } from "@/contexts/VideoConfigsContext";
 import { SyncBadge } from "@/components/SyncBadge";
@@ -13,12 +13,23 @@ import ResultsTab from "@/components/tabs/ResultsTab";
 import { ParticlesBg } from "@/components/ParticlesBg";
 import { SupportChat } from "@/components/SupportChat";
 import { UserAvatarMenu } from "@/components/UserAvatarMenu";
+import { WelcomeOverlay } from "@/components/WelcomeOverlay";
 import logoUrl from "@/assets/logo.png";
 
 function IndexInner() {
   const { user, signOut } = useAuth();
   const { syncStatus } = useVideoConfigs();
   const [tab, setTab] = useState("calculator");
+  const [showWelcome, setShowWelcome] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem("vmi:justLoggedIn") === "1") {
+        sessionStorage.removeItem("vmi:justLoggedIn");
+        setShowWelcome(true);
+      }
+    } catch {}
+  }, []);
 
   return (
     <div className="min-h-screen pb-32 relative animate-fade-in">
