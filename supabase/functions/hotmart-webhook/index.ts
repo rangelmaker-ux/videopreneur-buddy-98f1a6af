@@ -107,7 +107,7 @@ Deno.serve(async (req) => {
     if (REVOKE_EVENTS.has(event)) {
       const { error } = await supabase
         .from("compradores_aprovados")
-        .update({ status_compra: "revogado", raw_payload: payload, updated_at: new Date().toISOString() })
+        .update({ status_compra: "revogado", subscription_status: "canceled", raw_payload: payload, updated_at: new Date().toISOString() })
         .eq("email", email);
       if (error) console.error("Revoke error", error);
       return new Response(JSON.stringify({ ok: true, action: "revoked", email }), {
@@ -135,10 +135,13 @@ Deno.serve(async (req) => {
       .upsert(
         {
           email,
-          status_compra: "aprovado",
+          status_compra: "PURCHASE_COMPLETE",
+          subscription_status: "active",
+          payment_gateway: "hotmart",
           buyer_name: buyerName ?? null,
           hotmart_transaction: transaction ?? null,
           hotmart_product_id: productId ?? null,
+          last_payment_at: new Date().toISOString(),
           raw_payload: payload,
           updated_at: new Date().toISOString(),
         },
