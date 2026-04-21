@@ -148,6 +148,29 @@ export default function Auth() {
             </TabsList>
 
             <TabsContent value="signin" className="mt-6 space-y-4">
+              {paused && (
+                <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
+                  <AlertDescription className="text-sm">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+                      <div className="flex-1 space-y-2">
+                        <p className="font-semibold text-foreground">Acesso suspenso</p>
+                        <p className="text-xs text-muted-foreground">
+                          Sua assinatura está em atraso ou foi pausada. Para continuar usando a plataforma, regularize seu pagamento. O acesso é liberado automaticamente após a confirmação.
+                        </p>
+                        <a
+                          href={HOTMART_CHECKOUT}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700"
+                        >
+                          Regularizar pagamento <ExternalLink className="h-3 w-3" />
+                        </a>
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">E-mail</Label>
