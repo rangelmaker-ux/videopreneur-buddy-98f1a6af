@@ -57,6 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     });
     if (error) return { error: friendlyAuthError(error.message) };
+    try { sessionStorage.setItem("vmi:justLoggedIn", "1"); } catch {}
     return { error: null };
   }
 
