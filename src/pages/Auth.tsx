@@ -55,7 +55,7 @@ export default function Auth() {
       </div>
     );
   }
-  if (user) return <Navigate to="/" replace />;
+  if (user && !submitting) return <Navigate to="/" replace />;
 
   const isPaywallError = error?.includes("não encontrado ou pagamento não aprovado");
   const isPausedError = error === "SUBSCRIPTION_PAUSED";
