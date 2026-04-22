@@ -1,4 +1,4 @@
-import { useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth, HOTMART_CHECKOUT } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo3D } from "@/components/Logo3D";
+
+const PAUSED_MESSAGE = "Sua assinatura está em atraso ou foi pausada. Para continuar usando a plataforma, regularize seu pagamento. O acesso é liberado automaticamente após a confirmação.";
+const PAUSED_NOTICE_KEY = "vmi:pausedNotice";
 
 export default function Auth() {
   const { user, loading, signIn, signUp } = useAuth();
@@ -26,7 +30,6 @@ export default function Auth() {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
 
-  // Primeiro acesso (verificação Hotmart)
   const [firstAccessOpen, setFirstAccessOpen] = useState(false);
   const [firstAccessEmail, setFirstAccessEmail] = useState("");
   const [firstAccessChecking, setFirstAccessChecking] = useState(false);
@@ -36,6 +39,15 @@ export default function Auth() {
 
   const [paused, setPaused] = useState(false);
 
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(PAUSED_NOTICE_KEY) === "1") {
+        setPaused(true);
+        setError("SUBSCRIPTION_PAUSED");
+      }
+    } catch {}
+  }, []);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -43,21 +55,43 @@ export default function Auth() {
       </div>
     );
   }
-  if (user) return <Navigate to="/" replace />;
+  if (user && !submitting) return <Navigate to="/" replace />;
 
   const isPaywallError = error?.includes("não encontrado ou pagamento não aprovado");
+  const isPausedError = error === "SUBSCRIPTION_PAUSED";
 
   async function handleSignIn(e: FormEvent) {
     e.preventDefault();
-    setError(null); setSuccess(null); setPaused(false); setSubmitting(true);
+    setError(null);
+    setSuccess(null);
+    setPaused(false);
+    setSubmitting(true);
+    try {
+      sessionStorage.removeItem(PAUSED_NOTICE_KEY);
+    } catch {}
+
     const { error } = await signIn(signinEmail, signinPassword);
     setSubmitting(false);
+
     if (error === "SUBSCRIPTION_PAUSED") {
       setPaused(true);
+      setError("SUBSCRIPTION_PAUSED");
+      try {
+        sessionStorage.setItem(PAUSED_NOTICE_KEY, "1");
+      } catch {}
+      toast.error("Acesso suspenso", {
+        description: PAUSED_MESSAGE,
+      });
       return;
     }
+
     if (error) setError(error);
-    else navigate("/", { replace: true });
+    else {
+      try {
+        sessionStorage.removeItem(PAUSED_NOTICE_KEY);
+      } catch {}
+      navigate("/", { replace: true });
+    }
   }
 
   async function handleSignUp(e: FormEvent) {
@@ -80,7 +114,6 @@ export default function Auth() {
       if (error) throw error;
       if (data?.approved) {
         setFirstAccessResult({ ok: true });
-        // Pré-preenche aba de criar conta
         setSignupEmail(firstAccessEmail.trim().toLowerCase());
       } else {
         setFirstAccessResult({
@@ -108,7 +141,6 @@ export default function Auth() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
-      {/* Animated ambient orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-primary/20 blur-[120px] animate-float" />
         <div className="absolute -right-20 bottom-10 h-[28rem] w-[28rem] rounded-full bg-secondary/15 blur-[140px] animate-float" style={{ animationDelay: "2s" }} />
@@ -116,7 +148,6 @@ export default function Auth() {
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        {/* Brand */}
         <div className="mb-6 text-center animate-fade-in" style={{ animationDuration: "0.7s" }}>
           <div className="relative mx-auto mb-3 flex items-center justify-center">
             <div className="absolute inset-0 -z-10 mx-auto h-40 w-40 rounded-full bg-primary/30 blur-3xl animate-pulse-glow" />
@@ -156,7 +187,7 @@ export default function Auth() {
                       <div className="flex-1 space-y-2">
                         <p className="font-semibold text-foreground">Acesso suspenso</p>
                         <p className="text-xs text-muted-foreground">
-                          Sua assinatura está em atraso ou foi pausada. Para continuar usando a plataforma, regularize seu pagamento. O acesso é liberado automaticamente após a confirmação.
+                          {PAUSED_MESSAGE}
                         </p>
                         <a
                           href={HOTMART_CHECKOUT}
@@ -179,7 +210,16 @@ export default function Auth() {
                     type="email"
                     placeholder="seu@email.com"
                     value={signinEmail}
-                    onChange={(e) => setSigninEmail(e.target.value)}
+                    onChange={(e) => {
+                      setSigninEmail(e.target.value);
+                      if (paused) {
+                        setPaused(false);
+                        setError(null);
+                        try {
+                          sessionStorage.removeItem(PAUSED_NOTICE_KEY);
+                        } catch {}
+                      }
+                    }}
                     required
                     autoComplete="email"
                   />
@@ -191,7 +231,16 @@ export default function Auth() {
                     type="password"
                     placeholder="••••••••"
                     value={signinPassword}
-                    onChange={(e) => setSigninPassword(e.target.value)}
+                    onChange={(e) => {
+                      setSigninPassword(e.target.value);
+                      if (paused) {
+                        setPaused(false);
+                        setError(null);
+                        try {
+                          sessionStorage.removeItem(PAUSED_NOTICE_KEY);
+                        } catch {}
+                      }
+                    }}
                     required
                     autoComplete="current-password"
                   />
@@ -225,9 +274,9 @@ export default function Auth() {
 
                 {firstAccessOpen && (
                   <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3">
-                <p className="text-xs text-muted-foreground">
-                  Digite o e-mail usado na compra da Hotmart. Vamos verificar se o pagamento foi aprovado.
-                </p>
+                    <p className="text-xs text-muted-foreground">
+                      Digite o e-mail usado na compra da Hotmart. Vamos verificar se o pagamento foi aprovado.
+                    </p>
                     <div className="space-y-2">
                       <Label htmlFor="first-access-email" className="text-xs">E-mail da compra</Label>
                       <Input
@@ -343,15 +392,22 @@ export default function Auth() {
           {error && (
             <Alert variant="destructive" className="mt-4 border-destructive/40 bg-destructive/10">
               <AlertDescription className="text-sm">
-                {error}
-                {isPaywallError && (
+                {isPausedError
+                  ? (
+                    <>
+                      <span className="font-semibold text-foreground">Acesso suspenso.</span>{" "}
+                      <span>{PAUSED_MESSAGE}</span>
+                    </>
+                  )
+                  : error}
+                {(isPaywallError || isPausedError) && (
                   <a
                     href={HOTMART_CHECKOUT}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                   >
-                    Adquirir <ExternalLink className="h-3 w-3" />
+                    {isPausedError ? "Regularizar pagamento" : "Adquirir"} <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
               </AlertDescription>
@@ -364,12 +420,13 @@ export default function Auth() {
             </Alert>
           )}
 
-        <p className="mt-6 flex items-start gap-2 text-xs text-muted-foreground">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados na Hotmart.
-        </p>
+          <p className="mt-6 flex items-start gap-2 text-xs text-muted-foreground">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados na Hotmart.
+          </p>
         </div>
       </div>
     </main>
   );
 }
+
