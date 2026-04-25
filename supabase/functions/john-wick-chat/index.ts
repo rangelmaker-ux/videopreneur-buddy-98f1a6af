@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.95.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -36,7 +36,7 @@ O **Método Velocity** transforma o conhecimento do videomaker (ou qualquer cria
 
 1. **Vitrine otimizada**: Bio e perfil estruturados para atrair e reter o cliente certo.
 2. **Posicionamento de autoridade**: o que postar e como se posicionar para ser visto como autoridade — não como mais um no mercado.
-3. **Produto digital de entrada**: ajuda a criar um produto focado em resolver um problema rápido do cliente, facilitando a primeira venda.
+3. **Produto digital de entrada**: ajuda a criar um product focado em resolver um problema rápido do cliente, facilitando a primeira venda.
 4. **Inteligência de vendas**: scripts validados para Direct e WhatsApp — quebra de objeções e fechamento com confiança.
 
 **Resultado**: elimina a confusão mental. Estratégia pronta, produto estruturado e scripts validados — o usuário só executa e colhe.
@@ -106,9 +106,8 @@ serve(async (req) => {
   }
 
   try {
-    // 🔒 Exige usuário autenticado — evita consumo de créditos por anônimos
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -120,9 +119,9 @@ serve(async (req) => {
     const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { headers: { Authorization: authHeader } },
     });
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims?.sub) {
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -130,81 +129,38 @@ serve(async (req) => {
     }
 
     const { messages } = await req.json();
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return new Response(JSON.stringify({ error: "messages must be a non-empty array" }), {
+    if (!Array.isArray(messages)) {
+      return new Response(JSON.stringify({ error: "messages must be an array" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    // 🛡️ Limites anti-abuso e anti prompt-injection
-    const MAX_MESSAGES = 40;
-    const MAX_CONTENT_LEN = 2000;
-    if (messages.length > MAX_MESSAGES) {
-      return new Response(JSON.stringify({ error: "Too many messages" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const sanitizedMessages = [];
-    for (const m of messages) {
-      if (!m || typeof m !== "object") continue;
-      const role = m.role;
-      const content = typeof m.content === "string" ? m.content : "";
-      // Rejeita roles arbitrárias (system/tool) vindas do cliente
-      if (role !== "user" && role !== "assistant") continue;
-      if (content.length === 0) continue;
-      sanitizedMessages.push({
-        role,
-        content: content.slice(0, MAX_CONTENT_LEN),
-      });
-    }
-
-    if (sanitizedMessages.length === 0) {
-      return new Response(JSON.stringify({ error: "No valid messages" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "LOVABLE_API_KEY not configured" }), {
+    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+    if (!GEMINI_API_KEY) {
+      return new Response(JSON.stringify({ error: "GEMINI_API_KEY not configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${GEMINI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...sanitizedMessages],
+        model: "gemini-2.5-flash",
+        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
         stream: true,
       }),
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "Muitas requisições. Tente novamente em alguns segundos." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Créditos esgotados. Adicione créditos no workspace." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
-      const t = await response.text();
-      console.error("AI gateway error:", response.status, t);
-      return new Response(JSON.stringify({ error: "Erro ao falar com o agente" }), {
+      const errText = await response.text();
+      console.error("Gemini error:", response.status, errText);
+      return new Response(JSON.stringify({ error: "Erro na IA" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -215,9 +171,9 @@ serve(async (req) => {
     });
   } catch (e) {
     console.error("john-wick-chat error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

@@ -326,7 +326,7 @@ export function SupportChat() {
                 placeholder="Pergunte sobre a calculadora..."
                 rows={1}
                 maxLength={1000}
-                className="flex-1 resize-none rounded-xl bg-muted/40 border border-border/60 px-3 py-2 text-sm outline-none focus:border-primary/60 max-h-24"
+                className="flex-1 resize-none rounded-xl bg-muted/40 border border-border/60 px-3 py-2 text-base outline-none focus:border-primary/60 max-h-24"
                 disabled={loading}
               />
               <Button

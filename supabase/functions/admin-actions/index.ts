@@ -1,7 +1,7 @@
 // Edge Function: admin-actions
 // Painel administrativo — só o ADMIN_EMAIL pode executar.
 // Ações: list, pause, resume, change_email, send_password_reset, add_buyer, remove_buyer
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.95.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const ADMIN_EMAIL = "rangelmaker@gmail.com";
 
@@ -91,7 +91,6 @@ Deno.serve(async (req) => {
             has_account: true,
             status_compra: null,
             subscription_status: null,
-            payment_gateway: null,
             buyer_name: null,
             orphan: true,
           }));
@@ -151,9 +150,8 @@ Deno.serve(async (req) => {
           });
           if (upErr) return json({ error: upErr.message }, 500);
 
-          // 3. Profiles e professional_data
+          // 3. Profiles
           await admin.from("profiles").update({ email: newEmail }).eq("user_id", u.id);
-          await admin.from("professional_data").update({ email: newEmail }).eq("user_id", u.id);
         }
 
         return json({ ok: true });
@@ -181,8 +179,6 @@ Deno.serve(async (req) => {
             buyer_name: buyerName,
             status_compra: "PURCHASE_COMPLETE",
             subscription_status: "active",
-            payment_gateway: "manual",
-            last_payment_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           },
           { onConflict: "email" },
