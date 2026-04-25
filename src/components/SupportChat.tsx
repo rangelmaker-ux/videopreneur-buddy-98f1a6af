@@ -217,8 +217,8 @@ export function SupportChat() {
 
       {open && (
         <div
-          className="fixed bottom-24 left-4 right-4 sm:right-auto sm:left-6 sm:w-[380px] z-40 flex flex-col rounded-2xl glass-strong border border-border/60 shadow-[var(--shadow-elegant)] animate-fade-in overflow-hidden"
-          style={{ height: "min(560px, calc(100vh - 140px))" }}
+          className="fixed bottom-24 left-3 right-3 sm:right-auto sm:left-6 sm:w-[380px] max-w-[calc(100vw-1.5rem)] z-40 flex flex-col rounded-2xl glass-strong border border-border/60 shadow-[var(--shadow-elegant)] animate-fade-in overflow-hidden"
+          style={{ height: "min(560px, calc(100dvh - 140px))" }}
         >
           {/* Header */}
           <div className="flex items-center gap-3 border-b border-border/50 px-4 py-3 bg-gradient-primary/10">
