@@ -69,14 +69,18 @@ function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolea
       const p = takeoffElapsed / 2; // Progress of flight (0 to 1 over 2 seconds)
       
       // Flash logic: quick intense burst at the very start (2.0s to 2.3s)
-      if (flashRef.current) {
-        if (takeoffElapsed < 0.3) {
+      if (takeoffElapsed < 0.3) {
+        if (!flashSoundPlayed.current) {
+          flashSoundPlayed.current = true;
+          playFlashSound(volume);
+        }
+        if (flashRef.current) {
           // Stronger intensity (150) and a peak-hold-fade curve
           const flashP = takeoffElapsed / 0.3;
           flashRef.current.intensity = Math.pow(1 - flashP, 2) * 150;
-        } else {
-          flashRef.current.intensity = 0;
         }
+      } else if (flashRef.current) {
+        flashRef.current.intensity = 0;
       }
       
       // Face forward for flight
