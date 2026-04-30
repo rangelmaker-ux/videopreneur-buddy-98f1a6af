@@ -1,6 +1,6 @@
 import { useEffect, useState, FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth, STRIPE_CHECKOUT } from "@/contexts/AuthContext";
+import { useAuth, STRIPE_MENSAL } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -190,7 +190,7 @@ export default function Auth() {
                           {PAUSED_MESSAGE}
                         </p>
                         <a
-                          href={STRIPE_CHECKOUT}
+                          href={STRIPE_MENSAL}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700"
@@ -327,7 +327,7 @@ export default function Auth() {
                         <AlertDescription className="text-sm">
                           {(firstAccessResult as { ok: false; msg: string }).msg}
                           <a
-                            href={STRIPE_CHECKOUT}
+                            href={STRIPE_MENSAL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
@@ -402,7 +402,7 @@ export default function Auth() {
                   : error}
                 {(isPaywallError || isPausedError) && (
                   <a
-                    href={STRIPE_CHECKOUT}
+                    href={STRIPE_MENSAL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
