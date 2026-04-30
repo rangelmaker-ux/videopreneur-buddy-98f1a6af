@@ -28,7 +28,8 @@ const MAX_BYTES = 5 * 1024 * 1024; // 5MB
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
 export function UserAvatarMenu() {
-  const { user } = useAuth();
+  const { user, signOut, accessStatus, trialDaysRemaining } = useAuth();
+  const [profileOpen, setProfileOpen] = useState(false);
   const navigate = useNavigate();
   const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
