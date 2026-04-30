@@ -242,8 +242,7 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
     </group>
   );
 }
-  );
-}
+
 
 interface LoginSuccessAnimationProps {
   onComplete: () => void;
