@@ -64,17 +64,16 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
     // Phase 3: 2-4s - Flash and Hero Takeoff!
     else if (elapsed < 4.5) {
       const takeoffElapsed = elapsed - 2;
-      const p = takeoffElapsed / 2;
+      const p = takeoffElapsed / 2; // Progress of flight (0 to 1 over 2 seconds)
       
       // Flash logic: quick burst between 2.0s and 2.2s
       if (flashRef.current) {
         if (takeoffElapsed < 0.2) {
-          flashRef.current.intensity = (1 - takeoffElapsed / 0.2) * 50;
+          flashRef.current.intensity = (1 - takeoffElapsed / 0.2) * 80;
         } else {
           flashRef.current.intensity = 0;
         }
       }
-      const p = takeoffElapsed / 2; // Progress of flight (0 to 1 over 2 seconds)
       
       // Face forward for flight
       calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, 0, 0.1);
