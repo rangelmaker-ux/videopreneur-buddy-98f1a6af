@@ -368,6 +368,21 @@ export default function Admin() {
                                   <KeyRound className="h-3.5 w-3.5 mr-1" /> Senha
                                 </Button>
                               )}
+
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button size="sm" variant="outline" disabled={busy} className="text-blue-500 hover:text-blue-600 border-blue-200 hover:border-blue-300">
+                                    <Clock className="h-3.5 w-3.5 mr-1" /> Liberar acesso
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleGrantTrial(row, 7)}>7 dias</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleGrantTrial(row, 30)}>30 dias</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleGrantTrial(row, 90)}>3 meses (90 dias)</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleGrantTrial(row, 365)}>1 ano (365 dias)</DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+
                               <Button 
                                 size="sm" 
                                 variant="ghost" 
@@ -383,7 +398,7 @@ export default function Admin() {
                                 }} 
                                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                <Trash2 className="h-3.5 w-3.5 mr-1" /> Excluir conta
                               </Button>
                             </div>
                           </TableCell>
