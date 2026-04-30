@@ -282,9 +282,9 @@ export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps
         {/* Skip Button */}
         <button
           onClick={onComplete}
-          className="absolute bottom-10 right-10 z-[110] text-[11px] font-light uppercase tracking-widest text-white/40 transition-all hover:text-white/100"
+          className="absolute bottom-10 right-10 z-[110] text-[11px] font-light uppercase tracking-widest text-white/30 transition-all hover:text-white/80 active:scale-95 sm:bottom-12 sm:right-12"
         >
-          Pular animação
+          Pular animação &gt;&gt;
         </button>
       </div>
     </div>
