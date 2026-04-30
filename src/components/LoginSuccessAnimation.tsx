@@ -21,6 +21,8 @@ function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolea
   
   const startTime = useRef(0);
   const completed = useRef(false);
+  const flashSoundPlayed = useRef(false);
+  const audioContext = useRef<AudioContext | null>(null);
 
   const buttons: { x: number; y: number; w: number; h: number; color: string; emissive: string }[] = [
     { x: -0.55, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
