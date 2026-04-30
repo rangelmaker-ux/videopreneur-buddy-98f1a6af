@@ -179,7 +179,7 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
       </group>
 
       {/* STABILIZED SYSTEM: Gimbal + Cinema Camera */}
-      <group ref={cameraGroupRef} scale={0} position={[0, 0.78, 0.8]}>
+      <group ref={cameraGroupRef} scale={0} position={[0, -0.3, 1.4]}>
         {/* Gimbal Structure (DJI Style) */}
         <group ref={gimbalRef}>
           {/* Vertical Arm */}
