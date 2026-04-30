@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { TrialBanner } from "@/components/TrialBanner";
+import { TrialWelcomePopup } from "@/components/TrialWelcomePopup";
 import { TrialExpiredGate } from "@/components/TrialExpiredGate";
 import { useAuth } from "@/contexts/AuthContext";
 import Index from "./pages/Index.tsx";
@@ -19,7 +19,7 @@ const AppContent = () => {
 
   return (
     <>
-      <TrialBanner />
+      <TrialWelcomePopup />
       {isBlocked ? (
         <TrialExpiredGate />
       ) : (
