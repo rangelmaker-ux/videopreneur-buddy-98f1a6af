@@ -138,11 +138,18 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
           ))}
         </group>
 
-        {/* Super Hero Cape (Red) */}
+        {/* Super Hero Cape (Red) - segmented plane for waving */}
         <group position={[0, 0, -0.22]} ref={armsRef} scale={0}>
-          <mesh position={[0, -0.2, -0.1]}>
-            <boxGeometry args={[1.6, 2.5, 0.05]} />
-            <meshStandardMaterial color="#dc2626" roughness={0.4} metalness={0.1} />
+          <mesh ref={capeRef} position={[0, -0.2, -0.1]} rotation={[0, 0, 0]}>
+            <planeGeometry args={[1.6, 2.5, 12, 20]} />
+            <meshStandardMaterial
+              color="#dc2626"
+              roughness={0.45}
+              metalness={0.1}
+              side={THREE.DoubleSide}
+              emissive="#7f1d1d"
+              emissiveIntensity={0.15}
+            />
           </mesh>
         </group>
 
