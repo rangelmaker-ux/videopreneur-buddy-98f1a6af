@@ -16,6 +16,7 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
   const cameraGroupRef = useRef<THREE.Group>(null);
   const gimbalRef = useRef<THREE.Group>(null);
   const legsRef = useRef<THREE.Group>(null);
+  const capeRef = useRef<THREE.Mesh>(null);
   
   const startTime = useRef(0);
   const completed = useRef(false);
