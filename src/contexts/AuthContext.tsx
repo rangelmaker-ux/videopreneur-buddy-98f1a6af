@@ -13,9 +13,9 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const HOTMART_CHECKOUT_URL = "https://pay.hotmart.com/H105462348U";
+const STRIPE_CHECKOUT_URL = "https://pay.hotmart.com/H105462348U";
 
-export const HOTMART_CHECKOUT = HOTMART_CHECKOUT_URL;
+export const STRIPE_CHECKOUT = STRIPE_CHECKOUT_URL;
 
 function friendlyAuthError(message: string): string {
   const m = message.toLowerCase();
