@@ -357,7 +357,7 @@ export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps
           <pointLight position={[0, 0, 4]} intensity={0.8} color="#3b82f6" />
           
           <Suspense fallback={null}>
-            <AnimatedCalculator isMobile={isMobile} onComplete={onComplete} />
+            <AnimatedCalculator isMobile={isMobile} onComplete={onComplete} volume={isMuted ? 0 : volume} />
             <ContactShadows position={[0, -2, 0]} opacity={0.3} scale={12} blur={2} far={4} />
             <Environment preset="studio" />
           </Suspense>
