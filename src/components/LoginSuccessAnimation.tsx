@@ -16,6 +16,7 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
   const cameraGroupRef = useRef<THREE.Group>(null);
   const gimbalRef = useRef<THREE.Group>(null);
   const legsRef = useRef<THREE.Group>(null);
+  const capeRef = useRef<THREE.Mesh>(null);
   
   const startTime = useRef(0);
   const completed = useRef(false);
@@ -78,6 +79,28 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
       // Lean forward slightly as it speeds up
       calculatorRef.current.rotation.x = THREE.MathUtils.lerp(0, -Math.PI / 4, p);
 
+      // Cape waving — animate vertices to simulate wind
+      if (capeRef.current) {
+        const geo = capeRef.current.geometry as THREE.PlaneGeometry;
+        const pos = geo.attributes.position;
+        const time = elapsed * 6;
+        const intensity = 0.15 + p * 0.35; // stronger as speed increases
+        for (let i = 0; i < pos.count; i++) {
+          const x = pos.getX(i);
+          const y = pos.getY(i);
+          // Wind ripple: stronger toward bottom of cape (lower y)
+          const distFromTop = (1.25 - y) / 2.5; // 0 at top, 1 at bottom
+          const wave =
+            Math.sin(y * 3 + time) * 0.12 * distFromTop +
+            Math.sin(x * 2.5 + time * 1.3) * 0.08 * distFromTop;
+          pos.setZ(i, wave * intensity * 4);
+        }
+        pos.needsUpdate = true;
+        geo.computeVertexNormals();
+        // Trail backward as it accelerates upward
+        capeRef.current.rotation.x = THREE.MathUtils.lerp(0, 0.6, p);
+      }
+
       // Camera stays with the hero but fades out
       if (cameraGroupRef.current) {
         cameraGroupRef.current.scale.setScalar(1 - p);
@@ -137,11 +160,18 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
           ))}
         </group>
 
-        {/* Super Hero Cape (Red) */}
+        {/* Super Hero Cape (Red) - segmented plane for waving */}
         <group position={[0, 0, -0.22]} ref={armsRef} scale={0}>
-          <mesh position={[0, -0.2, -0.1]}>
-            <boxGeometry args={[1.6, 2.5, 0.05]} />
-            <meshStandardMaterial color="#dc2626" roughness={0.4} metalness={0.1} />
+          <mesh ref={capeRef} position={[0, -0.2, -0.1]} rotation={[0, 0, 0]}>
+            <planeGeometry args={[1.6, 2.5, 12, 20]} />
+            <meshStandardMaterial
+              color="#dc2626"
+              roughness={0.45}
+              metalness={0.1}
+              side={THREE.DoubleSide}
+              emissive="#7f1d1d"
+              emissiveIntensity={0.15}
+            />
           </mesh>
         </group>
 
