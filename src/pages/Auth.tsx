@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Logo3D } from "@/components/Logo3D";
 import { LoginSuccessAnimation } from "@/components/LoginSuccessAnimation";
 
-const PAUSED_MESSAGE = "Sua assinatura está em atraso ou foi pausada. Para continuar usando a plataforma, regularize seu pagamento. O acesso é liberado automaticamente após a confirmação.";
+const PAUSED_MESSAGE = "Seu período de acesso gratuito expirou ou a assinatura foi pausada. Para continuar usando a plataforma, escolha um plano.";
 const PAUSED_NOTICE_KEY = "vmi:pausedNotice";
 
 export default function Auth() {
