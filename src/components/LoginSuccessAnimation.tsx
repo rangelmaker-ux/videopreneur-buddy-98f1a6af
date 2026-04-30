@@ -8,7 +8,7 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 
-function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onComplete: () => void }) {
+function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolean; onComplete: () => void; volume: number }) {
   const groupRef = useRef<THREE.Group>(null);
   const calculatorRef = useRef<THREE.Group>(null);
   const eyesRef = useRef<THREE.Group>(null);
