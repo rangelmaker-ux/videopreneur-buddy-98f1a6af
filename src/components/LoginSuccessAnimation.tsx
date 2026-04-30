@@ -330,6 +330,8 @@ interface LoginSuccessAnimationProps {
 
 export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const [volume, setVolume] = useState(0.5);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
