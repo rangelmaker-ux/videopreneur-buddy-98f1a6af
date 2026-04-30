@@ -13,14 +13,14 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const STRIPE_CHECKOUT_URL = "https://pay.hotmart.com/H105462348U";
+const STRIPE_CHECKOUT_URL = "https://buy.stripe.com/bJeaEX3hj11Ih139be5ZC03";
 
 export const STRIPE_CHECKOUT = STRIPE_CHECKOUT_URL;
 
 function friendlyAuthError(message: string): string {
   const m = message.toLowerCase();
   if (m.includes("email_not_approved") || m.includes("email não foi encontrado")) {
-    return "E-mail não encontrado ou pagamento não aprovado. Certifique-se de usar o mesmo e-mail da compra na HooPay.";
+    return "E-mail não encontrado ou pagamento não aprovado. Certifique-se de usar o mesmo e-mail da compra.";
   }
   if (m.includes("invalid login credentials")) return "E-mail ou senha incorretos.";
   if (m.includes("user already registered")) return "Este e-mail já está cadastrado. Faça login.";
