@@ -9,6 +9,47 @@ import {
 import * as THREE from "three";
 
 function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolean; onComplete: () => void; volume: number }) {
+  const playFlashSound = (vol: number) => {
+    try {
+      if (!audioContext.current) {
+        audioContext.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = audioContext.current;
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(vol * 0.5, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      
+      const noise = ctx.createBufferSource();
+      const bufferSize = ctx.sampleRate * 0.1;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      noise.buffer = buffer;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(vol * 0.8, ctx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      noise.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + 0.15);
+      noise.start();
+      noise.stop(ctx.currentTime + 0.1);
+    } catch (e) {
+      console.error("Audio error", e);
+    }
+  };
   const groupRef = useRef<THREE.Group>(null);
   const calculatorRef = useRef<THREE.Group>(null);
   const eyesRef = useRef<THREE.Group>(null);
