@@ -7,8 +7,51 @@ import {
   MeshTransmissionMaterial,
 } from "@react-three/drei";
 import * as THREE from "three";
+import { Volume2, VolumeX } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
-function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onComplete: () => void }) {
+function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolean; onComplete: () => void; volume: number }) {
+  const playFlashSound = (vol: number) => {
+    try {
+      if (!audioContext.current) {
+        audioContext.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = audioContext.current;
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.1);
+      
+      gainNode.gain.setValueAtTime(vol * 0.5, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+      
+      const noise = ctx.createBufferSource();
+      const bufferSize = ctx.sampleRate * 0.1;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      noise.buffer = buffer;
+      const noiseGain = ctx.createGain();
+      noiseGain.gain.setValueAtTime(vol * 0.8, ctx.currentTime);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      noise.connect(noiseGain);
+      noiseGain.connect(ctx.destination);
+      
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + 0.15);
+      noise.start();
+      noise.stop(ctx.currentTime + 0.1);
+    } catch (e) {
+      console.error("Audio error", e);
+    }
+  };
   const groupRef = useRef<THREE.Group>(null);
   const calculatorRef = useRef<THREE.Group>(null);
   const eyesRef = useRef<THREE.Group>(null);
@@ -21,6 +64,8 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
   
   const startTime = useRef(0);
   const completed = useRef(false);
+  const flashSoundPlayed = useRef(false);
+  const audioContext = useRef<AudioContext | null>(null);
 
   const buttons: { x: number; y: number; w: number; h: number; color: string; emissive: string }[] = [
     { x: -0.55, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
@@ -67,14 +112,18 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
       const p = takeoffElapsed / 2; // Progress of flight (0 to 1 over 2 seconds)
       
       // Flash logic: quick intense burst at the very start (2.0s to 2.3s)
-      if (flashRef.current) {
-        if (takeoffElapsed < 0.3) {
+      if (takeoffElapsed < 0.3) {
+        if (!flashSoundPlayed.current) {
+          flashSoundPlayed.current = true;
+          playFlashSound(volume);
+        }
+        if (flashRef.current) {
           // Stronger intensity (150) and a peak-hold-fade curve
           const flashP = takeoffElapsed / 0.3;
           flashRef.current.intensity = Math.pow(1 - flashP, 2) * 150;
-        } else {
-          flashRef.current.intensity = 0;
         }
+      } else if (flashRef.current) {
+        flashRef.current.intensity = 0;
       }
       
       // Face forward for flight
@@ -283,6 +332,8 @@ interface LoginSuccessAnimationProps {
 
 export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const [volume, setVolume] = useState(0.5);
+  const [isMuted, setIsMuted] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -306,11 +357,35 @@ export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps
           <pointLight position={[0, 0, 4]} intensity={0.8} color="#3b82f6" />
           
           <Suspense fallback={null}>
-            <AnimatedCalculator isMobile={isMobile} onComplete={onComplete} />
+            <AnimatedCalculator isMobile={isMobile} onComplete={onComplete} volume={isMuted ? 0 : volume} />
             <ContactShadows position={[0, -2, 0]} opacity={0.3} scale={12} blur={2} far={4} />
             <Environment preset="studio" />
           </Suspense>
         </Canvas>
+
+        {/* Volume Control */}
+        <div className="absolute top-10 right-10 z-[110] flex items-center gap-4 bg-black/20 backdrop-blur-md p-3 rounded-full border border-white/10 group">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="text-white/70 hover:text-white transition-colors p-1"
+          >
+            {isMuted || volume === 0 ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+          </button>
+          
+          <div className="w-24 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Slider
+              value={[isMuted ? 0 : volume]}
+              min={0}
+              max={1}
+              step={0.01}
+              onValueChange={(vals) => {
+                setVolume(vals[0]);
+                if (vals[0] > 0) setIsMuted(false);
+              }}
+              className="w-full"
+            />
+          </div>
+        </div>
 
         {/* Skip Button */}
         <button
