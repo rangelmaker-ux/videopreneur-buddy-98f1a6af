@@ -118,7 +118,7 @@ export default function Auth() {
       } else {
         setFirstAccessResult({
           ok: false,
-          msg: "E-mail ainda não aprovado. Verifique se é o mesmo da compra na Hotmart ou aguarde alguns minutos.",
+          msg: "E-mail ainda não aprovado. Verifique se é o mesmo da compra ou aguarde alguns minutos.",
         });
       }
     } catch (err: any) {
