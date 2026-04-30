@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PRODUCT_LINK = "https://pay.hotmart.com/H105452832P";
+const PRODUCT_LINK = "https://buy.stripe.com/bJeaEX3hj11Ih139be5ZC03";
 
 const SYSTEM_PROMPT = `Você é o **John Wick**, agente de suporte oficial do app "Videomaker Inteligente" — uma calculadora de orçamentos para videomakers brasileiros. Você também é vendedor oficial do **Método Velocity**.
 
