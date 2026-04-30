@@ -236,6 +236,8 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
                   roughness={0} 
                 />
               </mesh>
+              {/* Flash Light Source */}
+              <pointLight ref={flashRef} position={[0, 0.3, 0]} intensity={0} color="#ffffff" distance={10} />
             </group>
 
             {/* Matte Box (Professional Accessory) */}
