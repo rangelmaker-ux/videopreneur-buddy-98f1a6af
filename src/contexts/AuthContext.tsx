@@ -126,14 +126,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     if (error) return { error: friendlyAuthError(error.message) };
 
-    if (cleanEmail !== ADMIN) {
-      const { data: approved } = await supabase.rpc("is_email_approved", { _email: cleanEmail });
-      if (!approved) {
-        try { sessionStorage.setItem("vmi:pausedNotice", "1"); } catch {}
-        await supabase.auth.signOut();
-        return { error: "SUBSCRIPTION_PAUSED" };
-      }
-    }
 
     try { sessionStorage.setItem("vmi:justLoggedIn", "1"); } catch {}
     return { error: null };
