@@ -363,6 +363,30 @@ export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps
           </Suspense>
         </Canvas>
 
+        {/* Volume Control */}
+        <div className="absolute top-10 right-10 z-[110] flex items-center gap-4 bg-black/20 backdrop-blur-md p-3 rounded-full border border-white/10 group">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="text-white/70 hover:text-white transition-colors p-1"
+          >
+            {isMuted || volume === 0 ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+          </button>
+          
+          <div className="w-24 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Slider
+              value={[isMuted ? 0 : volume]}
+              min={0}
+              max={1}
+              step={0.01}
+              onValueChange={(vals) => {
+                setVolume(vals[0]);
+                if (vals[0] > 0) setIsMuted(false);
+              }}
+              className="w-full"
+            />
+          </div>
+        </div>
+
         {/* Skip Button */}
         <button
           onClick={onComplete}
