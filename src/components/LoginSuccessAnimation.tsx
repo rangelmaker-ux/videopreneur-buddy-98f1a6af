@@ -79,6 +79,28 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
       // Lean forward slightly as it speeds up
       calculatorRef.current.rotation.x = THREE.MathUtils.lerp(0, -Math.PI / 4, p);
 
+      // Cape waving — animate vertices to simulate wind
+      if (capeRef.current) {
+        const geo = capeRef.current.geometry as THREE.PlaneGeometry;
+        const pos = geo.attributes.position;
+        const time = elapsed * 6;
+        const intensity = 0.15 + p * 0.35; // stronger as speed increases
+        for (let i = 0; i < pos.count; i++) {
+          const x = pos.getX(i);
+          const y = pos.getY(i);
+          // Wind ripple: stronger toward bottom of cape (lower y)
+          const distFromTop = (1.25 - y) / 2.5; // 0 at top, 1 at bottom
+          const wave =
+            Math.sin(y * 3 + time) * 0.12 * distFromTop +
+            Math.sin(x * 2.5 + time * 1.3) * 0.08 * distFromTop;
+          pos.setZ(i, wave * intensity * 4);
+        }
+        pos.needsUpdate = true;
+        geo.computeVertexNormals();
+        // Trail backward as it accelerates upward
+        capeRef.current.rotation.x = THREE.MathUtils.lerp(0, 0.6, p);
+      }
+
       // Camera stays with the hero but fades out
       if (cameraGroupRef.current) {
         cameraGroupRef.current.scale.setScalar(1 - p);
