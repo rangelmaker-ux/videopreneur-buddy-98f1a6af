@@ -241,7 +241,7 @@ export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps
           onClick={onComplete}
           className="absolute bottom-8 right-8 z-[110] rounded-full bg-black/20 px-6 py-3 text-sm font-medium text-white/80 backdrop-blur-md transition-all hover:bg-black/40 hover:text-white"
         >
-          Pular animação >>
+          Pular animação {">>"}
         </button>
       </div>
     </div>
