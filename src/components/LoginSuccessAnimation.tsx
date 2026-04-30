@@ -17,6 +17,7 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
   const gimbalRef = useRef<THREE.Group>(null);
   const legsRef = useRef<THREE.Group>(null);
   const capeRef = useRef<THREE.Mesh>(null);
+  const flashRef = useRef<THREE.PointLight>(null);
   
   const startTime = useRef(0);
   const completed = useRef(false);
@@ -60,10 +61,19 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
         cameraGroupRef.current.position.y = THREE.MathUtils.lerp(0, -0.3, p);
       }
     } 
-    // Phase 3: 2-4s - Hero Takeoff!
+    // Phase 3: 2-4s - Flash and Hero Takeoff!
     else if (elapsed < 4.5) {
       const takeoffElapsed = elapsed - 2;
       const p = takeoffElapsed / 2; // Progress of flight (0 to 1 over 2 seconds)
+      
+      // Flash logic: quick burst between 2.0s and 2.2s
+      if (flashRef.current) {
+        if (takeoffElapsed < 0.2) {
+          flashRef.current.intensity = (1 - takeoffElapsed / 0.2) * 80;
+        } else {
+          flashRef.current.intensity = 0;
+        }
+      }
       
       // Face forward for flight
       calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, 0, 0.1);
@@ -226,6 +236,8 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
                   roughness={0} 
                 />
               </mesh>
+              {/* Flash Light Source */}
+              <pointLight ref={flashRef} position={[0, 0.3, 0]} intensity={0} color="#ffffff" distance={10} />
             </group>
 
             {/* Matte Box (Professional Accessory) */}
