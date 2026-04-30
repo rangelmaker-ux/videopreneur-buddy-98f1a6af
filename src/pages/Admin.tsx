@@ -147,7 +147,11 @@ export default function Admin() {
     setBusyEmail(row.email);
     try {
       await callAdmin(action, { email: row.email, ...extra });
-      toast.success("Pronto!");
+      if (action === "delete_user") {
+        toast.success("Usuário excluído com sucesso.");
+      } else {
+        toast.success("Pronto!");
+      }
       await load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro");
@@ -345,11 +349,23 @@ export default function Admin() {
                                   <KeyRound className="h-3.5 w-3.5 mr-1" /> Senha
                                 </Button>
                               )}
-                              {!row.orphan && (
-                                <Button size="sm" variant="ghost" disabled={busy} onClick={() => setConfirmRemove(row)} className="text-destructive hover:text-destructive">
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              )}
+                              <Button 
+                                size="sm" 
+                                variant="ghost" 
+                                disabled={busy} 
+                                onClick={() => {
+                                  if (row.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                                    toast.error("Não é possível excluir o próprio administrador.");
+                                    return;
+                                  }
+                                  if (confirm(`Tem certeza que deseja excluir permanentemente o usuário ${row.email}? Esta ação não pode ser desfeita.`)) {
+                                    doAction("delete_user", row);
+                                  }
+                                }} 
+                                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
                             </div>
                           </TableCell>
                         </TableRow>

@@ -45,7 +45,7 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
         eyesRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0.4, 1));
       }
     } 
-    // Phase 2: 1-2s - Reveal Arms and Cinema Camera/Gimbal
+    // Phase 2: 1-2s - Reveal Arms and Cinema Camera/Gimbal (Now in FRONT)
     else if (elapsed < 2) {
       const p = (elapsed - 1) / 1;
       if (armsRef.current) {
@@ -53,40 +53,47 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
       }
       if (cameraGroupRef.current) {
         cameraGroupRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0, 1));
-        const cameraZ = THREE.MathUtils.lerp(-1, 0.8, THREE.MathUtils.smoothstep(p, 0, 1));
-        cameraGroupRef.current.position.z = cameraZ;
+        // Move to FRONT: Z goes from 0 to 1.4
+        cameraGroupRef.current.position.z = THREE.MathUtils.lerp(0, 1.4, p);
+        // Position at Chest/Waist level
+        cameraGroupRef.current.position.y = THREE.MathUtils.lerp(0, -0.3, p);
       }
     } 
-    // Phase 3: 2-10s - Ninja Walk and Perfect Stabilization (Looong and Cinematic)
+    // Phase 3: 2-10s - Discrete Cinematic Steps and Perfect Stabilization
     else if (elapsed < 10.5) {
-      const p = (elapsed - 2) / 8; // 0 to 1 over 8 seconds (Slow movement)
+      const walkElapsed = elapsed - 2; // 0 to 8
+      const p = walkElapsed / 8; // Global progress
       
-      // Turn 90 degrees to profile
+      // Turn to profile
       calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, Math.PI / 2, 0.05);
       
       if (legsRef.current) {
-        legsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 2, 2.3));
+        legsRef.current.scale.setScalar(1);
       }
 
-      // Movement to the right (Cinematic exit)
+      // Movement to the right
       const exitDistance = isMobile ? 8 : 15;
       groupRef.current.position.x = THREE.MathUtils.smoothstep(p, 0, 1) * exitDistance;
 
-      // Ninja Walk Bobbing (Extremely controlled and slow)
-      const walkCycleSpeed = 6; // Slower steps
-      const bobbingAmount = 0.15; // Deeper flexion
-      const bobbing = Math.abs(Math.sin((elapsed - 2) * walkCycleSpeed)) * bobbingAmount;
-      calculatorRef.current.position.y = -bobbing;
+      // 4 Steps Logic (2s each)
+      // Step indices: 0 (2-4s), 1 (4-6s), 2 (6-8s), 3 (8-10s)
+      const stepDuration = 2;
+      const stepIndex = Math.floor(walkElapsed / stepDuration);
+      const stepProgress = (walkElapsed % stepDuration) / stepDuration;
       
-      // Perfect Stabilization
+      // Deep Flexion Curve: Sine curve that goes 0 -> 1 -> 0 over the 2s step
+      const bobbingAmount = 0.35; // Profunda e evidente
+      const stepFlexion = Math.sin(stepProgress * Math.PI) * bobbingAmount;
+      calculatorRef.current.position.y = -stepFlexion;
+      
+      // Perfect Stabilization: Counter-act bobbing to keep camera at fixed horizontal line
       if (cameraGroupRef.current) {
-        // Stabilize Y: Counter-act parent bobbing precisely to keep camera on a flat line
-        cameraGroupRef.current.position.y = 0.78 + bobbing;
-        // Keep camera facing forward relative to movement path (90deg offset from body)
+        // Horizontal line fixed at -0.3 relative to neutral body
+        cameraGroupRef.current.position.y = -0.3 + stepFlexion;
         cameraGroupRef.current.rotation.y = -Math.PI / 2;
       }
 
-      // Finish at 10s
+      // Finish
       if (elapsed > 10.1 && !completed.current) {
         completed.current = true;
         onComplete();
@@ -140,17 +147,17 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
           ))}
         </group>
 
-        {/* Mechanical Arms */}
+        {/* Mechanical Arms (Holding the gimbal in front) */}
         <group ref={armsRef} scale={0}>
-          {/* Left Arm holding Gimbal handle */}
-          <group position={[-1.1, 0, 0.1]} rotation={[0.2, 0, 0.5]}>
-            <RoundedBox args={[0.12, 1.2, 0.12]} radius={0.06}>
+          {/* Left Arm */}
+          <group position={[-0.9, -0.3, 0.5]} rotation={[0.4, 0, 0.4]}>
+            <RoundedBox args={[0.12, 1.0, 0.12]} radius={0.06}>
               <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.2} />
             </RoundedBox>
           </group>
           {/* Right Arm */}
-          <group position={[1.1, 0, 0.1]} rotation={[0.2, 0, -0.5]}>
-            <RoundedBox args={[0.12, 1.2, 0.12]} radius={0.06}>
+          <group position={[0.9, -0.3, 0.5]} rotation={[0.4, 0, -0.4]}>
+            <RoundedBox args={[0.12, 1.0, 0.12]} radius={0.06}>
               <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.2} />
             </RoundedBox>
           </group>
@@ -158,13 +165,13 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
 
         {/* Ninja Legs (Bent for low center of gravity) */}
         <group ref={legsRef} scale={0} position={[0, -1.1, 0]}>
-          <group position={[-0.6, -0.4, 0]} rotation={[0.5, 0, 0.2]}>
-            <RoundedBox args={[0.18, 0.9, 0.18]} radius={0.05}>
+          <group position={[-0.6, -0.3, 0]} rotation={[0.3, 0, 0.2]}>
+            <RoundedBox args={[0.18, 0.8, 0.18]} radius={0.05}>
               <meshStandardMaterial color="#0f172a" metalness={0.8} />
             </RoundedBox>
           </group>
-          <group position={[0.6, -0.4, 0]} rotation={[0.5, 0, -0.2]}>
-            <RoundedBox args={[0.18, 0.9, 0.18]} radius={0.05}>
+          <group position={[0.6, -0.3, 0]} rotation={[0.3, 0, -0.2]}>
+            <RoundedBox args={[0.18, 0.8, 0.18]} radius={0.05}>
               <meshStandardMaterial color="#0f172a" metalness={0.8} />
             </RoundedBox>
           </group>
@@ -172,7 +179,7 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
       </group>
 
       {/* STABILIZED SYSTEM: Gimbal + Cinema Camera */}
-      <group ref={cameraGroupRef} scale={0} position={[0, 0.78, 0.8]}>
+      <group ref={cameraGroupRef} scale={0} position={[0, -0.3, 1.4]}>
         {/* Gimbal Structure (DJI Style) */}
         <group ref={gimbalRef}>
           {/* Vertical Arm */}
