@@ -41,7 +41,7 @@ export const TrialWelcomePopup = () => {
           </h2>
           
           <p className="text-zinc-600 dark:text-zinc-400 mb-8">
-            Você tem <span className="font-bold text-zinc-900 dark:text-white">{trialDaysRemaining} dias</span> de acesso completo ao Videopreneur Buddy. Aproveite tudo sem limitações.
+            Você tem <span className="font-bold text-zinc-900 dark:text-white">{trialDaysRemaining} dias</span> de acesso completo ao Videomaker Inteligente. Aproveite tudo sem limitações.
           </p>
 
           <div className="w-full space-y-3 mb-8 text-left bg-zinc-50 dark:bg-zinc-800/50 p-4 rounded-xl">
