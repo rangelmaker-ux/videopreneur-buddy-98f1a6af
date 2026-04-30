@@ -142,13 +142,17 @@ function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolea
 
     // Phase 1: 0-1s - Smooth Stop and Awakening
     if (elapsed < 1) {
+      if (!techSoundPlayed.current) {
+        techSoundPlayed.current = true;
+        playTechSound(volume);
+      }
       const p = elapsed / 1;
       const easing = 1 - Math.pow(1 - p, 3); // ease-out
       calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, 0, easing * 0.1);
       if (eyesRef.current) {
         eyesRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0.4, 1));
       }
-    } 
+    }
     // Phase 2: 1-2s - Reveal Arms and Cinema Camera/Gimbal (Now in FRONT)
     else if (elapsed < 2) {
       const p = (elapsed - 1) / 1;
