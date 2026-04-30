@@ -6,9 +6,12 @@ type AuthContextValue = {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  accessStatus: "active" | "trial" | "trial_expired" | "blocked" | "loading" | null;
+  trialDaysRemaining: number;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string, displayName: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
+  checkAccess: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -35,6 +38,50 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [accessStatus, setAccessStatus] = useState<AuthContextValue["accessStatus"]>("loading");
+  const [trialDaysRemaining, setTrialDaysRemaining] = useState(0);
+
+  async function checkAccess() {
+    if (!user) {
+      setAccessStatus(null);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke("check-approved-email", {
+        body: { email: user.email },
+      });
+
+      if (error) throw error;
+
+      if (data.approved) {
+        if (data.status === "trial") {
+          setAccessStatus("trial");
+          setTrialDaysRemaining(data.trial_days_remaining || 0);
+        } else {
+          setAccessStatus("active");
+        }
+      } else {
+        if (data.status === "trial_expired") {
+          setAccessStatus("trial_expired");
+        } else {
+          setAccessStatus("blocked");
+        }
+      }
+    } catch (err) {
+      console.error("Error checking access:", err);
+      // Fallback behavior if function fails - keep as loading or set to blocked?
+      // Defaulting to blocked for security, but maybe allow if it's a temp network error.
+    }
+  }
+
+  useEffect(() => {
+    if (user) {
+      checkAccess();
+    } else if (!loading) {
+      setAccessStatus(null);
+    }
+  }, [user, loading]);
 
   useEffect(() => {
     // IMPORTANT: set up listener FIRST, then check session
@@ -108,7 +155,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      loading, 
+      accessStatus, 
+      trialDaysRemaining, 
+      signIn, 
+      signUp, 
+      signOut,
+      checkAccess
+    }}>
       {children}
     </AuthContext.Provider>
   );
