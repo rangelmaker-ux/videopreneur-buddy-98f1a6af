@@ -275,7 +275,7 @@ export default function Auth() {
                 {firstAccessOpen && (
                   <div className="rounded-lg border border-border/60 bg-muted/20 p-4 space-y-3">
                     <p className="text-xs text-muted-foreground">
-                      Digite o e-mail usado na compra da Hotmart. Vamos verificar se o pagamento foi aprovado.
+                      Digite o e-mail usado na compra. Vamos verificar se o pagamento foi aprovado.
                     </p>
                     <div className="space-y-2">
                       <Label htmlFor="first-access-email" className="text-xs">E-mail da compra</Label>
