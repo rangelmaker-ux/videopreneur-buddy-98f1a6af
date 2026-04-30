@@ -70,8 +70,9 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
       }
       if (cameraRef.current) {
         cameraRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 2.2, 2.6));
-        // Move camera to front of eye
-        cameraRef.current.position.set(0.4, 0.78, 0.5);
+        // Move camera from behind to front of eye
+        const cameraZ = THREE.MathUtils.lerp(-0.8, 0.6, THREE.MathUtils.smoothstep(elapsed, 2.2, 2.6));
+        cameraRef.current.position.set(0.4, 0.78, cameraZ);
       }
     } else if (elapsed < 5.5) {
       // 3-5.5s: A Saída do Videomaker
