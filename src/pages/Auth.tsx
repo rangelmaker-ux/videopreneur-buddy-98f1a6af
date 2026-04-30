@@ -358,7 +358,7 @@ export default function Auth() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">E-mail (mesmo da Hotmart)</Label>
+                  <Label htmlFor="signup-email">E-mail (mesmo da compra)</Label>
                   <Input
                     id="signup-email"
                     type="email"
