@@ -56,17 +56,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) throw error;
 
       if (data.approved === true) {
-        if (data.status === "trial") {
+        if (data.access === "trial") {
           setAccessStatus("trial");
           setTrialDaysRemaining(data.trial_days_remaining ?? 7);
         } else {
+          // active
           setAccessStatus("active");
           setTrialDaysRemaining(0);
         }
       } else {
-        if (data.status === "trial_expired") {
-          setAccessStatus("trial_expired");
-        } else if (data.status === "not_found") {
+        if (data.access === "trial_expired") {
           setAccessStatus("trial_expired");
         } else {
           setAccessStatus("blocked");
@@ -127,14 +126,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     if (error) return { error: friendlyAuthError(error.message) };
 
-    if (cleanEmail !== ADMIN) {
-      const { data: approved } = await supabase.rpc("is_email_approved", { _email: cleanEmail });
-      if (!approved) {
-        try { sessionStorage.setItem("vmi:pausedNotice", "1"); } catch {}
-        await supabase.auth.signOut();
-        return { error: "SUBSCRIPTION_PAUSED" };
-      }
-    }
 
     try { sessionStorage.setItem("vmi:justLoggedIn", "1"); } catch {}
     return { error: null };
