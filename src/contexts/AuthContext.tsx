@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [accessStatus, setAccessStatus] = useState<AuthContextValue["accessStatus"]>("loading");
+  const [accessStatus, setAccessStatus] = useState<AuthContextValue["accessStatus"]>(null);
   const [trialDaysRemaining, setTrialDaysRemaining] = useState(0);
 
   async function checkAccess() {
@@ -54,12 +54,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) throw error;
 
-      if (data.approved) {
+      if (data.approved === true) {
         if (data.status === "trial") {
           setAccessStatus("trial");
-          setTrialDaysRemaining(data.trial_days_remaining || 0);
+          setTrialDaysRemaining(data.trial_days_remaining ?? 7);
         } else {
           setAccessStatus("active");
+          setTrialDaysRemaining(0);
         }
       } else {
         if (data.status === "trial_expired") {
