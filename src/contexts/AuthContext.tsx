@@ -13,9 +13,11 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-const STRIPE_CHECKOUT_URL = "https://buy.stripe.com/bJeaEX3hj11Ih139be5ZC03";
+const STRIPE_MENSAL_URL = "https://buy.stripe.com/dRm14ndVX25MbGJdru5ZC04";
+const STRIPE_ANUAL_URL = "https://buy.stripe.com/9B65kDg456m26mp87a5ZC05";
 
-export const STRIPE_CHECKOUT = STRIPE_CHECKOUT_URL;
+export const STRIPE_MENSAL = STRIPE_MENSAL_URL;
+export const STRIPE_ANUAL = STRIPE_ANUAL_URL;
 
 function friendlyAuthError(message: string): string {
   const m = message.toLowerCase();
