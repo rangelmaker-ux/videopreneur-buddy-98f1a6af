@@ -431,7 +431,7 @@ export default function Auth() {
 
           <p className="mt-6 flex items-start gap-2 text-xs text-muted-foreground">
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados na Hotmart.
+            Seus dados são armazenados com segurança na nuvem. Acesso liberado apenas para compradores aprovados !
           </p>
         </div>
       </div>
