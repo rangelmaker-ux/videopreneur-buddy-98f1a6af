@@ -218,6 +218,19 @@ export default function Admin() {
     }
   }
 
+  async function handleGrantTrial(row: Row, days: number) {
+    setBusyEmail(row.email);
+    try {
+      await callAdmin("grant_trial", { email: row.email, days });
+      toast.success(`Acesso liberado por ${days} dias para ${row.email}.`);
+      await load();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao liberar acesso");
+    } finally {
+      setBusyEmail(null);
+    }
+  }
+
   async function handleRemove(row: Row) {
     setBusyEmail(row.email);
     try {
