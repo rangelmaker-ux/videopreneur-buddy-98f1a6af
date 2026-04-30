@@ -385,6 +385,15 @@ export default function Auth() {
                 <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Criar conta"}
                 </Button>
+
+                <div className="mt-4 rounded-lg border border-[#22c55e]/30 bg-[#f0fdf4] p-3 text-center">
+                  <p className="text-xs font-medium text-[#166534]">
+                    🎉 7 dias grátis de acesso completo — Sem cartão necessário agora.
+                  </p>
+                  <p className="mt-1 text-[10px] text-[#166534]/80">
+                    Após o teste: Mensal R$57/mês ou Anual R$399/ano (6x sem juros).
+                  </p>
+                </div>
               </form>
             </TabsContent>
           </Tabs>
