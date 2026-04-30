@@ -147,7 +147,11 @@ export default function Admin() {
     setBusyEmail(row.email);
     try {
       await callAdmin(action, { email: row.email, ...extra });
-      toast.success("Pronto!");
+      if (action === "delete_user") {
+        toast.success("Usuário excluído com sucesso.");
+      } else {
+        toast.success("Pronto!");
+      }
       await load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Erro");
