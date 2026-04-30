@@ -137,31 +137,23 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
           ))}
         </group>
 
-        {/* Mechanical Arms (Holding the gimbal in front) */}
-        <group ref={armsRef} scale={0}>
-          {/* Left Arm */}
-          <group position={[-0.9, -0.3, 0.5]} rotation={[0.4, 0, 0.4]}>
-            <RoundedBox args={[0.12, 1.0, 0.12]} radius={0.06}>
-              <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.2} />
-            </RoundedBox>
-          </group>
-          {/* Right Arm */}
-          <group position={[0.9, -0.3, 0.5]} rotation={[0.4, 0, -0.4]}>
-            <RoundedBox args={[0.12, 1.0, 0.12]} radius={0.06}>
-              <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.2} />
-            </RoundedBox>
-          </group>
+        {/* Super Hero Cape (Red) */}
+        <group position={[0, 0, -0.22]} ref={armsRef} scale={0}>
+          <mesh position={[0, -0.2, -0.1]}>
+            <boxGeometry args={[1.6, 2.5, 0.05]} />
+            <meshStandardMaterial color="#dc2626" roughness={0.4} metalness={0.1} />
+          </mesh>
         </group>
 
-        {/* Ninja Legs (Bent for low center of gravity) */}
+        {/* Legs retracted for flight */}
         <group ref={legsRef} scale={0} position={[0, -1.1, 0]}>
-          <group position={[-0.6, -0.3, 0]} rotation={[0.3, 0, 0.2]}>
-            <RoundedBox args={[0.18, 0.8, 0.18]} radius={0.05}>
+          <group position={[-0.4, -0.2, 0]} rotation={[0.1, 0, 0]}>
+            <RoundedBox args={[0.18, 0.5, 0.18]} radius={0.05}>
               <meshStandardMaterial color="#0f172a" metalness={0.8} />
             </RoundedBox>
           </group>
-          <group position={[0.6, -0.3, 0]} rotation={[0.3, 0, -0.2]}>
-            <RoundedBox args={[0.18, 0.8, 0.18]} radius={0.05}>
+          <group position={[0.4, -0.2, 0]} rotation={[0.1, 0, 0]}>
+            <RoundedBox args={[0.18, 0.5, 0.18]} radius={0.05}>
               <meshStandardMaterial color="#0f172a" metalness={0.8} />
             </RoundedBox>
           </group>
