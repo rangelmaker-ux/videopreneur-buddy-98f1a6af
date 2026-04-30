@@ -56,9 +56,6 @@ function IndexInner() {
 
           <div className="flex items-center gap-2">
             <UserAvatarMenu />
-            <Button variant="ghost" size="icon" onClick={() => signOut()} aria-label="Sair">
-              <LogOut className="h-4 w-4" />
-            </Button>
           </div>
         </div>
       </header>
