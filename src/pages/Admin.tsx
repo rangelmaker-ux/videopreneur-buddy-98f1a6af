@@ -74,6 +74,7 @@ function StatusBadge({ row }: { row: Row }) {
   if (row.orphan) return <Badge variant="outline">Sem compra</Badge>;
   const active = row.subscription_status === "active" && row.status_compra === "PURCHASE_COMPLETE";
   if (active) return <Badge className="bg-emerald-600 hover:bg-emerald-600">Ativo</Badge>;
+  if (row.subscription_status === "trial") return <Badge className="bg-blue-600 hover:bg-blue-600">Trial</Badge>;
   if (row.subscription_status === "canceled" || row.status_compra === "revogado")
     return <Badge variant="destructive">Pausado</Badge>;
   return <Badge variant="secondary">{row.status_compra || "—"}</Badge>;
