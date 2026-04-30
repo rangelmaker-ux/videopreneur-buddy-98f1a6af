@@ -13,20 +13,21 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
   const calculatorRef = useRef<THREE.Group>(null);
   const eyesRef = useRef<THREE.Group>(null);
   const armsRef = useRef<THREE.Group>(null);
-  const cameraRef = useRef<THREE.Group>(null);
+  const cameraGroupRef = useRef<THREE.Group>(null);
+  const gimbalRef = useRef<THREE.Group>(null);
   const legsRef = useRef<THREE.Group>(null);
   
   const startTime = useRef(0);
   const completed = useRef(false);
 
   const buttons: { x: number; y: number; w: number; h: number; color: string; emissive: string }[] = [
-    { x: -0.55, y: 0.2, w: 0.42, h: 0.32, color: "#1e2a5e", emissive: "#3b82f6" },
-    { x: 0, y: 0.2, w: 0.42, h: 0.32, color: "#1e2a5e", emissive: "#3b82f6" },
-    { x: 0.55, y: 0.2, w: 0.42, h: 0.32, color: "#1e2a5e", emissive: "#3b82f6" },
-    { x: -0.55, y: -0.25, w: 0.42, h: 0.32, color: "#1e2a5e", emissive: "#3b82f6" },
-    { x: 0, y: -0.25, w: 0.42, h: 0.32, color: "#1e2a5e", emissive: "#3b82f6" },
-    { x: -0.275, y: -0.7, w: 0.97, h: 0.32, color: "#1e2a5e", emissive: "#3b82f6" },
-    { x: 0.55, y: -0.475, w: 0.42, h: 0.77, color: "#5b21b6", emissive: "#8b5cf6" },
+    { x: -0.55, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
+    { x: 0, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
+    { x: 0.55, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
+    { x: -0.55, y: -0.25, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
+    { x: 0, y: -0.25, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
+    { x: -0.275, y: -0.7, w: 0.97, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
+    { x: 0.55, y: -0.475, w: 0.42, h: 0.77, color: "#312e81", emissive: "#4f46e5" },
   ];
 
   useFrame((state) => {
@@ -35,56 +36,58 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
 
     if (!groupRef.current || !calculatorRef.current) return;
 
-    // Phase 1: 0-1s - Focus and Awakening
+    // Phase 1: 0-1s - Smooth Stop and Awakening
     if (elapsed < 1) {
       const p = elapsed / 1;
-      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, 0, 0.1);
+      const easing = 1 - Math.pow(1 - p, 3); // ease-out
+      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, 0, easing * 0.1);
       if (eyesRef.current) {
-        eyesRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0.5, 1));
+        eyesRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0.4, 1));
       }
     } 
-    // Phase 2: 1-2s - The Equipment (Arms and Cinema Camera)
+    // Phase 2: 1-2s - Reveal Arms and Cinema Camera/Gimbal
     else if (elapsed < 2) {
       const p = (elapsed - 1) / 1;
       if (armsRef.current) {
-        armsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0, 0.8));
+        armsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0, 1));
       }
-      if (cameraRef.current) {
-        cameraRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0, 1));
-        const cameraZ = THREE.MathUtils.lerp(-1, 0.7, THREE.MathUtils.smoothstep(p, 0.2, 0.8));
-        cameraRef.current.position.set(0, 0, cameraZ);
+      if (cameraGroupRef.current) {
+        cameraGroupRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0, 1));
+        const cameraZ = THREE.MathUtils.lerp(-1, 0.8, THREE.MathUtils.smoothstep(p, 0, 1));
+        cameraGroupRef.current.position.z = cameraZ;
       }
     } 
     // Phase 3: 2-5s - Ninja Walk and Perfect Stabilization
     else if (elapsed < 5.5) {
-      const p = (elapsed - 2) / 3;
+      const p = (elapsed - 2) / 3; // 0 to 1 over 3 seconds
       
-      // Rotate body 90 degrees to the right
+      // Turn 90 degrees to profile
       calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, Math.PI / 2, 0.1);
       
       if (legsRef.current) {
         legsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 2, 2.3));
       }
 
-      // Movement to the right
-      const exitDistance = isMobile ? 8 : 12;
+      // Movement to the right (Cinematic exit)
+      const exitDistance = isMobile ? 7 : 12;
       groupRef.current.position.x = THREE.MathUtils.smoothstep(p, 0, 1) * exitDistance;
 
-      // Ninja Walk Bobbing (Heel-to-toe roll simulation)
-      const walkSpeed = 10;
-      const bobbing = Math.abs(Math.sin((elapsed - 2) * walkSpeed)) * 0.15;
+      // Ninja Walk Bobbing (Controlled and slow)
+      const walkCycleSpeed = 8;
+      const bobbingAmount = 0.12;
+      const bobbing = Math.abs(Math.sin((elapsed - 2) * walkCycleSpeed)) * bobbingAmount;
       calculatorRef.current.position.y = -bobbing;
       
-      // Stabilization (Camera remains locked in global Y space)
-      if (cameraRef.current) {
-        // Counter-act the parent's bobbing precisely
-        cameraRef.current.position.y = 0.78 + bobbing;
-        // Keep camera facing forward even though body turned 90deg
-        cameraRef.current.rotation.y = -Math.PI / 2;
+      // Perfect Stabilization
+      if (cameraGroupRef.current) {
+        // Stabilize Y: Counter-act parent bobbing precisely
+        cameraGroupRef.current.position.y = 0.78 + bobbing;
+        // Keep camera facing forward relative to screen (90deg offset from body)
+        cameraGroupRef.current.rotation.y = -Math.PI / 2;
       }
 
-      // Finish
-      if (elapsed > 5.2 && !completed.current) {
+      // Finish at 5s
+      if (elapsed > 5.1 && !completed.current) {
         completed.current = true;
         onComplete();
       }
@@ -92,111 +95,153 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
   });
 
   return (
-    <group ref={groupRef} scale={isMobile ? 0.65 : 1}>
+    <group ref={groupRef} scale={isMobile ? 0.6 : 0.9}>
       <group ref={calculatorRef}>
-        {/* Main Body */}
-        <RoundedBox args={[1.85, 2.3, 0.42]} radius={0.22} smoothness={8}>
-          <MeshTransmissionMaterial
-            backside
-            samples={6}
-            thickness={0.4}
-            chromaticAberration={0.05}
-            ior={1.4}
-            roughness={0.05}
-            color={"#020617"}
-            attenuationDistance={0.8}
-            attenuationColor={"#3b82f6"}
+        {/* Main Body - Dark & Premium */}
+        <RoundedBox args={[1.85, 2.3, 0.42]} radius={0.18} smoothness={8}>
+          <meshStandardMaterial 
+            color="#0f172a" 
+            metalness={0.9} 
+            roughness={0.1}
+            emissive="#1e293b"
+            emissiveIntensity={0.2}
           />
         </RoundedBox>
 
-        {/* Display with LED Eyes */}
+        {/* Display with Recording LED Eyes */}
         <group position={[0, 0.78, 0.215]}>
-          <RoundedBox args={[1.55, 0.55, 0.04]} radius={0.08} smoothness={4}>
-            <meshStandardMaterial color={"#020617"} emissive={"#0a0f2c"} emissiveIntensity={0.6} />
+          <RoundedBox args={[1.55, 0.55, 0.05]} radius={0.06} smoothness={4}>
+            <meshStandardMaterial color="#020617" emissive="#000000" />
           </RoundedBox>
           
           <group ref={eyesRef} scale={0}>
-            {/* Recording Status LED Look */}
+            {/* Status LED "Eyes" - Recording Red */}
             <mesh position={[-0.4, 0, 0.03]}>
-              <planeGeometry args={[0.2, 0.08]} />
-              <meshStandardMaterial color={"#ff0000"} emissive={"#ff0000"} emissiveIntensity={2} toneMapped={false} />
+              <sphereGeometry args={[0.08, 16, 16]} />
+              <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={2.5} toneMapped={false} />
             </mesh>
             <mesh position={[0.4, 0, 0.03]}>
-              <planeGeometry args={[0.2, 0.08]} />
-              <meshStandardMaterial color={"#ff0000"} emissive={"#ff0000"} emissiveIntensity={2} toneMapped={false} />
+              <sphereGeometry args={[0.08, 16, 16]} />
+              <meshStandardMaterial color="#ff0000" emissive="#ff0000" emissiveIntensity={2.5} toneMapped={false} />
             </mesh>
+            {/* Glow light */}
+            <pointLight position={[0, 0, 0.2]} distance={1} intensity={1} color="#ff0000" />
           </group>
         </group>
 
-        {/* Buttons */}
+        {/* Premium Buttons */}
         <group position={[0, -0.15, 0.215]}>
           {buttons.map((b, i) => (
             <group key={i} position={[b.x, b.y, 0]}>
-              <RoundedBox args={[b.w, b.h, 0.06]} radius={0.05} smoothness={4}>
-                <meshStandardMaterial color={b.color} emissive={b.emissive} emissiveIntensity={0.25} />
+              <RoundedBox args={[b.w, b.h, 0.08]} radius={0.04} smoothness={4}>
+                <meshStandardMaterial color={b.color} emissive={b.emissive} emissiveIntensity={0.2} />
               </RoundedBox>
             </group>
           ))}
         </group>
 
-        {/* Arms (Carbon Fiber style) */}
+        {/* Mechanical Arms */}
         <group ref={armsRef} scale={0}>
-          <group position={[-1.1, 0, 0]} rotation={[0, 0, 0.4]}>
-            <RoundedBox args={[0.1, 1, 0.1]} radius={0.05}>
-              <meshStandardMaterial color="#020617" metalness={1} roughness={0.1} />
+          {/* Left Arm holding Gimbal handle */}
+          <group position={[-1.1, 0, 0.1]} rotation={[0.2, 0, 0.5]}>
+            <RoundedBox args={[0.12, 1.2, 0.12]} radius={0.06}>
+              <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.2} />
             </RoundedBox>
           </group>
-          <group position={[1.1, 0, 0]} rotation={[0, 0, -0.4]}>
-            <RoundedBox args={[0.1, 1, 0.1]} radius={0.05}>
-              <meshStandardMaterial color="#020617" metalness={1} roughness={0.1} />
+          {/* Right Arm */}
+          <group position={[1.1, 0, 0.1]} rotation={[0.2, 0, -0.5]}>
+            <RoundedBox args={[0.12, 1.2, 0.12]} radius={0.06}>
+              <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.2} />
             </RoundedBox>
           </group>
         </group>
 
-        {/* Ninja Legs */}
-        <group ref={legsRef} scale={0} position={[0, -1.2, 0]}>
-          <group position={[-0.5, -0.4, 0]} rotation={[0.4, 0, 0]}>
-            <RoundedBox args={[0.15, 0.8, 0.15]} radius={0.05}>
-              <meshStandardMaterial color="#020617" metalness={1} roughness={0.1} />
+        {/* Ninja Legs (Bent for low center of gravity) */}
+        <group ref={legsRef} scale={0} position={[0, -1.1, 0]}>
+          <group position={[-0.6, -0.4, 0]} rotation={[0.5, 0, 0.2]}>
+            <RoundedBox args={[0.18, 0.9, 0.18]} radius={0.05}>
+              <meshStandardMaterial color="#0f172a" metalness={0.8} />
             </RoundedBox>
           </group>
-          <group position={[0.5, -0.4, 0]} rotation={[0.4, 0, 0]}>
-            <RoundedBox args={[0.15, 0.8, 0.15]} radius={0.05}>
-              <meshStandardMaterial color="#020617" metalness={1} roughness={0.1} />
+          <group position={[0.6, -0.4, 0]} rotation={[0.5, 0, -0.2]}>
+            <RoundedBox args={[0.18, 0.9, 0.18]} radius={0.05}>
+              <meshStandardMaterial color="#0f172a" metalness={0.8} />
             </RoundedBox>
           </group>
         </group>
       </group>
 
-      {/* Professional Cinema Camera (Stabilized) */}
-      <group ref={cameraRef} scale={0} position={[0, 0.78, 0.7]}>
-        {/* Main Body (Matte Black) */}
-        <RoundedBox args={[0.6, 0.5, 0.4]} radius={0.05}>
-          <meshStandardMaterial color="#0f172a" metalness={0.9} roughness={0.2} />
-        </RoundedBox>
-        {/* Cinema Lens (Chrome/Glass) */}
-        <group position={[0, 0, 0.3]} rotation={[Math.PI / 2, 0, 0]}>
-          <cylinderGeometry args={[0.15, 0.15, 0.4, 32]} />
-          <meshStandardMaterial color="#334155" metalness={1} roughness={0.1} />
-          {/* Lens Glass */}
-          <mesh position={[0, 0.21, 0]}>
-            <circleGeometry args={[0.12, 32]} />
-            <meshStandardMaterial color="#1e3a8a" emissive="#3b82f6" emissiveIntensity={0.5} />
-          </mesh>
+      {/* STABILIZED SYSTEM: Gimbal + Cinema Camera */}
+      <group ref={cameraGroupRef} scale={0} position={[0, 0.78, 0.8]}>
+        {/* Gimbal Structure (DJI Style) */}
+        <group ref={gimbalRef}>
+          {/* Vertical Arm */}
+          <group position={[0, -0.4, 0]}>
+            <RoundedBox args={[0.08, 0.8, 0.08]} radius={0.04}>
+              <meshStandardMaterial color="#334155" metalness={1} />
+            </RoundedBox>
+          </group>
+          {/* Horizontal Base */}
+          <group position={[0, -0.8, 0]}>
+             <cylinderGeometry args={[0.1, 0.1, 0.6, 16]} rotation={[0, 0, Math.PI / 2]} />
+             <meshStandardMaterial color="#1e293b" metalness={1} />
+          </group>
+          
+          {/* Cinema Camera Body */}
+          <group position={[0, 0, 0]}>
+            <RoundedBox args={[0.6, 0.55, 0.5]} radius={0.05}>
+              <meshStandardMaterial color="#020617" metalness={0.9} roughness={0.3} />
+            </RoundedBox>
+            
+            {/* Professional Cinema Lens */}
+            <group position={[0, 0, 0.35]} rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[0.18, 0.18, 0.5, 32]} />
+              <meshStandardMaterial color="#1e293b" metalness={1} roughness={0.1} />
+              {/* Glass Element with reflections */}
+              <mesh position={[0, 0.26, 0]}>
+                <circleGeometry args={[0.15, 32]} />
+                <meshStandardMaterial 
+                  color="#1e3a8a" 
+                  emissive="#3b82f6" 
+                  emissiveIntensity={0.8} 
+                  metalness={1} 
+                  roughness={0} 
+                />
+              </mesh>
+            </group>
+
+            {/* Matte Box (Professional Accessory) */}
+            <group position={[0, 0, 0.65]}>
+              <boxGeometry args={[0.65, 0.6, 0.15]} />
+              <meshStandardMaterial color="#000000" metalness={0.5} />
+            </group>
+
+            {/* Top Monitor (Small LED Screen) */}
+            <group position={[0, 0.45, 0]} rotation={[-0.2, 0, 0]}>
+              <RoundedBox args={[0.4, 0.25, 0.05]} radius={0.02}>
+                <meshStandardMaterial color="#1e293b" />
+              </RoundedBox>
+              <mesh position={[0, 0, 0.026]}>
+                <planeGeometry args={[0.35, 0.2]} />
+                <meshStandardMaterial color="#000000" emissive="#3b82f6" emissiveIntensity={0.5} />
+              </mesh>
+            </group>
+
+            {/* High-end Details: Knobs & Ports */}
+            <mesh position={[0.31, 0.1, 0]}>
+              <cylinderGeometry args={[0.04, 0.04, 0.1, 8]} rotation={[0, 0, Math.PI/2]} />
+              <meshStandardMaterial color="#475569" />
+            </mesh>
+          </group>
         </group>
-        {/* Matte Box */}
-        <group position={[0, 0, 0.55]}>
-          <boxGeometry args={[0.5, 0.5, 0.1]} />
-          <meshStandardMaterial color="#020617" />
-        </group>
-        {/* Top Handle */}
-        <group position={[0, 0.35, 0]}>
-          <RoundedBox args={[0.1, 0.1, 0.4]} radius={0.02}>
-            <meshStandardMaterial color="#1e293b" />
-          </RoundedBox>
-        </group>
+        
+        {/* Cinematic Highlight Lights */}
+        <pointLight position={[0.5, 0.5, 1]} intensity={1.5} color="#ffffff" distance={2} />
+        <pointLight position={[-0.5, -0.5, 1]} intensity={1} color="#3b82f6" distance={2} />
       </group>
     </group>
+  );
+}
   );
 }
 
