@@ -57,37 +57,37 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
         cameraGroupRef.current.position.z = cameraZ;
       }
     } 
-    // Phase 3: 2-5s - Ninja Walk and Perfect Stabilization
-    else if (elapsed < 5.5) {
-      const p = (elapsed - 2) / 3; // 0 to 1 over 3 seconds
+    // Phase 3: 2-10s - Ninja Walk and Perfect Stabilization (Looong and Cinematic)
+    else if (elapsed < 10.5) {
+      const p = (elapsed - 2) / 8; // 0 to 1 over 8 seconds (Slow movement)
       
       // Turn 90 degrees to profile
-      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, Math.PI / 2, 0.1);
+      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, Math.PI / 2, 0.05);
       
       if (legsRef.current) {
         legsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 2, 2.3));
       }
 
       // Movement to the right (Cinematic exit)
-      const exitDistance = isMobile ? 7 : 12;
+      const exitDistance = isMobile ? 8 : 15;
       groupRef.current.position.x = THREE.MathUtils.smoothstep(p, 0, 1) * exitDistance;
 
-      // Ninja Walk Bobbing (Controlled and slow)
-      const walkCycleSpeed = 8;
-      const bobbingAmount = 0.12;
+      // Ninja Walk Bobbing (Extremely controlled and slow)
+      const walkCycleSpeed = 6; // Slower steps
+      const bobbingAmount = 0.15; // Deeper flexion
       const bobbing = Math.abs(Math.sin((elapsed - 2) * walkCycleSpeed)) * bobbingAmount;
       calculatorRef.current.position.y = -bobbing;
       
       // Perfect Stabilization
       if (cameraGroupRef.current) {
-        // Stabilize Y: Counter-act parent bobbing precisely
+        // Stabilize Y: Counter-act parent bobbing precisely to keep camera on a flat line
         cameraGroupRef.current.position.y = 0.78 + bobbing;
-        // Keep camera facing forward relative to screen (90deg offset from body)
+        // Keep camera facing forward relative to movement path (90deg offset from body)
         cameraGroupRef.current.rotation.y = -Math.PI / 2;
       }
 
-      // Finish at 5s
-      if (elapsed > 5.1 && !completed.current) {
+      // Finish at 10s
+      if (elapsed > 10.1 && !completed.current) {
         completed.current = true;
         onComplete();
       }
@@ -282,9 +282,9 @@ export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps
         {/* Skip Button */}
         <button
           onClick={onComplete}
-          className="absolute bottom-10 right-10 z-[110] text-[11px] font-light uppercase tracking-widest text-white/40 transition-all hover:text-white/100"
+          className="absolute bottom-10 right-10 z-[110] text-[11px] font-light uppercase tracking-widest text-white/30 transition-all hover:text-white/80 active:scale-95 sm:bottom-12 sm:right-12"
         >
-          Pular animação
+          Pular animação &gt;&gt;
         </button>
       </div>
     </div>
