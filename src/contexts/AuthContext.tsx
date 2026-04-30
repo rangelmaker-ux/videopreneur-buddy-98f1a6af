@@ -48,8 +48,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      const cleanEmail = user.email?.trim().toLowerCase();
       const { data, error } = await supabase.functions.invoke("check-approved-email", {
-        body: { email: user.email },
+        body: { email: cleanEmail },
       });
 
       if (error) throw error;
@@ -64,6 +65,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } else {
         if (data.status === "trial_expired") {
+          setAccessStatus("trial_expired");
+        } else if (data.status === "not_found") {
           setAccessStatus("trial_expired");
         } else {
           setAccessStatus("blocked");
