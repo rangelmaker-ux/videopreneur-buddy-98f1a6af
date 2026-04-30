@@ -65,9 +65,64 @@ function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolea
   const startTime = useRef(0);
   const completed = useRef(false);
   const flashSoundPlayed = useRef(false);
+  const techSoundPlayed = useRef(false);
   const audioContext = useRef<AudioContext | null>(null);
+  const techOscillators = useRef<any[]>([]);
 
-  const buttons: { x: number; y: number; w: number; h: number; color: string; emissive: string }[] = [
+  const playTechSound = (vol: number) => {
+    try {
+      if (!audioContext.current) {
+        audioContext.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = audioContext.current;
+      
+      // Layer 1: Ambient futuristic drone
+      const drone = ctx.createOscillator();
+      const droneGain = ctx.createGain();
+      drone.type = 'sawtooth';
+      drone.frequency.setValueAtTime(40, ctx.currentTime);
+      drone.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 2);
+      
+      droneGain.gain.setValueAtTime(0, ctx.currentTime);
+      droneGain.gain.linearRampToValueAtTime(vol * 0.1, ctx.currentTime + 0.5);
+      droneGain.gain.linearRampToValueAtTime(0, ctx.currentTime + 2.5);
+      
+      // Filter for that "tech" feel
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(200, ctx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 2);
+      
+      drone.connect(filter);
+      filter.connect(droneGain);
+      droneGain.connect(ctx.destination);
+      
+      drone.start();
+      drone.stop(ctx.currentTime + 2.5);
+
+      // Layer 2: Fast tech blips
+      const playBlip = (time: number, freq: number) => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + time);
+        g.gain.setValueAtTime(0, ctx.currentTime + time);
+        g.gain.linearRampToValueAtTime(vol * 0.05, ctx.currentTime + time + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + time + 0.1);
+        osc.connect(g);
+        g.connect(ctx.destination);
+        osc.start(ctx.currentTime + time);
+        osc.stop(ctx.currentTime + time + 0.1);
+      };
+
+      [0.2, 0.5, 0.8, 1.2, 1.5].forEach((t, i) => {
+        playBlip(t, 440 + i * 220);
+      });
+
+    } catch (e) {
+      console.error("Tech sound error", e);
+    }
+  };
     { x: -0.55, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
     { x: 0, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
     { x: 0.55, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
