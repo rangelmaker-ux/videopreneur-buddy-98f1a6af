@@ -59,42 +59,32 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
         cameraGroupRef.current.position.y = THREE.MathUtils.lerp(0, -0.3, p);
       }
     } 
-    // Phase 3: 2-10s - Discrete Cinematic Steps and Perfect Stabilization
-    else if (elapsed < 10.5) {
-      const walkElapsed = elapsed - 2; // 0 to 8
-      const p = walkElapsed / 8; // Global progress
+    // Phase 3: 2-4s - Hero Takeoff!
+    else if (elapsed < 4.5) {
+      const takeoffElapsed = elapsed - 2;
+      const p = takeoffElapsed / 2; // Progress of flight (0 to 1 over 2 seconds)
       
-      // Turn to profile
-      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, Math.PI / 2, 0.05);
+      // Face forward for flight
+      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, 0, 0.1);
       
-      if (legsRef.current) {
-        legsRef.current.scale.setScalar(1);
-      }
+      // Red Cape Appearance (Simulated by scaling/positioning if we had a mesh, 
+      // but we'll focus on the movement first as requested)
+      
+      // Super Velocity Flight UP
+      // Use an exponential power to simulate "Super Velocity" (acceleration)
+      const flyHeight = Math.pow(p * 5, 3); 
+      groupRef.current.position.y = flyHeight;
+      
+      // Lean forward slightly as it speeds up
+      calculatorRef.current.rotation.x = THREE.MathUtils.lerp(0, -Math.PI / 4, p);
 
-      // Movement to the right
-      const exitDistance = isMobile ? 8 : 15;
-      groupRef.current.position.x = THREE.MathUtils.smoothstep(p, 0, 1) * exitDistance;
-
-      // 4 Steps Logic (2s each)
-      // Step indices: 0 (2-4s), 1 (4-6s), 2 (6-8s), 3 (8-10s)
-      const stepDuration = 2;
-      const stepIndex = Math.floor(walkElapsed / stepDuration);
-      const stepProgress = (walkElapsed % stepDuration) / stepDuration;
-      
-      // Deep Flexion Curve: Sine curve that goes 0 -> 1 -> 0 over the 2s step
-      const bobbingAmount = 0.35; // Profunda e evidente
-      const stepFlexion = Math.sin(stepProgress * Math.PI) * bobbingAmount;
-      calculatorRef.current.position.y = -stepFlexion;
-      
-      // Perfect Stabilization: Counter-act bobbing to keep camera at fixed horizontal line
+      // Camera stays with the hero but fades out
       if (cameraGroupRef.current) {
-        // Horizontal line fixed at -0.3 relative to neutral body
-        cameraGroupRef.current.position.y = -0.3 + stepFlexion;
-        cameraGroupRef.current.rotation.y = -Math.PI / 2;
+        cameraGroupRef.current.scale.setScalar(1 - p);
       }
 
-      // Finish
-      if (elapsed > 10.1 && !completed.current) {
+      // Finish and redirect when high enough
+      if (p > 0.95 && !completed.current) {
         completed.current = true;
         onComplete();
       }
