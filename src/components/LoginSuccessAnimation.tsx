@@ -7,6 +7,8 @@ import {
   MeshTransmissionMaterial,
 } from "@react-three/drei";
 import * as THREE from "three";
+import { Volume2, VolumeX } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 
 function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolean; onComplete: () => void; volume: number }) {
   const playFlashSound = (vol: number) => {
