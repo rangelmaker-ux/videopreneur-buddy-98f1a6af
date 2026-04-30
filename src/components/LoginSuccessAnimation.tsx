@@ -227,10 +227,11 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
             </group>
 
             {/* High-end Details: Knobs & Ports */}
-            <mesh position={[0.31, 0.1, 0]}>
-              <cylinderGeometry args={[0.04, 0.04, 0.1, 8]} rotation={[0, 0, Math.PI/2]} />
+            <group position={[0.31, 0.1, 0]} rotation={[0, 0, Math.PI / 2]}>
+              <cylinderGeometry args={[0.04, 0.04, 0.1, 8]} />
               <meshStandardMaterial color="#475569" />
-            </mesh>
+            </group>
+
           </group>
         </group>
         
