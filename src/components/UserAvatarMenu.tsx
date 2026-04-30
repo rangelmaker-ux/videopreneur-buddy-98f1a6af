@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Loader2, Shield, Trash2, User as UserIcon } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Camera, CreditCard, ExternalLink, HelpCircle, Loader2, LogOut, Shield, Trash2, User as UserIcon } from "lucide-react";
+import { useAuth, STRIPE_MENSAL, STRIPE_ANUAL } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DropdownMenu,
@@ -10,6 +10,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const ADMIN_EMAIL = "rangelmaker@gmail.com";
