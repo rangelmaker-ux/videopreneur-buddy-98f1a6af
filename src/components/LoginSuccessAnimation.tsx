@@ -123,6 +123,8 @@ function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolea
       console.error("Tech sound error", e);
     }
   };
+  
+  const buttons: { x: number; y: number; w: number; h: number; color: string; emissive: string }[] = [
     { x: -0.55, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
     { x: 0, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
     { x: 0.55, y: 0.2, w: 0.42, h: 0.32, color: "#0f172a", emissive: "#3b82f6" },
