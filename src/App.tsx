@@ -16,10 +16,11 @@ import NotFound from "./pages/NotFound.tsx";
 const AppContent = () => {
   const { accessStatus } = useAuth();
   const isBlocked = accessStatus === "trial_expired" || accessStatus === "blocked";
+  const isTrial = accessStatus === "trial";
 
   return (
     <>
-      <TrialWelcomePopup />
+      {isTrial && <TrialWelcomePopup />}
       {isBlocked ? (
         <TrialExpiredGate />
       ) : (
