@@ -10,6 +10,7 @@ import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2, AlertTriang
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo3D } from "@/components/Logo3D";
+import { LoginSuccessAnimation } from "@/components/LoginSuccessAnimation";
 
 const PAUSED_MESSAGE = "Sua assinatura está em atraso ou foi pausada. Para continuar usando a plataforma, regularize seu pagamento. O acesso é liberado automaticamente após a confirmação.";
 const PAUSED_NOTICE_KEY = "vmi:pausedNotice";
@@ -22,6 +23,7 @@ export default function Auth() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   const [signinEmail, setSigninEmail] = useState("");
   const [signinPassword, setSigninPassword] = useState("");
@@ -55,7 +57,7 @@ export default function Auth() {
       </div>
     );
   }
-  if (user && !submitting) return <Navigate to="/" replace />;
+  if (user && !submitting && !showSuccessAnimation) return <Navigate to="/" replace />;
 
   const isPaywallError = error?.includes("não encontrado ou pagamento não aprovado");
   const isPausedError = error === "SUBSCRIPTION_PAUSED";
@@ -90,7 +92,7 @@ export default function Auth() {
       try {
         sessionStorage.removeItem(PAUSED_NOTICE_KEY);
       } catch {}
-      navigate("/", { replace: true });
+      setShowSuccessAnimation(true);
     }
   }
 
@@ -100,7 +102,11 @@ export default function Auth() {
     const { error } = await signUp(signupEmail, signupPassword, signupName);
     setSubmitting(false);
     if (error) setError(error);
-    else setSuccess("Conta criada! Você já pode acessar a plataforma.");
+    else {
+      setSuccess("Conta criada! Você já pode acessar a plataforma.");
+      // Se já logou automaticamente, mostramos a animação
+      if (user) setShowSuccessAnimation(true);
+    }
   }
 
   async function handleFirstAccessCheck(e: FormEvent) {
@@ -139,8 +145,15 @@ export default function Auth() {
     setSuccess(null);
   }
 
+  const handleAnimationComplete = () => {
+    navigate("/", { replace: true });
+  };
+
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      {showSuccessAnimation && (
+        <LoginSuccessAnimation onComplete={handleAnimationComplete} />
+      )}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-primary/20 blur-[120px] animate-float" />
         <div className="absolute -right-20 bottom-10 h-[28rem] w-[28rem] rounded-full bg-secondary/15 blur-[140px] animate-float" style={{ animationDelay: "2s" }} />
