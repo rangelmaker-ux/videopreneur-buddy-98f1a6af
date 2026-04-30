@@ -1,30 +1,24 @@
-import { Suspense, useRef, useState, useMemo, useEffect } from "react";
+import { Suspense, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Environment,
   ContactShadows,
   RoundedBox,
   MeshTransmissionMaterial,
-  PerspectiveCamera,
 } from "@react-three/drei";
 import * as THREE from "three";
 
-// Reusing the calculator logic but with animation hooks
 function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onComplete: () => void }) {
   const groupRef = useRef<THREE.Group>(null);
   const calculatorRef = useRef<THREE.Group>(null);
   const eyesRef = useRef<THREE.Group>(null);
-  const leftEyeRef = useRef<THREE.Mesh>(null);
-  const rightEyeRef = useRef<THREE.Mesh>(null);
   const armsRef = useRef<THREE.Group>(null);
   const cameraRef = useRef<THREE.Group>(null);
   const legsRef = useRef<THREE.Group>(null);
   
-  const [phase, setPhase] = useState(0); // 0: focusing, 1: awakening, 2: arms/camera, 3: walking
   const startTime = useRef(0);
   const completed = useRef(false);
 
-  // Constants for parts
   const buttons: { x: number; y: number; w: number; h: number; color: string; emissive: string }[] = [
     { x: -0.55, y: 0.2, w: 0.42, h: 0.32, color: "#1e2a5e", emissive: "#3b82f6" },
     { x: 0, y: 0.2, w: 0.42, h: 0.32, color: "#1e2a5e", emissive: "#3b82f6" },
@@ -35,66 +29,61 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
     { x: 0.55, y: -0.475, w: 0.42, h: 0.77, color: "#5b21b6", emissive: "#8b5cf6" },
   ];
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (startTime.current === 0) startTime.current = state.clock.elapsedTime;
     const elapsed = state.clock.elapsedTime - startTime.current;
 
     if (!groupRef.current || !calculatorRef.current) return;
 
-    // Sequence timing
+    // Phase 1: 0-1s - Focus and Awakening
     if (elapsed < 1) {
-      // 0-1s: Parada e Foco
-      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, 0, 0.15);
-      calculatorRef.current.rotation.x = THREE.MathUtils.lerp(calculatorRef.current.rotation.x, 0, 0.15);
-      calculatorRef.current.rotation.z = THREE.MathUtils.lerp(calculatorRef.current.rotation.z, 0, 0.15);
-    } else if (elapsed < 2) {
-      // 1-2s: Despertar
+      const p = elapsed / 1;
+      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, 0, 0.1);
       if (eyesRef.current) {
-        eyesRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 1, 1.3));
-        
-        // Piscar aos 1.5s
-        if (elapsed > 1.4 && elapsed < 1.6) {
-          const blinkScale = 1 - Math.sin((elapsed - 1.4) * Math.PI * 5) * 0.9;
-          leftEyeRef.current?.scale.set(1, blinkScale, 1);
-          rightEyeRef.current?.scale.set(1, blinkScale, 1);
-        } else {
-          leftEyeRef.current?.scale.set(1, 1, 1);
-          rightEyeRef.current?.scale.set(1, 1, 1);
-        }
+        eyesRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0.5, 1));
       }
-    } else if (elapsed < 3) {
-      // 2-3s: Ação Inesperada (Braços e Câmera)
+    } 
+    // Phase 2: 1-2s - The Equipment (Arms and Cinema Camera)
+    else if (elapsed < 2) {
+      const p = (elapsed - 1) / 1;
       if (armsRef.current) {
-        armsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 2, 2.3));
-        armsRef.current.position.z = THREE.MathUtils.lerp(-0.2, 0, THREE.MathUtils.smoothstep(elapsed, 2, 2.3));
+        armsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0, 0.8));
       }
       if (cameraRef.current) {
-        cameraRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 2.2, 2.6));
-        // Move camera from behind to front of eye
-        const cameraZ = THREE.MathUtils.lerp(-0.8, 0.6, THREE.MathUtils.smoothstep(elapsed, 2.2, 2.6));
-        cameraRef.current.position.set(0.4, 0.78, cameraZ);
+        cameraRef.current.scale.setScalar(THREE.MathUtils.smoothstep(p, 0, 1));
+        const cameraZ = THREE.MathUtils.lerp(-1, 0.7, THREE.MathUtils.smoothstep(p, 0.2, 0.8));
+        cameraRef.current.position.set(0, 0, cameraZ);
       }
-    } else if (elapsed < 5.5) {
-      // 3-5.5s: A Saída do Videomaker
+    } 
+    // Phase 3: 2-5s - Ninja Walk and Perfect Stabilization
+    else if (elapsed < 5.5) {
+      const p = (elapsed - 2) / 3;
+      
+      // Rotate body 90 degrees to the right
+      calculatorRef.current.rotation.y = THREE.MathUtils.lerp(calculatorRef.current.rotation.y, Math.PI / 2, 0.1);
+      
       if (legsRef.current) {
-        legsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 3, 3.2));
+        legsRef.current.scale.setScalar(THREE.MathUtils.smoothstep(elapsed, 2, 2.3));
       }
 
-      // Movement
-      const moveProgress = THREE.MathUtils.smoothstep(elapsed, 3.2, 5.2);
+      // Movement to the right
       const exitDistance = isMobile ? 8 : 12;
-      groupRef.current.position.x = moveProgress * exitDistance;
+      groupRef.current.position.x = THREE.MathUtils.smoothstep(p, 0, 1) * exitDistance;
 
-      // Walking bobbing (ninja walk)
-      const walkSpeed = 12;
-      const bobbing = Math.abs(Math.sin(elapsed * walkSpeed)) * 0.15;
+      // Ninja Walk Bobbing (Heel-to-toe roll simulation)
+      const walkSpeed = 10;
+      const bobbing = Math.abs(Math.sin((elapsed - 2) * walkSpeed)) * 0.15;
       calculatorRef.current.position.y = -bobbing;
       
-      // Stabilization (camera stays flat)
+      // Stabilization (Camera remains locked in global Y space)
       if (cameraRef.current) {
-        cameraRef.current.position.y = 0.78 + bobbing; // Counter-act bobbing
+        // Counter-act the parent's bobbing precisely
+        cameraRef.current.position.y = 0.78 + bobbing;
+        // Keep camera facing forward even though body turned 90deg
+        cameraRef.current.rotation.y = -Math.PI / 2;
       }
 
+      // Finish
       if (elapsed > 5.2 && !completed.current) {
         completed.current = true;
         onComplete();
@@ -103,9 +92,9 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
   });
 
   return (
-    <group ref={groupRef} scale={isMobile ? 0.7 : 1}>
+    <group ref={groupRef} scale={isMobile ? 0.65 : 1}>
       <group ref={calculatorRef}>
-        {/* Corpo principal */}
+        {/* Main Body */}
         <RoundedBox args={[1.85, 2.3, 0.42]} radius={0.22} smoothness={8}>
           <MeshTransmissionMaterial
             backside
@@ -114,32 +103,32 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
             chromaticAberration={0.05}
             ior={1.4}
             roughness={0.05}
-            color={"#1e3a8a"}
+            color={"#020617"}
             attenuationDistance={0.8}
             attenuationColor={"#3b82f6"}
           />
         </RoundedBox>
 
-        {/* Display */}
+        {/* Display with LED Eyes */}
         <group position={[0, 0.78, 0.215]}>
           <RoundedBox args={[1.55, 0.55, 0.04]} radius={0.08} smoothness={4}>
             <meshStandardMaterial color={"#020617"} emissive={"#0a0f2c"} emissiveIntensity={0.6} />
           </RoundedBox>
           
-          {/* Eyes */}
           <group ref={eyesRef} scale={0}>
-            <mesh ref={leftEyeRef} position={[-0.4, 0, 0.03]}>
-              <planeGeometry args={[0.25, 0.1]} />
-              <meshStandardMaterial color={"#00d4ff"} emissive={"#00d4ff"} emissiveIntensity={2} toneMapped={false} />
+            {/* Recording Status LED Look */}
+            <mesh position={[-0.4, 0, 0.03]}>
+              <planeGeometry args={[0.2, 0.08]} />
+              <meshStandardMaterial color={"#ff0000"} emissive={"#ff0000"} emissiveIntensity={2} toneMapped={false} />
             </mesh>
-            <mesh ref={rightEyeRef} position={[0.4, 0, 0.03]}>
-              <planeGeometry args={[0.25, 0.1]} />
-              <meshStandardMaterial color={"#00d4ff"} emissive={"#00d4ff"} emissiveIntensity={2} toneMapped={false} />
+            <mesh position={[0.4, 0, 0.03]}>
+              <planeGeometry args={[0.2, 0.08]} />
+              <meshStandardMaterial color={"#ff0000"} emissive={"#ff0000"} emissiveIntensity={2} toneMapped={false} />
             </mesh>
           </group>
         </group>
 
-        {/* Botões */}
+        {/* Buttons */}
         <group position={[0, -0.15, 0.215]}>
           {buttons.map((b, i) => (
             <group key={i} position={[b.x, b.y, 0]}>
@@ -150,55 +139,62 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
           ))}
         </group>
 
-        {/* Arms */}
-        <group ref={armsRef} scale={0} position={[0, 0, -0.1]}>
-          {/* Left Arm */}
-          <group position={[-1, 0, 0]} rotation={[0, 0, 0.5]}>
-            <RoundedBox args={[0.15, 0.8, 0.15]} radius={0.05}>
-              <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
+        {/* Arms (Carbon Fiber style) */}
+        <group ref={armsRef} scale={0}>
+          <group position={[-1.1, 0, 0]} rotation={[0, 0, 0.4]}>
+            <RoundedBox args={[0.1, 1, 0.1]} radius={0.05}>
+              <meshStandardMaterial color="#020617" metalness={1} roughness={0.1} />
             </RoundedBox>
           </group>
-          {/* Right Arm */}
-          <group position={[1, 0, 0]} rotation={[0, 0, -0.5]}>
-            <RoundedBox args={[0.15, 0.8, 0.15]} radius={0.05}>
-              <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
+          <group position={[1.1, 0, 0]} rotation={[0, 0, -0.4]}>
+            <RoundedBox args={[0.1, 1, 0.1]} radius={0.05}>
+              <meshStandardMaterial color="#020617" metalness={1} roughness={0.1} />
             </RoundedBox>
           </group>
         </group>
 
-        {/* Legs */}
-        <group ref={legsRef} scale={0} position={[0, -1.15, 0]}>
-          {/* Left Leg */}
-          <group position={[-0.4, -0.3, 0]} rotation={[0.2, 0, 0]}>
-            <RoundedBox args={[0.2, 0.6, 0.2]} radius={0.05}>
-              <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
+        {/* Ninja Legs */}
+        <group ref={legsRef} scale={0} position={[0, -1.2, 0]}>
+          <group position={[-0.5, -0.4, 0]} rotation={[0.4, 0, 0]}>
+            <RoundedBox args={[0.15, 0.8, 0.15]} radius={0.05}>
+              <meshStandardMaterial color="#020617" metalness={1} roughness={0.1} />
             </RoundedBox>
           </group>
-          {/* Right Leg */}
-          <group position={[0.4, -0.3, 0]} rotation={[-0.2, 0, 0]}>
-            <RoundedBox args={[0.2, 0.6, 0.2]} radius={0.05}>
-              <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
+          <group position={[0.5, -0.4, 0]} rotation={[0.4, 0, 0]}>
+            <RoundedBox args={[0.15, 0.8, 0.15]} radius={0.05}>
+              <meshStandardMaterial color="#020617" metalness={1} roughness={0.1} />
             </RoundedBox>
           </group>
         </group>
       </group>
 
-      {/* Camera (positioned independently to handle stabilization) */}
-      <group ref={cameraRef} scale={0}>
-        {/* Main Body */}
-        <RoundedBox args={[0.5, 0.4, 0.3]} radius={0.04}>
-          <meshStandardMaterial color="#0f172a" metalness={0.9} roughness={0.1} />
+      {/* Professional Cinema Camera (Stabilized) */}
+      <group ref={cameraRef} scale={0} position={[0, 0.78, 0.7]}>
+        {/* Main Body (Matte Black) */}
+        <RoundedBox args={[0.6, 0.5, 0.4]} radius={0.05}>
+          <meshStandardMaterial color="#0f172a" metalness={0.9} roughness={0.2} />
         </RoundedBox>
-        {/* Lens */}
-        <group position={[0, 0, 0.2]} rotation={[Math.PI/2, 0, 0]}>
-          <cylinderGeometry args={[0.12, 0.12, 0.3, 32]} />
-          <meshStandardMaterial color="#334155" metalness={1} roughness={0.2} />
+        {/* Cinema Lens (Chrome/Glass) */}
+        <group position={[0, 0, 0.3]} rotation={[Math.PI / 2, 0, 0]}>
+          <cylinderGeometry args={[0.15, 0.15, 0.4, 32]} />
+          <meshStandardMaterial color="#334155" metalness={1} roughness={0.1} />
+          {/* Lens Glass */}
+          <mesh position={[0, 0.21, 0]}>
+            <circleGeometry args={[0.12, 32]} />
+            <meshStandardMaterial color="#1e3a8a" emissive="#3b82f6" emissiveIntensity={0.5} />
+          </mesh>
         </group>
-        {/* Viewfinder/Top */}
-        <mesh position={[0, 0.25, 0]}>
-          <boxGeometry args={[0.2, 0.1, 0.2]} />
-          <meshStandardMaterial color="#1e293b" />
-        </mesh>
+        {/* Matte Box */}
+        <group position={[0, 0, 0.55]}>
+          <boxGeometry args={[0.5, 0.5, 0.1]} />
+          <meshStandardMaterial color="#020617" />
+        </group>
+        {/* Top Handle */}
+        <group position={[0, 0.35, 0]}>
+          <RoundedBox args={[0.1, 0.1, 0.4]} radius={0.02}>
+            <meshStandardMaterial color="#1e293b" />
+          </RoundedBox>
+        </group>
       </group>
     </group>
   );
@@ -222,27 +218,29 @@ export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-fade-in">
       <div className="relative h-full w-full">
         <Canvas
-          camera={{ position: [0, 0, 5], fov: 40 }}
-          gl={{ alpha: true, antialias: true }}
+          camera={{ position: [0, 0, 6], fov: 35 }}
+          gl={{ alpha: true, antialias: true, stencil: false, depth: true }}
           dpr={[1, 2]}
         >
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[5, 5, 5]} intensity={1.5} color="#cfe2ff" />
-          <pointLight position={[0, 0, 3]} intensity={0.8} color="#3b82f6" />
+          {/* Studio Lighting */}
+          <ambientLight intensity={0.4} />
+          <directionalLight position={[5, 5, 5]} intensity={1.5} color="#ffffff" />
+          <directionalLight position={[-5, 5, 2]} intensity={1} color="#cfe2ff" />
+          <pointLight position={[0, 0, 4]} intensity={0.8} color="#3b82f6" />
           
           <Suspense fallback={null}>
             <AnimatedCalculator isMobile={isMobile} onComplete={onComplete} />
-            <ContactShadows position={[0, -1.8, 0]} opacity={0.4} scale={10} blur={2.5} far={4} />
-            <Environment preset="city" />
+            <ContactShadows position={[0, -2, 0]} opacity={0.3} scale={12} blur={2} far={4} />
+            <Environment preset="studio" />
           </Suspense>
         </Canvas>
 
         {/* Skip Button */}
         <button
           onClick={onComplete}
-          className="absolute bottom-8 right-8 z-[110] rounded-full bg-black/20 px-6 py-3 text-sm font-medium text-white/80 backdrop-blur-md transition-all hover:bg-black/40 hover:text-white"
+          className="absolute bottom-10 right-10 z-[110] text-[11px] font-light uppercase tracking-widest text-white/40 transition-all hover:text-white/100"
         >
-          Pular animação {">>"}
+          Pular animação
         </button>
       </div>
     </div>
