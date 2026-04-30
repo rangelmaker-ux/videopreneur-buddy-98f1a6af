@@ -198,7 +198,7 @@ export default function Auth() {
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
                       <div className="flex-1 space-y-2">
-                        <p className="font-semibold text-foreground">Acesso suspenso</p>
+                        <p className="font-semibold text-foreground">Acesso expirado</p>
                         <p className="text-xs text-muted-foreground">
                           {PAUSED_MESSAGE}
                         </p>
@@ -208,7 +208,7 @@ export default function Auth() {
                           rel="noopener noreferrer"
                           className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700"
                         >
-                          Regularizar pagamento <ExternalLink className="h-3 w-3" />
+                          Escolher plano <ExternalLink className="h-3 w-3" />
                         </a>
                       </div>
                     </div>
