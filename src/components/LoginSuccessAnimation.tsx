@@ -181,12 +181,11 @@ function AnimatedCalculator({ isMobile, onComplete }: { isMobile: boolean; onCom
               <meshStandardMaterial color="#334155" metalness={1} />
             </RoundedBox>
           </group>
-          {/* Horizontal Base */}
-          <group position={[0, -0.8, 0]}>
-             <cylinderGeometry args={[0.1, 0.1, 0.6, 16]} rotation={[0, 0, Math.PI / 2]} />
+          <group position={[0, -0.8, 0]} rotation={[0, 0, Math.PI / 2]}>
+             <cylinderGeometry args={[0.1, 0.1, 0.6, 16]} />
              <meshStandardMaterial color="#1e293b" metalness={1} />
           </group>
-          
+
           {/* Cinema Camera Body */}
           <group position={[0, 0, 0]}>
             <RoundedBox args={[0.6, 0.55, 0.5]} radius={0.05}>
