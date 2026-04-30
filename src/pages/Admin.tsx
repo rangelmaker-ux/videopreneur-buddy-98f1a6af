@@ -10,6 +10,12 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 import {
@@ -19,7 +25,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
-  ArrowLeft, FileText, KeyRound, Mail, Pause, Play, Plus, RefreshCw, Search, Trash2, UserPlus,
+  ArrowLeft, Clock, FileText, KeyRound, Mail, Pause, Play, Plus, RefreshCw, Search, Trash2, UserPlus,
 } from "lucide-react";
 
 const ADMIN_EMAIL = "rangelmaker@gmail.com";
@@ -68,6 +74,7 @@ function StatusBadge({ row }: { row: Row }) {
   if (row.orphan) return <Badge variant="outline">Sem compra</Badge>;
   const active = row.subscription_status === "active" && row.status_compra === "PURCHASE_COMPLETE";
   if (active) return <Badge className="bg-emerald-600 hover:bg-emerald-600">Ativo</Badge>;
+  if (row.subscription_status === "trial") return <Badge className="bg-blue-600 hover:bg-blue-600">Trial</Badge>;
   if (row.subscription_status === "canceled" || row.status_compra === "revogado")
     return <Badge variant="destructive">Pausado</Badge>;
   return <Badge variant="secondary">{row.status_compra || "—"}</Badge>;
@@ -212,6 +219,19 @@ export default function Admin() {
     }
   }
 
+  async function handleGrantTrial(row: Row, days: number) {
+    setBusyEmail(row.email);
+    try {
+      await callAdmin("grant_trial", { email: row.email, days });
+      toast.success(`Acesso liberado por ${days} dias para ${row.email}.`);
+      await load();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao liberar acesso");
+    } finally {
+      setBusyEmail(null);
+    }
+  }
+
   async function handleRemove(row: Row) {
     setBusyEmail(row.email);
     try {
@@ -349,6 +369,21 @@ export default function Admin() {
                                   <KeyRound className="h-3.5 w-3.5 mr-1" /> Senha
                                 </Button>
                               )}
+
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button size="sm" variant="outline" disabled={busy} className="text-blue-500 hover:text-blue-600 border-blue-200 hover:border-blue-300">
+                                    <Clock className="h-3.5 w-3.5 mr-1" /> Liberar acesso
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleGrantTrial(row, 7)}>7 dias</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleGrantTrial(row, 30)}>30 dias</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleGrantTrial(row, 90)}>3 meses (90 dias)</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleGrantTrial(row, 365)}>1 ano (365 dias)</DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+
                               <Button 
                                 size="sm" 
                                 variant="ghost" 
@@ -364,7 +399,7 @@ export default function Admin() {
                                 }} 
                                 className="text-destructive hover:text-destructive hover:bg-destructive/10"
                               >
-                                <Trash2 className="h-3.5 w-3.5" />
+                                <Trash2 className="h-3.5 w-3.5 mr-1" /> Excluir conta
                               </Button>
                             </div>
                           </TableCell>
