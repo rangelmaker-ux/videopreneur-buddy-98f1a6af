@@ -153,6 +153,7 @@ export default function Auth() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      <PricingModal open={pricingOpen} onOpenChange={setPricingOpen} />
       {showSuccessAnimation && (
         <LoginSuccessAnimation onComplete={handleAnimationComplete} />
       )}
