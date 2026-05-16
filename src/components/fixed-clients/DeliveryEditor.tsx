@@ -180,7 +180,8 @@ export default function DeliveryEditor({
   const handleSave = async () => {
     if (!clientId && !quoteId) return;
     setSaving(true);
-    await onSave({
+    
+    const basePayload = {
       fixed_client_id: clientId || null,
       quote_id: quoteId,
       title: title.trim(),
@@ -190,7 +191,33 @@ export default function DeliveryEditor({
       script,
       notes,
       status,
-    });
+    };
+
+    if (repeatWeekly && !isEdit) {
+      // Create 4 weekly deliveries
+      const baseDate = fromDateTimeLocal(recording);
+      if (baseDate) {
+        for (let i = 0; i < 4; i++) {
+          const date = new Date(baseDate);
+          date.setDate(date.getDate() + i * 7);
+          
+          const delDate = deliveryDate ? new Date(deliveryDate + "T12:00:00") : null;
+          if (delDate) {
+            delDate.setDate(delDate.getDate() + i * 7);
+          }
+
+          await onSave({
+            ...basePayload,
+            recording_at: date.toISOString(),
+            delivery_date: delDate ? delDate.toISOString().split('T')[0] : null,
+            title: i === 0 ? basePayload.title : `${basePayload.title} (Semana ${i + 1})`
+          });
+        }
+      }
+    } else {
+      await onSave(basePayload);
+    }
+
     setSaving(false);
     onOpenChange(false);
   };
