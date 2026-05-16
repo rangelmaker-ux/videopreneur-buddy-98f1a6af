@@ -139,6 +139,25 @@ export function UserAvatarMenu() {
     }
   };
 
+  const handleUpdateName = async () => {
+    if (!user?.id || !newName.trim()) return;
+    setSavingName(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { display_name: newName.trim() }
+      });
+      if (error) throw error;
+      
+      setIsListeningName(false);
+      toast.success("Nome atualizado com sucesso!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao atualizar o nome.");
+    } finally {
+      setSavingName(false);
+    }
+  };
+
   return (
     <>
       <PricingModal open={pricingOpen} onOpenChange={setPricingOpen} />
