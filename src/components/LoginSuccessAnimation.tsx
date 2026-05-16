@@ -389,9 +389,10 @@ function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolea
 
 interface LoginSuccessAnimationProps {
   onComplete: () => void;
+  userName?: string | null;
 }
 
-export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps) {
+export function LoginSuccessAnimation({ onComplete, userName }: LoginSuccessAnimationProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setIsMuted] = useState(false);
