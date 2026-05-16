@@ -416,7 +416,7 @@ export default function Auth() {
                 {isPausedError
                   ? (
                     <>
-                      <span className="font-semibold text-foreground">Acesso suspenso.</span>{" "}
+                      <span className="font-semibold text-foreground text-sm leading-tight">Acesso suspenso.</span>{" "}
                       <span>{PAUSED_MESSAGE}</span>
                     </>
                   )
