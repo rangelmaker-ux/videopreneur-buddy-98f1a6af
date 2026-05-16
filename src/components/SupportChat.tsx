@@ -304,8 +304,8 @@ export function SupportChat() {
           }
         }
       } catch (e) {
-        console.error(e);
-        toast.error("Erro ao falar com o suporte. Tente novamente.");
+        console.error("Support chat error:", e);
+        toast.error(`Erro ao falar com o suporte: ${e instanceof Error ? e.message : 'Falha na conexão'}`);
       } finally {
         setLoading(false);
       }
