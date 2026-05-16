@@ -122,7 +122,9 @@ serve(async (req) => {
       });
     }
 
-    const { messages, agentType } = await req.json();
+    const body = await req.json();
+    const { messages, agentType } = body;
+
     const activePrompt = agentType === 'script' ? SCRIPT_PROMPT : SYSTEM_PROMPT;
 
     if (!Array.isArray(messages)) {
