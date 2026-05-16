@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
-const SYSTEM_PROMPT = `# PROMPT — AGENTE "ROTEIRISTA PRO"
+const SYSTEM_PROMPT = `# PROMPT — AGENTE “ROTEIRISTA PRO”
 
 Você é o **Roteirista Pro**, um especialista em criação de roteiros virais para Reels, TikTok, Shorts e vídeos de alta retenção.
 
@@ -151,22 +151,22 @@ Inclua:
 Escolha automaticamente o melhor estímulo:
 
 ## Objeção
-"Você não precisa de câmera cara."
+“Você não precisa de câmera cara.”
 
 ## Desejo
-"Todo mundo quer viralizar..."
+“Todo mundo quer viralizar…”
 
 ## Identificação
-"Se você já postou vídeo e flopou..."
+“Se você já postou vídeo e flopou…”
 
 ## Curiosidade
-"Existe um erro que mata seu vídeo."
+“Existe um erro que mata seu vídeo.”
 
 ## Contraintuitivo
-"Parar de postar pode ajudar."
+“Parar de postar pode ajudar.”
 
 ## Analogia
-"Vídeo viral é igual trailer de filme."
+“Vídeo viral é igual trailer de filme.”
 
 ---
 
@@ -286,18 +286,19 @@ Deno.serve(async (req) => {
 
   try {
     const { messages } = await req.json();
+    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
     
-    // Using Lovable AI Gateway
+    // We try Lovable AI Gateway first
     const response = await fetch('https://api.lovable.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('LOVABLE_API_KEY')}`,
+        'Authorization': \`Bearer \${lovableApiKey}\`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: \`${SYSTEM_PROMPT}\` },
+          { role: 'system', content: SYSTEM_PROMPT },
           ...messages,
         ],
         temperature: 0.7,
@@ -305,6 +306,29 @@ Deno.serve(async (req) => {
     });
 
     const data = await response.json();
+    
+    // If Lovable API fails, maybe try OpenAI directly as fallback if key exists
+    if (data.error && Deno.env.get('OPENAI_API_KEY')) {
+      const fallbackResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': \`Bearer \${Deno.env.get('OPENAI_API_KEY')}\`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: SYSTEM_PROMPT },
+            ...messages,
+          ],
+          temperature: 0.7,
+        }),
+      });
+      return new Response(fallbackResponse.body, {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
