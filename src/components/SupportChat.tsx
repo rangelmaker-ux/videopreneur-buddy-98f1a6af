@@ -233,7 +233,7 @@ export function SupportChat() {
             <div className="flex-1 min-w-0">
               <p className="font-display text-sm font-semibold leading-tight">John Wick</p>
               <p className="text-[11px] text-muted-foreground leading-tight">
-                Suporte • Calculadora & Orçamentos
+                Diretor Criativo & Suporte
               </p>
             </div>
           </div>
