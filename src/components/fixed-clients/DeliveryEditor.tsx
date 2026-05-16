@@ -400,8 +400,9 @@ export default function DeliveryEditor({
                 />
                 <label
                   htmlFor="repeat-group"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-1.5"
                 >
+                  <ListTree className="h-3.5 w-3.5 text-primary" />
                   Aplicar alterações em todos os agendamentos futuros deste grupo
                 </label>
               </div>
