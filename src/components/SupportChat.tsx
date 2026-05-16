@@ -15,7 +15,7 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const INITIAL: Msg = {
   role: "assistant",
   content:
-    "Olá, sou o suporte do **Videomaker Inteligente**. Como posso te ajudar com dúvidas sobre a calculadora, orçamentos ou configurações?",
+    "Olá! Sou o **Roteirista Pro**. Minha missão é transformar suas ideias em roteiros memoráveis e te ajudar com o que precisar no app.\n\nQual o tema do seu próximo vídeo?",
 };
 
 export function SupportChat() {
@@ -325,7 +325,7 @@ export function SupportChat() {
       <button
         onClick={() => setOpen((v) => !v)}
         className="fixed bottom-6 left-6 z-40 flex h-12 w-12 items-center justify-center rounded-full glass-strong text-foreground hover:text-primary transition-colors shadow-[var(--shadow-elegant)]"
-        aria-label="Suporte com John Wick"
+        aria-label="Conversar com Roteirista Pro"
       >
         {open ? <X className="h-5 w-5" /> : <MessageCircle className="h-5 w-5" />}
       </button>
@@ -346,9 +346,9 @@ export function SupportChat() {
               className="h-9 w-9 rounded-full object-cover ring-2 ring-primary/40 shadow-[0_0_12px_hsl(var(--primary)/0.4)]"
             />
             <div className="flex-1 min-w-0">
-              <p className="font-display text-sm font-semibold leading-tight">Suporte VMI</p>
+              <p className="font-display text-sm font-semibold leading-tight">Roteirista Pro</p>
               <p className="text-[11px] text-muted-foreground leading-tight">
-                Assistente Técnico
+                Estrategista de Audiovisual
               </p>
             </div>
           </div>
