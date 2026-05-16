@@ -37,6 +37,9 @@ export function UserAvatarMenu() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isEditingName, setIsListeningName] = useState(false);
+  const [newName, setNewName] = useState(user?.user_metadata?.display_name || "");
+  const [savingName, setSavingName] = useState(false);
 
   const initials = (user?.user_metadata?.display_name || user?.email || "U")
     .split(" ")
