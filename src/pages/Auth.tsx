@@ -205,12 +205,25 @@ export default function Auth() {
                         <p className="text-xs text-muted-foreground">
                           {PAUSED_MESSAGE}
                         </p>
-                        <Button
-                          onClick={() => setPricingOpen(true)}
-                          className="mt-1 bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 h-auto"
-                        >
-                          Escolher plano <ExternalLink className="h-3 w-3" />
-                        </Button>
+                        <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                          <Button
+                            asChild
+                            className="bg-green-600 px-3 py-2 text-[10px] font-bold text-white hover:bg-green-700 h-8 w-full sm:w-auto uppercase tracking-wider"
+                          >
+                            <a href={STRIPE_MENSAL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
+                              Pagamento Mensal <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </Button>
+                          <Button
+                            asChild
+                            variant="outline"
+                            className="border-primary/40 bg-primary/5 px-3 py-2 text-[10px] font-bold text-primary hover:bg-primary/10 h-8 w-full sm:w-auto uppercase tracking-wider"
+                          >
+                            <a href={STRIPE_ANUAL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
+                              Pagamento Anual <CheckCircle2 className="h-3 w-3 text-primary" />
+                            </a>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </AlertDescription>
