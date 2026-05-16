@@ -293,6 +293,34 @@ export default function DeliveryEditor({
             </Field>
           </div>
 
+          {!isEdit && (
+            <div className="flex flex-col gap-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="repeat-weekly"
+                  checked={repeatWeekly}
+                  onCheckedChange={(checked) => setRepeatWeekly(!!checked)}
+                />
+                <label
+                  htmlFor="repeat-weekly"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Repetir essa data toda semana
+                </label>
+              </div>
+
+              {repeatWeekly && (
+                <Alert variant="warning" className="bg-warning/10 border-warning/20 py-2">
+                  <AlertCircle className="h-4 w-4 text-warning" />
+                  <AlertDescription className="text-[11px] text-warning-foreground leading-snug">
+                    <strong>Atenção:</strong> Serão criados 4 agendamentos (um para cada semana). 
+                    Lembre-se de abrir cada um posteriormente para preencher os detalhes específicos.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+
           <Field label="Local de gravação">
             <Input
               value={location}
