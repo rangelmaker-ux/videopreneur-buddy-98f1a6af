@@ -6,7 +6,23 @@ import remarkBreaks from "remark-breaks";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import johnWickAvatar from "@/assets/john-wick-avatar.png";
-import { useFixedClients } from "@/hooks/useFixedClients";
+import { useFixedClients, Delivery } from "@/hooks/useFixedClients";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -30,7 +46,15 @@ export default function ScriptWriterTab() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const { clients, createDelivery } = useFixedClients();
+  const { clients, deliveries, createDelivery, updateDelivery } = useFixedClients();
+
+  const [schedulingData, setSchedulingData] = useState<{
+    content: string;
+    clientId: string;
+    deliveryId: string;
+    date: string;
+  } | null>(null);
+  const [isScheduleDialogOpen, setIsScheduleDialogOpen] = useState(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -181,17 +205,34 @@ export default function ScriptWriterTab() {
       toast.error("Cadastre um cliente primeiro na aba Clientes.");
       return;
     }
-    // Para simplificar, pegamos o primeiro cliente ou abrimos um seletor no futuro
-    const client = clients[0];
+    setSchedulingData({
+      content,
+      clientId: clients[0]?.id || "",
+      deliveryId: "new",
+      date: new Date().toISOString().split('T')[0],
+    });
+    setIsScheduleDialogOpen(true);
+  };
+
+  const confirmScheduling = async () => {
+    if (!schedulingData) return;
     try {
-      await createDelivery({
-        fixed_client_id: client.id,
-        title: "Gravação: Roteiro Gerado",
-        script: content,
-        delivery_date: new Date().toISOString().split('T')[0],
-        status: 'scheduled'
-      });
-      toast.success(`Agendado para ${client.name}!`);
+      if (schedulingData.deliveryId === "new") {
+        await createDelivery({
+          fixed_client_id: schedulingData.clientId,
+          title: "Gravação: Roteiro Gerado",
+          script: schedulingData.content,
+          delivery_date: schedulingData.date,
+          status: 'scheduled'
+        });
+      } else {
+        await updateDelivery(schedulingData.deliveryId, {
+          script: schedulingData.content,
+          delivery_date: schedulingData.date
+        });
+      }
+      toast.success("Roteiro agendado com sucesso!");
+      setIsScheduleDialogOpen(false);
     } catch (err) {
       toast.error("Erro ao agendar.");
     }
@@ -277,6 +318,67 @@ export default function ScriptWriterTab() {
           </Button>
         </div>
       </div>
+
+      <Dialog open={isScheduleDialogOpen} onOpenChange={setIsScheduleDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Agendar Roteiro</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="client">Cliente</Label>
+              <Select 
+                value={schedulingData?.clientId} 
+                onValueChange={(val) => setSchedulingData(prev => prev ? ({ ...prev, clientId: val, deliveryId: "new" }) : null)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o cliente" />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="delivery">Vincular a uma entrega existente?</Label>
+              <Select 
+                value={schedulingData?.deliveryId} 
+                onValueChange={(val) => setSchedulingData(prev => prev ? ({ ...prev, deliveryId: val }) : null)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Criar nova entrega" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">Criar nova entrega</SelectItem>
+                  {deliveries
+                    .filter(d => d.fixed_client_id === schedulingData?.clientId)
+                    .map(d => (
+                      <SelectItem key={d.id} value={d.id}>{d.title || "Sem título"} ({d.delivery_date || "Sem data"})</SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {schedulingData?.deliveryId === "new" && (
+              <div className="grid gap-2">
+                <Label htmlFor="date">Data da Gravação/Entrega</Label>
+                <Input 
+                  type="date" 
+                  value={schedulingData?.date} 
+                  onChange={(e) => setSchedulingData(prev => prev ? ({ ...prev, date: e.target.value }) : null)}
+                />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsScheduleDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={confirmScheduling}>Confirmar Agendamento</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
