@@ -31,8 +31,11 @@ import {
   FileText,
 } from "lucide-react";
 
-const BRL = (n: number) =>
-  n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const BRL = (n: number) => {
+  const isHidden = typeof window !== 'undefined' && localStorage.getItem("vmi:values_hidden") === "true";
+  if (isHidden) return "R$ ••••";
+  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+};
 
 const PIE_COLORS = [
   "hsl(var(--primary))",
