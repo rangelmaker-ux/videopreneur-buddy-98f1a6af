@@ -503,7 +503,7 @@ export default function DeliveryEditor({
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction
-                      variant="destructive"
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       onClick={async () => {
                         const currentId = (mode as { kind: "edit"; delivery: Delivery }).delivery.id;
                         
