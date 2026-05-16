@@ -337,7 +337,7 @@ export default function DeliveryEditor({
               </div>
 
               {repeatWeekly && (
-                <Alert variant="warning" className="bg-warning/10 border-warning/20 py-2">
+                <Alert className="bg-amber-500/10 border-amber-500/20 py-2">
                   <AlertCircle className="h-4 w-4 text-warning" />
                   <AlertDescription className="text-[11px] text-warning-foreground leading-snug">
                     <strong>Atenção:</strong> Serão criados 4 agendamentos (um para cada semana). 
