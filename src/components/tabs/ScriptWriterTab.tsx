@@ -175,6 +175,11 @@ export default function ScriptWriterTab() {
           }
         }
       }
+      
+      // Auto-save logic after message finishes
+      if (assistantSoFar && assistantSoFar.length > 100) {
+        await handleSaveScript(assistantSoFar);
+      }
     } catch (e) {
       toast.error("Erro ao gerar roteiro.");
     } finally {
