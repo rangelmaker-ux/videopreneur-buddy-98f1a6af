@@ -189,7 +189,7 @@ export default function ScriptWriterTab() {
         title: "Gravação: Roteiro Gerado",
         description: content,
         delivery_date: new Date().toISOString().split('T')[0],
-        status: 'pending'
+        status: 'Pendente' as any
       });
       toast.success(`Agendado para ${client.name}!`);
     } catch (err) {

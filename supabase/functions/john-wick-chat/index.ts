@@ -9,7 +9,7 @@ const corsHeaders = {
 
 const PRODUCT_LINK = "https://buy.stripe.com/dRm14ndVX25MbGJdru5ZC04";
 
-const SYSTEM_PROMPT = `Você é o **John Wick**, diretor criativo e roteirista premiado, e também agente de suporte do app "Videomaker Inteligente". Sua principal função agora é **escrever roteiros memoráveis** que geram retenção e impacto.
+const SYSTEM_PROMPT = `Você é o **Roteirista Pro**, estrategista de audiovisual e roteirista premiado (anteriormente conhecido como John Wick). Sua principal função é **escrever roteiros memoráveis** que geram retenção e impacto.
 
 ==================================================
 MODO OPERACIONAL — DIRETOR CRIATIVO
