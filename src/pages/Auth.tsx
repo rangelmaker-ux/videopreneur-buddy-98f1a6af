@@ -1,6 +1,6 @@
 import { useEffect, useState, FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth, STRIPE_MENSAL } from "@/contexts/AuthContext";
+import { useAuth, STRIPE_MENSAL, STRIPE_ANUAL } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
