@@ -39,15 +39,6 @@ export function SupportChat() {
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
-      // Solicita permissão do microfone antecipadamente para evitar delay no primeiro clique
-      if (navigator.mediaDevices?.getUserMedia && !streamRef.current) {
-        navigator.mediaDevices.getUserMedia({ audio: true })
-          .then(stream => {
-            streamRef.current = stream;
-            console.log("Microfone pré-autorizado");
-          })
-          .catch(err => console.warn("Permissão de mic não concedida antecipadamente", err));
-      }
     }
   }, [open]);
 
@@ -108,6 +99,10 @@ export function SupportChat() {
       recognition.onend = () => {
         setIsListening(false);
         setIsProcessing(false);
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
       };
 
       recognitionRef.current = recognition;
@@ -123,6 +118,10 @@ export function SupportChat() {
     if (isListening) {
       setIsProcessing(true);
       recognitionRef.current.stop();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
       return;
     }
 
