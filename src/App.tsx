@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { TrialWelcomePopup } from "@/components/TrialWelcomePopup";
 import { TrialExpiredGate } from "@/components/TrialExpiredGate";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAutoUpdate } from "@/hooks/useAutoUpdate";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
