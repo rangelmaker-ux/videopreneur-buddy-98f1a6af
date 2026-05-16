@@ -176,10 +176,8 @@ export default function ScriptWriterTab() {
         }
       }
       
-      // Auto-save logic after message finishes
-      if (assistantSoFar && assistantSoFar.length > 100) {
-        await handleSaveScript(assistantSoFar);
-      }
+      // Auto-save removed as per user request
+
     } catch (e) {
       toast.error("Erro ao gerar roteiro.");
     } finally {
