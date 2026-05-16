@@ -428,16 +428,21 @@ export function SupportChat() {
                   size="icon"
                   variant="ghost"
                   onClick={toggleListening}
+                  disabled={isProcessing}
                   className={`shrink-0 rounded-xl transition-all duration-300 relative z-10 ${
                     isListening 
-                      ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 ring-2 ring-red-500/50" 
+                      ? "bg-red-500 text-white hover:bg-red-600 scale-110 shadow-[0_0_15px_rgba(239,68,68,0.5)]" 
+                      : isProcessing
+                      ? "bg-muted text-muted-foreground cursor-wait"
                       : micError
                       ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30"
                       : "text-muted-foreground hover:bg-muted/60"
                   }`}
                   aria-label={isListening ? "Parar de ouvir" : "Falar pelo microfone"}
                 >
-                  {isListening ? (
+                  {isProcessing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : isListening ? (
                     <MicOff className="h-4 w-4" />
                   ) : micError ? (
                     <AlertCircle className="h-4 w-4" />
@@ -446,7 +451,7 @@ export function SupportChat() {
                   )}
                 </Button>
                 {isListening && (
-                  <span className="absolute inset-0 rounded-xl bg-red-500/20 animate-ping -z-0" />
+                  <span className="absolute inset-0 rounded-xl bg-red-500 animate-ping opacity-25 -z-0" />
                 )}
               </div>
               <textarea
