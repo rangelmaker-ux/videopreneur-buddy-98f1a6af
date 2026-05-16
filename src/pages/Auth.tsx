@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo3D } from "@/components/Logo3D";
 import { LoginSuccessAnimation } from "@/components/LoginSuccessAnimation";
+import { PricingModal } from "@/components/PricingModal";
 
 const PAUSED_MESSAGE = "Seu período de acesso gratuito expirou ou a assinatura foi pausada. Para continuar usando a plataforma, escolha um plano.";
 const PAUSED_NOTICE_KEY = "vmi:pausedNotice";
@@ -40,6 +41,7 @@ export default function Auth() {
   >(null);
 
   const [paused, setPaused] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -151,6 +153,7 @@ export default function Auth() {
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+      <PricingModal open={pricingOpen} onOpenChange={setPricingOpen} />
       {showSuccessAnimation && (
         <LoginSuccessAnimation onComplete={handleAnimationComplete} />
       )}
@@ -202,14 +205,12 @@ export default function Auth() {
                         <p className="text-xs text-muted-foreground">
                           {PAUSED_MESSAGE}
                         </p>
-                        <a
-                          href={STRIPE_MENSAL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700"
+                        <Button
+                          onClick={() => setPricingOpen(true)}
+                          className="mt-1 bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 h-auto"
                         >
                           Escolher plano <ExternalLink className="h-3 w-3" />
-                        </a>
+                        </Button>
                       </div>
                     </div>
                   </AlertDescription>
@@ -339,14 +340,12 @@ export default function Auth() {
                       <Alert variant="destructive" className="border-destructive/40 bg-destructive/10">
                         <AlertDescription className="text-sm">
                           {(firstAccessResult as { ok: false; msg: string }).msg}
-                          <a
-                            href={STRIPE_MENSAL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                          <Button
+                            onClick={() => setPricingOpen(true)}
+                            className="mt-2 bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 h-auto"
                           >
                             Adquirir <ExternalLink className="h-3 w-3" />
-                          </a>
+                          </Button>
                         </AlertDescription>
                       </Alert>
                     )}

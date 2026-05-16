@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PricingModal } from "@/components/PricingModal";
 import { toast } from "sonner";
 
 const ADMIN_EMAIL = "rangelmaker@gmail.com";
@@ -30,6 +31,7 @@ const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 export function UserAvatarMenu() {
   const { user, signOut, accessStatus, trialDaysRemaining } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
   const navigate = useNavigate();
   const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -136,6 +138,7 @@ export function UserAvatarMenu() {
 
   return (
     <>
+      <PricingModal open={pricingOpen} onOpenChange={setPricingOpen} />
       <input
         ref={fileInputRef}
         type="file"
@@ -271,17 +274,15 @@ export function UserAvatarMenu() {
                       <p className="text-sm text-slate-400 leading-relaxed">
                         Você tem <span className="font-bold text-foreground">{trialDaysRemaining} dias</span> restantes no seu período gratuito.
                       </p>
-                      <div className="grid grid-cols-1 gap-2 pt-2">
-                        <a href={STRIPE_MENSAL} target="_blank" rel="noopener noreferrer" className="w-full">
-                          <Button className="w-full bg-primary hover:bg-primary/90 font-bold" size="sm">
-                            Assinar Mensal — R$57/mês
-                          </Button>
-                        </a>
-                        <a href={STRIPE_ANUAL} target="_blank" rel="noopener noreferrer" className="w-full">
-                          <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/5 font-bold" size="sm">
-                            Assinar Anual — R$399/ano
-                          </Button>
-                        </a>
+                      <div className="pt-2">
+                        <Button 
+                          onClick={() => setPricingOpen(true)}
+                          className="w-full bg-primary hover:bg-primary/90 font-bold" 
+                          size="sm"
+                        >
+                          Escolher plano
+                          <ExternalLink className="ml-2 h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
                   ) : (
@@ -292,17 +293,15 @@ export function UserAvatarMenu() {
                       <p className="text-sm text-slate-400 leading-relaxed">
                         Seu período de teste encerrou. Escolha um plano para continuar.
                       </p>
-                      <div className="grid grid-cols-1 gap-2 pt-2">
-                        <a href={STRIPE_MENSAL} target="_blank" rel="noopener noreferrer" className="w-full">
-                          <Button className="w-full bg-primary hover:bg-primary/90 font-bold" size="sm">
-                            Assinar Mensal — R$57/mês
-                          </Button>
-                        </a>
-                        <a href={STRIPE_ANUAL} target="_blank" rel="noopener noreferrer" className="w-full">
-                          <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/5 font-bold" size="sm">
-                            Assinar Anual — R$399/ano
-                          </Button>
-                        </a>
+                      <div className="pt-2">
+                        <Button 
+                          onClick={() => setPricingOpen(true)}
+                          className="w-full bg-primary hover:bg-primary/90 font-bold" 
+                          size="sm"
+                        >
+                          Escolher plano
+                          <ExternalLink className="ml-2 h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
                   )}
