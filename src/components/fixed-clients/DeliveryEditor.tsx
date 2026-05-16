@@ -28,7 +28,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Copy, Save, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, Copy, Save, Trash2 } from "lucide-react";
 import {
   Delivery,
   DeliveryStatus,
@@ -116,6 +118,7 @@ export default function DeliveryEditor({
   const [status, setStatus] = useState<DeliveryStatus>(
     (initial?.status as DeliveryStatus) || "scheduled"
   );
+  const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Reset when opening with different data
@@ -177,7 +180,8 @@ export default function DeliveryEditor({
   const handleSave = async () => {
     if (!clientId && !quoteId) return;
     setSaving(true);
-    await onSave({
+    
+    const basePayload = {
       fixed_client_id: clientId || null,
       quote_id: quoteId,
       title: title.trim(),
@@ -187,7 +191,33 @@ export default function DeliveryEditor({
       script,
       notes,
       status,
-    });
+    };
+
+    if (repeatWeekly && !isEdit) {
+      // Create 4 weekly deliveries
+      const baseDate = fromDateTimeLocal(recording);
+      if (baseDate) {
+        for (let i = 0; i < 4; i++) {
+          const date = new Date(baseDate);
+          date.setDate(date.getDate() + i * 7);
+          
+          const delDate = deliveryDate ? new Date(deliveryDate + "T12:00:00") : null;
+          if (delDate) {
+            delDate.setDate(delDate.getDate() + i * 7);
+          }
+
+          await onSave({
+            ...basePayload,
+            recording_at: date.toISOString(),
+            delivery_date: delDate ? delDate.toISOString().split('T')[0] : null,
+            title: i === 0 ? basePayload.title : `${basePayload.title} (Semana ${i + 1})`
+          });
+        }
+      }
+    } else {
+      await onSave(basePayload);
+    }
+
     setSaving(false);
     onOpenChange(false);
   };
@@ -275,11 +305,16 @@ export default function DeliveryEditor({
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="Gravação (data + hora)">
-              <Input
-                type="datetime-local"
-                value={recording}
-                onChange={(e) => setRecording(e.target.value)}
-              />
+              <div className="space-y-1">
+                <Input
+                  type="datetime-local"
+                  value={recording}
+                  onChange={(e) => setRecording(e.target.value)}
+                />
+                <p className="text-[9px] text-muted-foreground">
+                  Atenção: certifique-se da data/hora antes de salvar.
+                </p>
+              </div>
             </Field>
             <Field label="Entrega (data)">
               <Input
@@ -289,6 +324,34 @@ export default function DeliveryEditor({
               />
             </Field>
           </div>
+
+          {!isEdit && (
+            <div className="flex flex-col gap-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="repeat-weekly"
+                  checked={repeatWeekly}
+                  onCheckedChange={(checked) => setRepeatWeekly(!!checked)}
+                />
+                <label
+                  htmlFor="repeat-weekly"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Repetir essa data toda semana
+                </label>
+              </div>
+
+              {repeatWeekly && (
+                <Alert className="bg-amber-500/10 border-amber-500/20 py-2">
+                  <AlertCircle className="h-4 w-4 text-warning" />
+                  <AlertDescription className="text-[11px] text-warning-foreground leading-snug">
+                    <strong>Atenção:</strong> Serão criados 4 agendamentos (um para cada semana). 
+                    Lembre-se de abrir cada um posteriormente para preencher os detalhes específicos.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
 
           <Field label="Local de gravação">
             <Input
