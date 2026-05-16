@@ -149,7 +149,7 @@ export function UserAvatarMenu() {
       });
       if (error) throw error;
       
-      setIsListeningName(false);
+      setIsEditingName(false);
       toast.success("Nome atualizado com sucesso!");
     } catch (err) {
       console.error(err);
