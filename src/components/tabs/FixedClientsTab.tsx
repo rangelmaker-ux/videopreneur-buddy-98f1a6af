@@ -2,13 +2,34 @@ import { useState } from "react";
 import { useFixedClients, Delivery } from "@/hooks/useFixedClients";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, CalendarDays, Users } from "lucide-react";
+import { toast } from "sonner";
 import CalendarView from "@/components/fixed-clients/CalendarView";
 import ClientsView from "@/components/fixed-clients/ClientsView";
 import DeliveryEditor from "@/components/fixed-clients/DeliveryEditor";
 
 export default function FixedClientsTab() {
   const hook = useFixedClients();
-  const { clients, quoteClients, deliveries, loading, createDelivery, updateDelivery, removeDelivery, duplicateDelivery } = hook;
+  const { clients, quoteClients, deliveries, loading, createDelivery, updateDelivery, removeDelivery, duplicateDelivery, reload } = hook;
+
+  const bulkSave = async (updates: { id: string; patch: any }[]) => {
+    try {
+      await Promise.all(updates.map(u => updateDelivery(u.id, u.patch)));
+      toast.success(`${updates.length} agendamentos atualizados`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao atualizar agendamentos em massa");
+    }
+  };
+
+  const bulkDelete = async (ids: string[]) => {
+    try {
+      await Promise.all(ids.map(id => removeDelivery(id)));
+      toast.success(`${ids.length} agendamentos removidos`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao remover agendamentos em massa");
+    }
+  };
 
   const [view, setView] = useState<"calendar" | "clients">("calendar");
   const [editorOpen, setEditorOpen] = useState(false);
@@ -85,9 +106,12 @@ export default function FixedClientsTab() {
         mode={editorMode}
         clients={clients}
         quoteClients={quoteClients}
+        deliveries={deliveries}
         onSave={handleSave}
         onDelete={removeDelivery}
         onDuplicate={duplicateDelivery}
+        onBulkSave={bulkSave}
+        onBulkDelete={bulkDelete}
       />
     </div>
   );

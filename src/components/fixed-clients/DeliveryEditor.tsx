@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, Copy, Save, Trash2 } from "lucide-react";
+import { AlertCircle, Copy, Save, Trash2, ListTree } from "lucide-react";
 import {
   Delivery,
   DeliveryStatus,
@@ -49,6 +49,7 @@ export type DeliveryEditorProps = {
   mode: Mode;
   clients: FixedClient[];
   quoteClients?: QuoteClient[];
+  deliveries?: Delivery[]; // Added to allow group operations
   onSave: (
     payload: Partial<Delivery> & {
       fixed_client_id?: string | null;
@@ -57,6 +58,8 @@ export type DeliveryEditorProps = {
   ) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
   onDuplicate?: (id: string) => Promise<void>;
+  onBulkSave?: (payloads: any[]) => Promise<void>; // Added for group operations
+  onBulkDelete?: (ids: string[]) => Promise<void>; // Added for group operations
 };
 
 // Valor único do <Select> que codifica origem + id
@@ -94,9 +97,12 @@ export default function DeliveryEditor({
   mode,
   clients,
   quoteClients = [],
+  deliveries = [],
   onSave,
   onDelete,
   onDuplicate,
+  onBulkSave,
+  onBulkDelete,
 }: DeliveryEditorProps) {
   const initial =
     mode.kind === "edit" ? mode.delivery : (mode.defaults as Partial<Delivery>);
@@ -119,6 +125,7 @@ export default function DeliveryEditor({
     (initial?.status as DeliveryStatus) || "scheduled"
   );
   const [repeatWeekly, setRepeatWeekly] = useState(false);
+  const [repeatGroup, setRepeatGroup] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Reset when opening with different data
@@ -152,6 +159,8 @@ export default function DeliveryEditor({
     setScript(init?.script || "");
     setNotes(init?.notes || "");
     setStatus((init?.status as DeliveryStatus) || "scheduled");
+    setRepeatWeekly(false);
+    setRepeatGroup(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, mode]);
 
@@ -192,6 +201,36 @@ export default function DeliveryEditor({
       notes,
       status,
     };
+
+    if (isEdit && repeatGroup && onBulkSave) {
+      const current = (mode as { kind: "edit"; delivery: Delivery }).delivery;
+      // Get similar future deliveries (same title prefix if it was generated with " (Semana N)")
+      // or simply same original title
+      const baseTitle = current.title.replace(/ \(Semana \d+\)$/, "");
+      const futureDeliveries = deliveries.filter(d => 
+        d.id !== current.id && 
+        d.fixed_client_id === current.fixed_client_id &&
+        d.title.startsWith(baseTitle) &&
+        d.recording_at && current.recording_at &&
+        new Date(d.recording_at) > new Date(current.recording_at)
+      );
+
+      if (futureDeliveries.length > 0) {
+        const updates = futureDeliveries.map(d => ({
+          id: d.id,
+          patch: {
+            ...basePayload,
+            // Keep the specific date/time of each future delivery, 
+            // unless the user specifically wanted to move the whole group (complex)
+            // For now, let's keep their dates but update metadata
+            recording_at: d.recording_at,
+            delivery_date: d.delivery_date,
+            title: d.title // Keep their specific title with "Semana X"
+          }
+        }));
+        await onBulkSave(updates);
+      }
+    }
 
     if (repeatWeekly && !isEdit) {
       // Create 4 weekly deliveries
@@ -325,7 +364,7 @@ export default function DeliveryEditor({
             </Field>
           </div>
 
-          {!isEdit && (
+          {!isEdit ? (
             <div className="flex flex-col gap-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -347,6 +386,32 @@ export default function DeliveryEditor({
                   <AlertDescription className="text-[11px] text-warning-foreground leading-snug">
                     <strong>Atenção:</strong> Serão criados 4 agendamentos (um para cada semana). 
                     Lembre-se de abrir cada um posteriormente para preencher os detalhes específicos.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="repeat-group"
+                  checked={repeatGroup}
+                  onCheckedChange={(checked) => setRepeatGroup(!!checked)}
+                />
+                <label
+                  htmlFor="repeat-group"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-1.5"
+                >
+                  <ListTree className="h-3.5 w-3.5 text-primary" />
+                  Aplicar alterações em todos os agendamentos futuros deste grupo
+                </label>
+              </div>
+              
+              {repeatGroup && (
+                <Alert className="bg-amber-500/10 border-amber-500/20 py-2">
+                  <AlertCircle className="h-4 w-4 text-warning" />
+                  <AlertDescription className="text-[11px] text-warning-foreground leading-snug">
+                    <strong>Atenção:</strong> Isso atualizará o roteiro, local e notas de todas as entregas futuras com o mesmo título base.
                   </AlertDescription>
                 </Alert>
               )}
@@ -416,15 +481,55 @@ export default function DeliveryEditor({
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Excluir entrega?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Esta ação não pode ser desfeita.
+                    <AlertDialogDescription className="space-y-3">
+                      <p>Esta ação não pode ser desfeita.</p>
+                      
+                      {isEdit && (
+                        <div className="flex items-center space-x-2 pt-2 border-t border-border">
+                          <Checkbox
+                            id="delete-group"
+                            checked={repeatGroup}
+                            onCheckedChange={(checked) => setRepeatGroup(!!checked)}
+                          />
+                          <label
+                            htmlFor="delete-group"
+                            className="text-sm font-medium leading-none cursor-pointer flex items-center gap-1.5"
+                          >
+                            <ListTree className="h-3.5 w-3.5 text-destructive" />
+                            Excluir também todos os agendamentos futuros deste grupo
+                          </label>
+                        </div>
+                      )}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       onClick={async () => {
-                        await onDelete((mode as any).delivery.id);
+                        const currentId = (mode as { kind: "edit"; delivery: Delivery }).delivery.id;
+                        
+                        if (repeatGroup && onBulkDelete) {
+                          const current = (mode as { kind: "edit"; delivery: Delivery }).delivery;
+                          const baseTitle = current.title.replace(/ \(Semana \d+\)$/, "");
+                          const futureIds = deliveries
+                            .filter(d => 
+                              d.id !== current.id && 
+                              d.fixed_client_id === current.fixed_client_id &&
+                              d.title.startsWith(baseTitle) &&
+                              d.recording_at && current.recording_at &&
+                              new Date(d.recording_at) > new Date(current.recording_at)
+                            )
+                            .map(d => d.id);
+                          
+                          if (futureIds.length > 0) {
+                            await onBulkDelete([currentId, ...futureIds]);
+                          } else {
+                            await onDelete(currentId);
+                          }
+                        } else {
+                          await onDelete(currentId);
+                        }
                         onOpenChange(false);
                       }}
                     >
