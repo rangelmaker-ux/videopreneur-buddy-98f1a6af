@@ -122,8 +122,18 @@ serve(async (req) => {
       });
     }
 
-    const body = await req.json();
-    const { messages, agentType } = body;
+    let messages, agentType;
+    try {
+      const body = await req.json();
+      messages = body.messages;
+      agentType = body.agentType;
+    } catch (e) {
+      console.error("Error parsing JSON:", e);
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const activePrompt = agentType === 'script' ? SCRIPT_PROMPT : SYSTEM_PROMPT;
 
