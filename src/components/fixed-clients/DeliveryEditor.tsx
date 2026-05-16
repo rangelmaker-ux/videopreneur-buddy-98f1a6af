@@ -153,6 +153,8 @@ export default function DeliveryEditor({
     setScript(init?.script || "");
     setNotes(init?.notes || "");
     setStatus((init?.status as DeliveryStatus) || "scheduled");
+    setRepeatWeekly(false);
+    setRepeatGroup(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, mode]);
 
