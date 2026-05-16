@@ -97,9 +97,12 @@ export default function DeliveryEditor({
   mode,
   clients,
   quoteClients = [],
+  deliveries = [],
   onSave,
   onDelete,
   onDuplicate,
+  onBulkSave,
+  onBulkDelete,
 }: DeliveryEditorProps) {
   const initial =
     mode.kind === "edit" ? mode.delivery : (mode.defaults as Partial<Delivery>);
