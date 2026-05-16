@@ -37,7 +37,18 @@ export function SupportChat() {
   }, [messages, loading]);
 
   useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 100);
+    if (open) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+      // Solicita permissão do microfone antecipadamente para evitar delay no primeiro clique
+      if (navigator.mediaDevices?.getUserMedia && !streamRef.current) {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+          .then(stream => {
+            streamRef.current = stream;
+            console.log("Microfone pré-autorizado");
+          })
+          .catch(err => console.warn("Permissão de mic não concedida antecipadamente", err));
+      }
+    }
   }, [open]);
 
   useEffect(() => {
