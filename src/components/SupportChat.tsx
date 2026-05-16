@@ -421,19 +421,32 @@ export function SupportChat() {
           {/* Input */}
           <div className="border-t border-border/50 p-2.5 bg-background/40">
             <div className="flex items-center gap-2">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={toggleListening}
-                className={`shrink-0 rounded-xl transition-all ${
-                  isListening 
-                    ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse" 
-                    : "text-muted-foreground hover:bg-muted/60"
-                }`}
-                aria-label={isListening ? "Parar de ouvir" : "Falar pelo microfone"}
-              >
-                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
+              <div className="relative">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={toggleListening}
+                  className={`shrink-0 rounded-xl transition-all duration-300 relative z-10 ${
+                    isListening 
+                      ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 ring-2 ring-red-500/50" 
+                      : micError
+                      ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30"
+                      : "text-muted-foreground hover:bg-muted/60"
+                  }`}
+                  aria-label={isListening ? "Parar de ouvir" : "Falar pelo microfone"}
+                >
+                  {isListening ? (
+                    <MicOff className="h-4 w-4" />
+                  ) : micError ? (
+                    <AlertCircle className="h-4 w-4" />
+                  ) : (
+                    <Mic className="h-4 w-4" />
+                  )}
+                </Button>
+                {isListening && (
+                  <span className="absolute inset-0 rounded-xl bg-red-500/20 animate-ping -z-0" />
+                )}
+              </div>
               <textarea
                 ref={inputRef}
                 value={input}
