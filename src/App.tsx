@@ -15,6 +15,7 @@ import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const AppContent = () => {
+  useAutoUpdate();
   const { accessStatus } = useAuth();
   const isBlocked = accessStatus === "trial_expired" || accessStatus === "blocked";
   const isTrial = accessStatus === "trial";
