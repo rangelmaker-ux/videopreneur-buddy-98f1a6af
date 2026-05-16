@@ -288,11 +288,9 @@ Deno.serve(async (req) => {
     const { messages } = await req.json();
     const openAiApiKey = Deno.env.get('OPENAI_API_KEY');
     
-    // Fallback if no API key is provided, though usually we expect it
     if (!openAiApiKey) {
-      console.error('Missing OPENAI_API_KEY');
       return new Response(
-        JSON.stringify({ error: 'Configuração de IA ausente. Verifique as chaves de API.' }),
+        JSON.stringify({ error: 'OPENAI_API_KEY is not set' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -300,7 +298,7 @@ Deno.serve(async (req) => {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': \`Bearer \${openAiApiKey}\`,
+        'Authorization': `Bearer ${openAiApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -318,7 +316,6 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error in roteirista-pro-chat:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
