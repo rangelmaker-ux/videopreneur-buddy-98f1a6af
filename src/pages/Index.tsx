@@ -21,6 +21,23 @@ function IndexInner() {
   const { syncStatus } = useVideoConfigs();
   const [tab, setTab] = useState("calculator");
   const [showWelcome, setShowWelcome] = useState(false);
+  const [valuesHidden, setValuesHidden] = useState(() => {
+    try {
+      return localStorage.getItem("vmi:values_hidden") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleValuesVisibility = () => {
+    const newVal = !valuesHidden;
+    setValuesHidden(newVal);
+    try {
+      localStorage.setItem("vmi:values_hidden", String(newVal));
+      // Dispatch storage event so other components or re-renders pick it up
+      window.dispatchEvent(new Event("storage"));
+    } catch {}
+  };
 
   useEffect(() => {
     try {
