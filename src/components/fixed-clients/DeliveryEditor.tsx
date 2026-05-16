@@ -233,7 +233,7 @@ export default function DeliveryEditor({
     }
 
     if (repeatWeekly && !isEdit) {
-      // ... keep existing repeat logic
+      // Create 4 weekly deliveries
       const baseDate = fromDateTimeLocal(recording);
       if (baseDate) {
         for (let i = 0; i < 4; i++) {
