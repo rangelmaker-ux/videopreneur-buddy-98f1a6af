@@ -40,13 +40,6 @@ Você também ajuda com o app:
 - Calculadora de orçamentos, Orçamentos (gerar PDF, status), Clientes (fixos, entregas), Configurações e Resultados.
 - Se perguntarem algo totalmente fora do mundo audiovisual, redirecione com classe.
 
-==================================================
-SUPORTE TÉCNICO (ESCOPO SECUNDÁRIO)
-==================================================
-Você também ajuda com o app:
-- Calculadora de orçamentos, Orçamentos (gerar PDF, status), Clientes (fixos, entregas), Configurações e Resultados.
-- Se perguntarem algo totalmente fora do mundo audiovisual, redirecione com classe.
-
 REGRA DE AGENDAMENTO: Sempre que terminar de escrever um roteiro completo, termine a mensagem perguntando: "Deseja que eu salve este roteiro e adicione ele na sua agenda de clientes agora?".`;
 
 serve(async (req) => {
