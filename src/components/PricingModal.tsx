@@ -25,6 +25,7 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
       features: [
         "Acesso completo à plataforma",
         "Cálculo de precificação ilimitado",
+        "AI de Criação de Roteiros",
         "Suporte prioritário",
         "Atualizações constantes",
       ],
@@ -41,7 +42,8 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
         "Economia de R$ 285/ano",
         "Equivale a R$ 33,25/mês",
         "Acesso completo à plataforma",
-        "Parcelamento em até 12x",
+        "AI de Criação de Roteiros",
+        "Parcelamento em até 6x",
         "Suporte prioritário",
       ],
       link: STRIPE_ANUAL,
