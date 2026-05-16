@@ -283,7 +283,7 @@ export function UserAvatarMenu() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsListeningName(true)}>
+                      <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsEditingName(true)}>
                         <span className="font-semibold truncate">{user?.user_metadata?.display_name || "Usuário"}</span>
                         <Edit2 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
