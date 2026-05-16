@@ -88,9 +88,12 @@ function IndexInner() {
 
       <section className="container mt-6">
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="grid w-full grid-cols-5 bg-muted/40 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-6 bg-muted/40 h-auto p-1">
             <TabsTrigger value="calculator" className="flex flex-col gap-1 py-2 text-[10px] sm:text-xs sm:flex-row">
               <Calculator className="h-4 w-4" /><span className="hidden sm:inline">Calculadora</span><span className="sm:hidden">Calc</span>
+            </TabsTrigger>
+            <TabsTrigger value="scripts" className="flex flex-col gap-1 py-2 text-[10px] sm:text-xs sm:flex-row">
+              <Sparkles className="h-4 w-4 text-primary" /><span>Roteiros</span>
             </TabsTrigger>
             <TabsTrigger value="quotes" className="flex flex-col gap-1 py-2 text-[10px] sm:text-xs sm:flex-row">
               <FileText className="h-4 w-4" /><span>Orçamentos</span>
@@ -108,6 +111,9 @@ function IndexInner() {
 
           <TabsContent value="calculator" className="mt-6">
             <CalculatorTab onSaved={() => setTab("quotes")} />
+          </TabsContent>
+          <TabsContent value="scripts" className="mt-6">
+            <ScriptWriterTab />
           </TabsContent>
           <TabsContent value="quotes" className="mt-6">
             <QuotesTab />
