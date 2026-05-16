@@ -4,15 +4,13 @@ import { VideoConfigsProvider, useVideoConfigs } from "@/contexts/VideoConfigsCo
 import { SyncBadge } from "@/components/SyncBadge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, Eye, EyeOff, PenTool } from "lucide-react";
+import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, Eye, EyeOff } from "lucide-react";
 import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
 import QuotesTab from "@/components/tabs/QuotesTab";
 import FixedClientsTab from "@/components/tabs/FixedClientsTab";
 import ResultsTab from "@/components/tabs/ResultsTab";
-import ScriptWriterTab from "@/components/tabs/ScriptWriterTab";
 import { ParticlesBg } from "@/components/ParticlesBg";
-import { SupportChat } from "@/components/SupportChat";
 import { UserAvatarMenu } from "@/components/UserAvatarMenu";
 import { WelcomeOverlay } from "@/components/WelcomeOverlay";
 import logoUrl from "@/assets/logo.png";
@@ -89,14 +87,9 @@ function IndexInner() {
 
       <section className="container mt-6">
         <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 bg-muted/40 h-auto p-1">
+          <TabsList className="grid w-full grid-cols-5 bg-muted/40 h-auto p-1">
             <TabsTrigger value="calculator" className="flex flex-col gap-1 py-2 text-[10px] sm:text-xs sm:flex-row">
               <Calculator className="h-4 w-4" /><span className="hidden sm:inline">Calculadora</span><span className="sm:hidden">Calc</span>
-            </TabsTrigger>
-            <TabsTrigger value="script" className="flex flex-col gap-1 py-2 text-[10px] sm:text-xs sm:flex-row relative overflow-hidden group">
-              <div className="absolute inset-0 bg-primary/10 opacity-0 group-data-[state=active]:opacity-100 transition-opacity" />
-              <PenTool className="h-4 w-4 text-primary" />
-              <span className="font-bold text-primary">Roteirista Pro</span>
             </TabsTrigger>
             <TabsTrigger value="quotes" className="flex flex-col gap-1 py-2 text-[10px] sm:text-xs sm:flex-row">
               <FileText className="h-4 w-4" /><span>Orçamentos</span>
@@ -115,9 +108,6 @@ function IndexInner() {
           <TabsContent value="calculator" className="mt-6">
             <CalculatorTab onSaved={() => setTab("quotes")} />
           </TabsContent>
-          <TabsContent value="script" className="mt-6">
-            <ScriptWriterTab />
-          </TabsContent>
           <TabsContent value="quotes" className="mt-6">
             <QuotesTab />
           </TabsContent>
@@ -134,7 +124,7 @@ function IndexInner() {
       </section>
 
       {/* FABs */}
-      <SupportChat />
+      
       <button
         onClick={() => setTab("calculator")}
         className="fixed bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-primary text-primary-foreground shadow-[var(--shadow-glow)] hover:scale-105 transition-transform"
