@@ -323,7 +323,7 @@ export function SupportChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={onKey}
-                placeholder="Pergunte sobre a calculadora..."
+                placeholder="Digite o tema do vídeo ou sua dúvida..."
                 rows={1}
                 maxLength={1000}
                 className="flex-1 resize-none rounded-xl bg-muted/40 border border-border/60 px-3 py-2 text-base outline-none focus:border-primary/60 max-h-24"
