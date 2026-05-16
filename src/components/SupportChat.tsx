@@ -118,6 +118,10 @@ export function SupportChat() {
     if (isListening) {
       setIsProcessing(true);
       recognitionRef.current.stop();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
       return;
     }
 
