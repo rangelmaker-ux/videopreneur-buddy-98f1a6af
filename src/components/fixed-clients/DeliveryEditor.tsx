@@ -305,11 +305,16 @@ export default function DeliveryEditor({
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="Gravação (data + hora)">
-              <Input
-                type="datetime-local"
-                value={recording}
-                onChange={(e) => setRecording(e.target.value)}
-              />
+              <div className="space-y-1">
+                <Input
+                  type="datetime-local"
+                  value={recording}
+                  onChange={(e) => setRecording(e.target.value)}
+                />
+                <p className="text-[9px] text-muted-foreground">
+                  Atenção: certifique-se da data/hora antes de salvar.
+                </p>
+              </div>
             </Field>
             <Field label="Entrega (data)">
               <Input
