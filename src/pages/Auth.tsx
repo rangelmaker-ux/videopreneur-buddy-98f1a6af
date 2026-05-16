@@ -423,25 +423,18 @@ export default function Auth() {
             </TabsContent>
           </Tabs>
 
-          {error && (
+          {error && !isPausedError && (
             <Alert variant="destructive" className="mt-4 border-destructive/40 bg-destructive/10">
               <AlertDescription className="text-sm">
-                {isPausedError
-                  ? (
-                    <>
-                      <span className="font-semibold text-foreground text-sm leading-tight">Acesso suspenso.</span>{" "}
-                      <span>{PAUSED_MESSAGE}</span>
-                    </>
-                  )
-                  : error}
-                {(isPaywallError || isPausedError) && (
+                {error}
+                {isPaywallError && (
                   <a
                     href={STRIPE_MENSAL}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
                   >
-                    {isPausedError ? "Regularizar pagamento" : "Adquirir"} <ExternalLink className="h-3 w-3" />
+                    Adquirir <ExternalLink className="h-3 w-3" />
                   </a>
                 )}
               </AlertDescription>
