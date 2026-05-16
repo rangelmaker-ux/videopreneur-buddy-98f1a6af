@@ -339,14 +339,12 @@ export default function Auth() {
                       <Alert variant="destructive" className="border-destructive/40 bg-destructive/10">
                         <AlertDescription className="text-sm">
                           {(firstAccessResult as { ok: false; msg: string }).msg}
-                          <a
-                            href={STRIPE_MENSAL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-2 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
+                          <Button
+                            onClick={() => setPricingOpen(true)}
+                            className="mt-2 bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700 h-auto"
                           >
                             Adquirir <ExternalLink className="h-3 w-3" />
-                          </a>
+                          </Button>
                         </AlertDescription>
                       </Alert>
                     )}
