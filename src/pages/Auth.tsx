@@ -390,23 +390,8 @@ export default function Auth() {
             </TabsContent>
           </Tabs>
 
-          {error && !isPausedError && (
-            <Alert variant="destructive" className="mt-4 border-destructive/40 bg-destructive/10">
-              <AlertDescription className="text-sm">
-                {error}
-                {isPaywallError && (
-                  <a
-                    href={STRIPE_MENSAL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
-                  >
-                    Adquirir <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* Aviso de erro inferior removido conforme solicitado */}
+
 
           {success && (
             <Alert className="mt-4 border-success/40 bg-success/10">
