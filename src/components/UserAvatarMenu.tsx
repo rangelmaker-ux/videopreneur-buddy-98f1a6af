@@ -138,6 +138,7 @@ export function UserAvatarMenu() {
 
   return (
     <>
+      <PricingModal open={pricingOpen} onOpenChange={setPricingOpen} />
       <input
         ref={fileInputRef}
         type="file"
