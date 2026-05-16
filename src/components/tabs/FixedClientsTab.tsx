@@ -8,7 +8,27 @@ import DeliveryEditor from "@/components/fixed-clients/DeliveryEditor";
 
 export default function FixedClientsTab() {
   const hook = useFixedClients();
-  const { clients, quoteClients, deliveries, loading, createDelivery, updateDelivery, removeDelivery, duplicateDelivery } = hook;
+  const { clients, quoteClients, deliveries, loading, createDelivery, updateDelivery, removeDelivery, duplicateDelivery, reload } = hook;
+
+  const bulkSave = async (updates: { id: string; patch: any }[]) => {
+    try {
+      await Promise.all(updates.map(u => updateDelivery(u.id, u.patch)));
+      toast.success(`${updates.length} agendamentos atualizados`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao atualizar agendamentos em massa");
+    }
+  };
+
+  const bulkDelete = async (ids: string[]) => {
+    try {
+      await Promise.all(ids.map(id => removeDelivery(id)));
+      toast.success(`${ids.length} agendamentos removidos`);
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao remover agendamentos em massa");
+    }
+  };
 
   const [view, setView] = useState<"calendar" | "clients">("calendar");
   const [editorOpen, setEditorOpen] = useState(false);
