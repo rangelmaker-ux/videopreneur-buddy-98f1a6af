@@ -273,17 +273,15 @@ export function UserAvatarMenu() {
                       <p className="text-sm text-slate-400 leading-relaxed">
                         Você tem <span className="font-bold text-foreground">{trialDaysRemaining} dias</span> restantes no seu período gratuito.
                       </p>
-                      <div className="grid grid-cols-1 gap-2 pt-2">
-                        <a href={STRIPE_MENSAL} target="_blank" rel="noopener noreferrer" className="w-full">
-                          <Button className="w-full bg-primary hover:bg-primary/90 font-bold" size="sm">
-                            Assinar Mensal — R$57/mês
-                          </Button>
-                        </a>
-                        <a href={STRIPE_ANUAL} target="_blank" rel="noopener noreferrer" className="w-full">
-                          <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary/5 font-bold" size="sm">
-                            Assinar Anual — R$399/ano
-                          </Button>
-                        </a>
+                      <div className="pt-2">
+                        <Button 
+                          onClick={() => setPricingOpen(true)}
+                          className="w-full bg-primary hover:bg-primary/90 font-bold" 
+                          size="sm"
+                        >
+                          Escolher plano
+                          <ExternalLink className="ml-2 h-3 w-3" />
+                        </Button>
                       </div>
                     </div>
                   ) : (
