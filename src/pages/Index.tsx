@@ -72,6 +72,15 @@ function IndexInner() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleValuesVisibility}
+              className="text-muted-foreground hover:text-primary transition-colors"
+              title={valuesHidden ? "Mostrar valores" : "Ocultar valores"}
+            >
+              {valuesHidden ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </Button>
             <UserAvatarMenu />
           </div>
         </div>
