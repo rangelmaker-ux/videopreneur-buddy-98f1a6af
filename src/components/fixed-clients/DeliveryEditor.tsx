@@ -49,6 +49,7 @@ export type DeliveryEditorProps = {
   mode: Mode;
   clients: FixedClient[];
   quoteClients?: QuoteClient[];
+  deliveries?: Delivery[]; // Added to allow group operations
   onSave: (
     payload: Partial<Delivery> & {
       fixed_client_id?: string | null;
@@ -57,6 +58,8 @@ export type DeliveryEditorProps = {
   ) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
   onDuplicate?: (id: string) => Promise<void>;
+  onBulkSave?: (payloads: any[]) => Promise<void>; // Added for group operations
+  onBulkDelete?: (ids: string[]) => Promise<void>; // Added for group operations
 };
 
 // Valor único do <Select> que codifica origem + id
