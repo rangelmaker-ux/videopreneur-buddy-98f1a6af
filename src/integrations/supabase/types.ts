@@ -308,6 +308,44 @@ export type Database = {
         }
         Relationships: []
       }
+      scripts: {
+        Row: {
+          content: string
+          created_at: string
+          fixed_client_id: string | null
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          fixed_client_id?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          fixed_client_id?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scripts_fixed_client_id_fkey"
+            columns: ["fixed_client_id"]
+            isOneToOne: false
+            referencedRelation: "fixed_clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       video_configs: {
         Row: {
           adv_mult: number
