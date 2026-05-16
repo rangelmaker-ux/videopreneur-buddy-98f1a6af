@@ -99,6 +99,10 @@ export function SupportChat() {
       recognition.onend = () => {
         setIsListening(false);
         setIsProcessing(false);
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach(track => track.stop());
+          streamRef.current = null;
+        }
       };
 
       recognitionRef.current = recognition;
