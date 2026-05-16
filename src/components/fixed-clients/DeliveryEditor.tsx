@@ -364,7 +364,7 @@ export default function DeliveryEditor({
             </Field>
           </div>
 
-          {!isEdit && (
+          {!isEdit ? (
             <div className="flex flex-col gap-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -386,6 +386,31 @@ export default function DeliveryEditor({
                   <AlertDescription className="text-[11px] text-warning-foreground leading-snug">
                     <strong>Atenção:</strong> Serão criados 4 agendamentos (um para cada semana). 
                     Lembre-se de abrir cada um posteriormente para preencher os detalhes específicos.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-3 p-3 rounded-lg border border-primary/20 bg-primary/5">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="repeat-group"
+                  checked={repeatGroup}
+                  onCheckedChange={(checked) => setRepeatGroup(!!checked)}
+                />
+                <label
+                  htmlFor="repeat-group"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                >
+                  Aplicar alterações em todos os agendamentos futuros deste grupo
+                </label>
+              </div>
+              
+              {repeatGroup && (
+                <Alert className="bg-amber-500/10 border-amber-500/20 py-2">
+                  <AlertCircle className="h-4 w-4 text-warning" />
+                  <AlertDescription className="text-[11px] text-warning-foreground leading-snug">
+                    <strong>Atenção:</strong> Isso atualizará o roteiro, local e notas de todas as entregas futuras com o mesmo título base.
                   </AlertDescription>
                 </Alert>
               )}
