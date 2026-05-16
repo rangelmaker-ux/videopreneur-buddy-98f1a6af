@@ -139,7 +139,7 @@ export default function ScriptWriterTab() {
           apikey: PUBLISHABLE_KEY,
           Authorization: `Bearer ${session?.access_token}`,
         },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next, agentType: 'script' }),
       });
 
       if (!resp.ok || !resp.body) throw new Error("Falha");
