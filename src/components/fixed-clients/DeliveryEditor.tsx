@@ -116,6 +116,7 @@ export default function DeliveryEditor({
   const [status, setStatus] = useState<DeliveryStatus>(
     (initial?.status as DeliveryStatus) || "scheduled"
   );
+  const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Reset when opening with different data
