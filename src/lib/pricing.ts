@@ -129,5 +129,7 @@ export function calcPrice(input: CalculatorInput, cfg: VideoConfig | undefined):
 }
 
 export function brl(value: number): string {
+  const isHidden = typeof window !== 'undefined' && localStorage.getItem("vmi:values_hidden") === "true";
+  if (isHidden) return "R$ ••••";
   return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value || 0);
 }
