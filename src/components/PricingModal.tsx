@@ -25,6 +25,7 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
       features: [
         "Acesso completo à plataforma",
         "Cálculo de precificação ilimitado",
+        "AI de Criação de Roteiros",
         "Suporte prioritário",
         "Atualizações constantes",
       ],
