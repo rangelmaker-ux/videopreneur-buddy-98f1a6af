@@ -325,7 +325,7 @@ export function SupportChat() {
       <button
         onClick={() => setOpen((v) => !v)}
         className="fixed bottom-6 left-6 z-40 flex h-12 w-12 items-center justify-center rounded-full glass-strong text-foreground hover:text-primary transition-colors shadow-[var(--shadow-elegant)]"
-        aria-label="Conversar com Roteirista Pro"
+        aria-label="Suporte com John Wick"
       >
         {open ? <X className="h-5 w-5" /> : <MessageCircle className="h-5 w-5" />}
       </button>
