@@ -15,7 +15,7 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const INITIAL: Msg = {
   role: "assistant",
   content:
-    "Olá, sou **John Wick**, seu diretor criativo e suporte do Videomaker Inteligente. Posso te ajudar a **escrever roteiros épicos**, além de tirar dúvidas sobre a calculadora, orçamentos e precificação.\n\nQual o tema do seu próximo vídeo?",
+    "Olá, sou o suporte do **Videomaker Inteligente**. Como posso te ajudar com dúvidas sobre a calculadora, orçamentos ou configurações?",
 };
 
 export function SupportChat() {
@@ -305,7 +305,7 @@ export function SupportChat() {
         }
       } catch (e) {
         console.error(e);
-        toast.error("Erro ao falar com o John Wick. Tente novamente.");
+        toast.error("Erro ao falar com o suporte. Tente novamente.");
       } finally {
         setLoading(false);
       }
@@ -346,9 +346,9 @@ export function SupportChat() {
               className="h-9 w-9 rounded-full object-cover ring-2 ring-primary/40 shadow-[0_0_12px_hsl(var(--primary)/0.4)]"
             />
             <div className="flex-1 min-w-0">
-              <p className="font-display text-sm font-semibold leading-tight">John Wick</p>
+              <p className="font-display text-sm font-semibold leading-tight">Suporte VMI</p>
               <p className="text-[11px] text-muted-foreground leading-tight">
-                Diretor Criativo & Suporte
+                Assistente Técnico
               </p>
             </div>
           </div>
