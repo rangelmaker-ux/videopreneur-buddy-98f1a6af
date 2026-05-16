@@ -204,14 +204,12 @@ export default function Auth() {
                         <p className="text-xs text-muted-foreground">
                           {PAUSED_MESSAGE}
                         </p>
-                        <a
-                          href={STRIPE_MENSAL}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700"
+                        <Button
+                          onClick={() => setPricingOpen(true)}
+                          className="mt-1 bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 h-auto"
                         >
                           Escolher plano <ExternalLink className="h-3 w-3" />
-                        </a>
+                        </Button>
                       </div>
                     </div>
                   </AlertDescription>
