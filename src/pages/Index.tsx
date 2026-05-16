@@ -4,7 +4,7 @@ import { VideoConfigsProvider, useVideoConfigs } from "@/contexts/VideoConfigsCo
 import { SyncBadge } from "@/components/SyncBadge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus } from "lucide-react";
+import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, Eye, EyeOff } from "lucide-react";
 import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
 import QuotesTab from "@/components/tabs/QuotesTab";
@@ -21,6 +21,23 @@ function IndexInner() {
   const { syncStatus } = useVideoConfigs();
   const [tab, setTab] = useState("calculator");
   const [showWelcome, setShowWelcome] = useState(false);
+  const [valuesHidden, setValuesHidden] = useState(() => {
+    try {
+      return localStorage.getItem("vmi:values_hidden") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const toggleValuesVisibility = () => {
+    const newVal = !valuesHidden;
+    setValuesHidden(newVal);
+    try {
+      localStorage.setItem("vmi:values_hidden", String(newVal));
+      // Dispatch storage event so other components or re-renders pick it up
+      window.dispatchEvent(new Event("storage"));
+    } catch {}
+  };
 
   useEffect(() => {
     try {
@@ -55,6 +72,15 @@ function IndexInner() {
           </div>
 
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleValuesVisibility}
+              className="text-muted-foreground hover:text-primary transition-colors"
+              title={valuesHidden ? "Mostrar valores" : "Ocultar valores"}
+            >
+              {valuesHidden ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </Button>
             <UserAvatarMenu />
           </div>
         </div>

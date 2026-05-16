@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useQuotes } from "@/hooks/useQuotes";
 import { useFixedClients } from "@/hooks/useFixedClients";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -31,8 +31,11 @@ import {
   FileText,
 } from "lucide-react";
 
-const BRL = (n: number) =>
-  n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const BRL = (n: number) => {
+  const isHidden = typeof window !== 'undefined' && localStorage.getItem("vmi:values_hidden") === "true";
+  if (isHidden) return "R$ ••••";
+  return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+};
 
 const PIE_COLORS = [
   "hsl(var(--primary))",
@@ -49,6 +52,13 @@ export default function ResultsTab() {
   const { quotes, loading } = useQuotes();
   const { clients } = useFixedClients();
   const [range, setRange] = useState<Range>("90d");
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const handleStorage = () => setTick(t => t + 1);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const filtered = useMemo(() => {
     if (range === "all") return quotes;

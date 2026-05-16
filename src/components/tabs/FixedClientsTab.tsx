@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFixedClients, Delivery } from "@/hooks/useFixedClients";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, CalendarDays, Users } from "lucide-react";
@@ -32,6 +32,13 @@ export default function FixedClientsTab() {
   };
 
   const [view, setView] = useState<"calendar" | "clients">("calendar");
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const handleStorage = () => setTick(t => t + 1);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editorMode, setEditorMode] = useState<
     | { kind: "create"; defaults?: Partial<Delivery> }

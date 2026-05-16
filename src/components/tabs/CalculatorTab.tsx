@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useVideoConfigs } from "@/contexts/VideoConfigsContext";
 import { useQuotes } from "@/hooks/useQuotes";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,13 @@ export default function CalculatorTab({ onSaved }: { onSaved?: () => void } = {}
     ...EMPTY_INPUT,
     videoTypeKey: "",
   });
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const handleStorage = () => setTick(t => t + 1);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   // Pre-select first available video type
   const selectedKey = input.videoTypeKey || configs[0]?.video_type_key || "";

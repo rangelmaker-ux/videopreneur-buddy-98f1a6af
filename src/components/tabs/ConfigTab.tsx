@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useVideoConfigs } from "@/contexts/VideoConfigsContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,13 @@ export default function ConfigTab() {
   const [selectedKey, setSelectedKey] = useState<string>("");
   const [newName, setNewName] = useState("");
   const [addOpen, setAddOpen] = useState(false);
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const handleStorage = () => setTick(t => t + 1);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const cfg = configs.find((c) => c.video_type_key === (selectedKey || configs[0]?.video_type_key));
 
@@ -185,7 +192,7 @@ function NumberField({ label, value, onChange, suffix, step = 1 }: {
       <Label className="text-xs">{label}</Label>
       <div className="relative">
         <Input
-          type="number"
+          type={typeof window !== 'undefined' && localStorage.getItem("vmi:values_hidden") === "true" ? "password" : "number"}
           step={step}
           min={0}
           value={Number.isFinite(value) ? value : 0}
