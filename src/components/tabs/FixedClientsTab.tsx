@@ -106,9 +106,12 @@ export default function FixedClientsTab() {
         mode={editorMode}
         clients={clients}
         quoteClients={quoteClients}
+        deliveries={deliveries}
         onSave={handleSave}
         onDelete={removeDelivery}
         onDuplicate={duplicateDelivery}
+        onBulkSave={bulkSave}
+        onBulkDelete={bulkDelete}
       />
     </div>
   );
