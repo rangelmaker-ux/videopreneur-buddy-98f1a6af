@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { MessageCircle, X, Send, Loader2, Mic, MicOff } from "lucide-react";
+import { MessageCircle, X, Send, Loader2, Mic, MicOff, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
@@ -24,9 +24,11 @@ export function SupportChat() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [micError, setMicError] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<any>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -38,6 +40,7 @@ export function SupportChat() {
 
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
@@ -45,28 +48,60 @@ export function SupportChat() {
       recognition.lang = "pt-BR";
 
       recognition.onresult = (event: any) => {
-        let transcript = "";
+        let currentTranscript = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript;
+          const transcriptChunk = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            setInput(prev => {
+              const base = prev.trim();
+              return base ? `${base} ${transcriptChunk.trim()}` : transcriptChunk.trim();
+            });
+          } else {
+            currentTranscript += transcriptChunk;
+          }
         }
-        setInput(transcript);
+        
+        // Se quisermos mostrar o texto parcial enquanto fala:
+        if (currentTranscript) {
+          // Opcional: feedback visual de transcrição em tempo real
+        }
       };
 
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error", event.error);
+        if (event.error === 'not-allowed') {
+          toast.error("Permissão de microfone negada.");
+          setMicError(true);
+        } else {
+          toast.error("Erro no reconhecimento de voz.");
+        }
         setIsListening(false);
-        toast.error("Erro ao acessar o microfone.");
       };
 
       recognition.onend = () => {
-        setIsListening(false);
+        if (isListening) {
+          try {
+            recognition.start(); // Garante continuidade em pausas longas se ainda ativo
+          } catch {
+            setIsListening(false);
+          }
+        }
       };
 
       recognitionRef.current = recognition;
     }
-  }, []);
 
-  const toggleListening = useCallback(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop();
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [isListening]);
+
+  const toggleListening = useCallback(async () => {
     if (!recognitionRef.current) {
       toast.error("Seu navegador não suporta reconhecimento de voz.");
       return;
@@ -74,14 +109,30 @@ export function SupportChat() {
 
     if (isListening) {
       recognitionRef.current.stop();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current = null;
+      }
       setIsListening(false);
+      toast.success("Gravação encerrada.");
     } else {
       try {
+        setMicError(false);
+        // Solicita permissão explicitamente via getUserMedia para garantir feedback do navegador
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        streamRef.current = stream;
+        
         recognitionRef.current.start();
         setIsListening(true);
-        toast.info("Ouvindo...");
-      } catch (err) {
-        console.error("Recognition start error", err);
+        toast.info("Ouvindo... Pode falar.");
+      } catch (err: any) {
+        console.error("Mic access error", err);
+        setMicError(true);
+        if (err.name === 'NotAllowedError') {
+          toast.error("Permissão de microfone bloqueada pelo navegador.");
+        } else {
+          toast.error("Não foi possível acessar o microfone.");
+        }
       }
     }
   }, [isListening]);
@@ -370,19 +421,32 @@ export function SupportChat() {
           {/* Input */}
           <div className="border-t border-border/50 p-2.5 bg-background/40">
             <div className="flex items-center gap-2">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={toggleListening}
-                className={`shrink-0 rounded-xl transition-all ${
-                  isListening 
-                    ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse" 
-                    : "text-muted-foreground hover:bg-muted/60"
-                }`}
-                aria-label={isListening ? "Parar de ouvir" : "Falar pelo microfone"}
-              >
-                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
+              <div className="relative">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={toggleListening}
+                  className={`shrink-0 rounded-xl transition-all duration-300 relative z-10 ${
+                    isListening 
+                      ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 ring-2 ring-red-500/50" 
+                      : micError
+                      ? "bg-amber-500/20 text-amber-500 hover:bg-amber-500/30"
+                      : "text-muted-foreground hover:bg-muted/60"
+                  }`}
+                  aria-label={isListening ? "Parar de ouvir" : "Falar pelo microfone"}
+                >
+                  {isListening ? (
+                    <MicOff className="h-4 w-4" />
+                  ) : micError ? (
+                    <AlertCircle className="h-4 w-4" />
+                  ) : (
+                    <Mic className="h-4 w-4" />
+                  )}
+                </Button>
+                {isListening && (
+                  <span className="absolute inset-0 rounded-xl bg-red-500/20 animate-ping -z-0" />
+                )}
+              </div>
               <textarea
                 ref={inputRef}
                 value={input}
