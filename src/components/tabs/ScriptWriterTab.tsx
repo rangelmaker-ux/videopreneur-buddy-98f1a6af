@@ -265,13 +265,15 @@ export default function ScriptWriterTab() {
                 <div className="prose prose-sm prose-invert max-w-none">
                   <ReactMarkdown remarkPlugins={[remarkBreaks]}>{m.content}</ReactMarkdown>
                   {i > 0 && !loading && i === messages.length - 1 && (
-                    <div className="flex gap-2 mt-4 pt-4 border-t border-border/20">
-                      <Button size="sm" variant="secondary" className="h-8 gap-2" onClick={() => handleSaveScript(m.content)}>
-                        <Save className="h-3.5 w-3.5" /> Salvar
-                      </Button>
-                      <Button size="sm" variant="outline" className="h-8 gap-2" onClick={() => handleSchedule(m.content)}>
-                        <Calendar className="h-3.5 w-3.5" /> Agendar
-                      </Button>
+                    <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-border/20">
+                      <p className="text-[11px] text-muted-foreground italic flex items-center gap-1">
+                        <Save className="h-3 w-3" /> Roteiro salvo automaticamente na biblioteca
+                      </p>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" className="h-8 gap-2 bg-primary/10 border-primary/20 hover:bg-primary/20 text-primary" onClick={() => handleSchedule(m.content)}>
+                          <Calendar className="h-3.5 w-3.5" /> Sim, agendar na agenda
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
