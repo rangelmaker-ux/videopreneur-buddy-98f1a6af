@@ -202,8 +202,38 @@ export default function DeliveryEditor({
       status,
     };
 
+    if (isEdit && repeatGroup && onBulkSave) {
+      const current = (mode as { kind: "edit"; delivery: Delivery }).delivery;
+      // Get similar future deliveries (same title prefix if it was generated with " (Semana N)")
+      // or simply same original title
+      const baseTitle = current.title.replace(/ \(Semana \d+\)$/, "");
+      const futureDeliveries = deliveries.filter(d => 
+        d.id !== current.id && 
+        d.fixed_client_id === current.fixed_client_id &&
+        d.title.startsWith(baseTitle) &&
+        d.recording_at && current.recording_at &&
+        new Date(d.recording_at) > new Date(current.recording_at)
+      );
+
+      if (futureDeliveries.length > 0) {
+        const updates = futureDeliveries.map(d => ({
+          id: d.id,
+          patch: {
+            ...basePayload,
+            // Keep the specific date/time of each future delivery, 
+            // unless the user specifically wanted to move the whole group (complex)
+            // For now, let's keep their dates but update metadata
+            recording_at: d.recording_at,
+            delivery_date: d.delivery_date,
+            title: d.title // Keep their specific title with "Semana X"
+          }
+        }));
+        await onBulkSave(updates);
+      }
+    }
+
     if (repeatWeekly && !isEdit) {
-      // Create 4 weekly deliveries
+      // ... keep existing repeat logic
       const baseDate = fromDateTimeLocal(recording);
       if (baseDate) {
         for (let i = 0; i < 4; i++) {
