@@ -480,15 +480,54 @@ export default function DeliveryEditor({
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Excluir entrega?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Esta ação não pode ser desfeita.
+                    <AlertDialogDescription className="space-y-3">
+                      <p>Esta ação não pode ser desfeita.</p>
+                      
+                      {isEdit && (
+                        <div className="flex items-center space-x-2 pt-2 border-t border-border">
+                          <Checkbox
+                            id="delete-group"
+                            checked={repeatGroup}
+                            onCheckedChange={(checked) => setRepeatGroup(!!checked)}
+                          />
+                          <label
+                            htmlFor="delete-group"
+                            className="text-sm font-medium leading-none cursor-pointer"
+                          >
+                            Excluir também todos os agendamentos futuros deste grupo
+                          </label>
+                        </div>
+                      )}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction
+                      variant="destructive"
                       onClick={async () => {
-                        await onDelete((mode as any).delivery.id);
+                        const currentId = (mode as { kind: "edit"; delivery: Delivery }).delivery.id;
+                        
+                        if (repeatGroup && onBulkDelete) {
+                          const current = (mode as { kind: "edit"; delivery: Delivery }).delivery;
+                          const baseTitle = current.title.replace(/ \(Semana \d+\)$/, "");
+                          const futureIds = deliveries
+                            .filter(d => 
+                              d.id !== current.id && 
+                              d.fixed_client_id === current.fixed_client_id &&
+                              d.title.startsWith(baseTitle) &&
+                              d.recording_at && current.recording_at &&
+                              new Date(d.recording_at) > new Date(current.recording_at)
+                            )
+                            .map(d => d.id);
+                          
+                          if (futureIds.length > 0) {
+                            await onBulkDelete([currentId, ...futureIds]);
+                          } else {
+                            await onDelete(currentId);
+                          }
+                        } else {
+                          await onDelete(currentId);
+                        }
                         onOpenChange(false);
                       }}
                     >
