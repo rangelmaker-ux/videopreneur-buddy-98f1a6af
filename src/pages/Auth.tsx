@@ -195,40 +195,7 @@ export default function Auth() {
             </TabsList>
 
             <TabsContent value="signin" className="mt-6 space-y-4">
-              {paused && (
-                <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
-                  <AlertDescription className="text-sm">
-                    <div className="flex items-start gap-2">
-                      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
-                      <div className="flex-1 space-y-2">
-                        <p className="font-semibold text-foreground text-sm">Acesso suspenso</p>
-                        <p className="text-xs text-muted-foreground">
-                          {PAUSED_MESSAGE}
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                          <Button
-                            asChild
-                            className="bg-green-600 px-3 py-2 text-[10px] font-bold text-white hover:bg-green-700 h-8 w-full sm:w-auto uppercase tracking-wider"
-                          >
-                            <a href={STRIPE_MENSAL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
-                              Pagamento Mensal <ExternalLink className="h-3 w-3" />
-                            </a>
-                          </Button>
-                          <Button
-                            asChild
-                            variant="outline"
-                            className="border-primary/40 bg-primary/5 px-3 py-2 text-[10px] font-bold text-primary hover:bg-primary/10 h-8 w-full sm:w-auto uppercase tracking-wider"
-                          >
-                            <a href={STRIPE_ANUAL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
-                              Pagamento Anual <CheckCircle2 className="h-3 w-3 text-primary" />
-                            </a>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </AlertDescription>
-                </Alert>
-              )}
+              {/* Aviso de acesso suspenso removido conforme solicitado */}
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">E-mail</Label>
@@ -423,23 +390,8 @@ export default function Auth() {
             </TabsContent>
           </Tabs>
 
-          {error && !isPausedError && (
-            <Alert variant="destructive" className="mt-4 border-destructive/40 bg-destructive/10">
-              <AlertDescription className="text-sm">
-                {error}
-                {isPaywallError && (
-                  <a
-                    href={STRIPE_MENSAL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700"
-                  >
-                    Adquirir <ExternalLink className="h-3 w-3" />
-                  </a>
-                )}
-              </AlertDescription>
-            </Alert>
-          )}
+          {/* Aviso de erro inferior removido conforme solicitado */}
+
 
           {success && (
             <Alert className="mt-4 border-success/40 bg-success/10">
