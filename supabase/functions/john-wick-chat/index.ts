@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const PRODUCT_LINK = "https://buy.stripe.com/dRm14ndVX25MbGJdru5ZC04";
+// Product link removed
 
 const SYSTEM_PROMPT = `Você é o **Roteirista Pro**, estrategista de audiovisual e roteirista premiado (anteriormente conhecido como John Wick). Sua principal função é **escrever roteiros memoráveis** que geram retenção e impacto.
 
