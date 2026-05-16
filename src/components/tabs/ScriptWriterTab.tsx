@@ -187,9 +187,9 @@ export default function ScriptWriterTab() {
       await createDelivery({
         fixed_client_id: client.id,
         title: "Gravação: Roteiro Gerado",
-        description: content,
+        script: content,
         delivery_date: new Date().toISOString().split('T')[0],
-        status: 'Pendente' as any
+        status: 'scheduled'
       });
       toast.success(`Agendado para ${client.name}!`);
     } catch (err) {
