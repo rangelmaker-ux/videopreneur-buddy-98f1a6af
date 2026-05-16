@@ -195,7 +195,27 @@ export default function Auth() {
             </TabsList>
 
             <TabsContent value="signin" className="mt-6 space-y-4">
-              {/* Aviso de acesso suspenso removido conforme solicitado */}
+              {paused && (
+                <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
+                  <AlertDescription className="text-sm">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+                      <div className="flex-1 space-y-2">
+                        <p className="font-semibold text-foreground text-sm">Acesso suspenso</p>
+                        <p className="text-xs text-muted-foreground">
+                          {PAUSED_MESSAGE}
+                        </p>
+                        <Button
+                          onClick={() => setPricingOpen(true)}
+                          className="mt-1 bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 h-auto"
+                        >
+                          Escolher plano <ExternalLink className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="signin-email">E-mail</Label>
