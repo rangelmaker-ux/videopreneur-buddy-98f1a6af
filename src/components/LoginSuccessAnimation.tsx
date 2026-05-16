@@ -389,9 +389,10 @@ function AnimatedCalculator({ isMobile, onComplete, volume }: { isMobile: boolea
 
 interface LoginSuccessAnimationProps {
   onComplete: () => void;
+  userName?: string | null;
 }
 
-export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps) {
+export function LoginSuccessAnimation({ onComplete, userName }: LoginSuccessAnimationProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [isMuted, setIsMuted] = useState(false);
@@ -404,7 +405,17 @@ export function LoginSuccessAnimation({ onComplete }: LoginSuccessAnimationProps
   }, []);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm animate-fade-in">
+      {/* Greeting Overlay */}
+      <div className="absolute top-[20%] z-[110] text-center pointer-events-none animate-scale-in">
+        <h2 className="font-display text-4xl sm:text-6xl font-bold tracking-tight">
+          <span className="gradient-text">Olá, {userName?.split(' ')[0] || 'Bem-vindo'}</span>
+        </h2>
+        <p className="mt-4 text-muted-foreground text-sm uppercase tracking-[0.2em] animate-pulse">
+          Acesso autorizado • Carregando sistema
+        </p>
+      </div>
+
       <div className="relative h-full w-full">
         <Canvas
           camera={{ position: [0, 0, 6], fov: 35 }}

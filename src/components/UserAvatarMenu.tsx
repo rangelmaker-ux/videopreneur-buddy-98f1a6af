@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, CreditCard, ExternalLink, HelpCircle, Loader2, LogOut, Shield, Trash2, User as UserIcon } from "lucide-react";
+import { Camera, CreditCard, ExternalLink, HelpCircle, Loader2, LogOut, Shield, Trash2, User as UserIcon, Save, Edit2 } from "lucide-react";
 import { useAuth, STRIPE_MENSAL, STRIPE_ANUAL } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -37,9 +37,13 @@ export function UserAvatarMenu() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isEditingName, setIsListeningName] = useState(false);
+  const [newName, setNewName] = useState(user?.user_metadata?.display_name || "");
+  const [savingName, setSavingName] = useState(false);
 
   const initials = (user?.user_metadata?.display_name || user?.email || "U")
     .split(" ")
+    .filter(Boolean)
     .map((p: string) => p[0])
     .join("")
     .slice(0, 2)
@@ -133,6 +137,25 @@ export function UserAvatarMenu() {
       toast.error("Não foi possível remover a foto.");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleUpdateName = async () => {
+    if (!user?.id || !newName.trim()) return;
+    setSavingName(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { display_name: newName.trim() }
+      });
+      if (error) throw error;
+      
+      setIsListeningName(false);
+      toast.success("Nome atualizado com sucesso!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Erro ao atualizar o nome.");
+    } finally {
+      setSavingName(false);
     }
   };
 
@@ -238,8 +261,33 @@ export function UserAvatarMenu() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-lg border-2 border-primary/20">
                     {initials}
                   </div>
-                  <div className="flex flex-col min-w-0">
-                    <span className="font-semibold truncate">{user?.user_metadata?.display_name || "Usuário"}</span>
+                  <div className="flex flex-col min-w-0 flex-1">
+                    {isEditingName ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={newName}
+                          onChange={(e) => setNewName(e.target.value)}
+                          className="bg-background border border-border rounded px-2 py-1 text-sm w-full outline-none focus:ring-1 focus:ring-primary"
+                          autoFocus
+                          disabled={savingName}
+                        />
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          className="h-8 w-8 shrink-0 text-primary hover:text-primary hover:bg-primary/10"
+                          onClick={handleUpdateName}
+                          disabled={savingName}
+                        >
+                          {savingName ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsListeningName(true)}>
+                        <span className="font-semibold truncate">{user?.user_metadata?.display_name || "Usuário"}</span>
+                        <Edit2 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    )}
                     <span className="text-sm text-muted-foreground truncate">{user?.email}</span>
                   </div>
                 </div>
