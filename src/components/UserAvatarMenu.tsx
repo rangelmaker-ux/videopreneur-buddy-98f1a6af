@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PricingModal } from "@/components/PricingModal";
 import { toast } from "sonner";
 
 const ADMIN_EMAIL = "rangelmaker@gmail.com";
