@@ -286,12 +286,19 @@ Deno.serve(async (req) => {
 
   try {
     const { messages } = await req.json();
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('OPENAI_API_KEY');
     
-    const response = await fetch('https://api.lovable.ai/v1/chat/completions', {
+    if (!apiKey) {
+      return new Response(
+        JSON.stringify({ error: 'Configuração de IA (OPENAI_API_KEY) não encontrada nas variáveis de ambiente do Supabase.' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + lovableApiKey,
+        'Authorization': 'Bearer ' + apiKey,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
