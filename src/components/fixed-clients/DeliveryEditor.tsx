@@ -493,8 +493,9 @@ export default function DeliveryEditor({
                           />
                           <label
                             htmlFor="delete-group"
-                            className="text-sm font-medium leading-none cursor-pointer"
+                            className="text-sm font-medium leading-none cursor-pointer flex items-center gap-1.5"
                           >
+                            <ListTree className="h-3.5 w-3.5 text-destructive" />
                             Excluir também todos os agendamentos futuros deste grupo
                           </label>
                         </div>
