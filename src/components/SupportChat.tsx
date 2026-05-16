@@ -346,9 +346,9 @@ export function SupportChat() {
               className="h-9 w-9 rounded-full object-cover ring-2 ring-primary/40 shadow-[0_0_12px_hsl(var(--primary)/0.4)]"
             />
             <div className="flex-1 min-w-0">
-              <p className="font-display text-sm font-semibold leading-tight">Suporte VMI</p>
+              <p className="font-display text-sm font-semibold leading-tight">Roteirista Pro</p>
               <p className="text-[11px] text-muted-foreground leading-tight">
-                Assistente Técnico
+                Estrategista de Audiovisual
               </p>
             </div>
           </div>
