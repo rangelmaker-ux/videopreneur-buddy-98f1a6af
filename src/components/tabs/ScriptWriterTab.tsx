@@ -152,12 +152,26 @@ export default function ScriptWriterTab() {
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
+        let textBuffer = "";
+        let streamDone = false;
+
+        while (!streamDone) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          textBuffer += decoder.decode(value, { stream: true });
+
+          let nl: number;
+          while ((nl = textBuffer.indexOf("\n")) !== -1) {
+            let line = textBuffer.slice(0, nl);
+            textBuffer = textBuffer.slice(nl + 1);
+            if (line.endsWith("\r")) line = line.slice(0, -1);
+            if (line.startsWith(":") || line.trim() === "") continue;
+            if (!line.startsWith("data: ")) continue;
             const jsonStr = line.slice(6).trim();
-            if (jsonStr === "[DONE]") break;
+            if (jsonStr === "[DONE]") {
+              streamDone = true;
+              break;
+            }
             try {
               const parsed = JSON.parse(jsonStr);
               const content = parsed.choices?.[0]?.delta?.content;
@@ -171,7 +185,10 @@ export default function ScriptWriterTab() {
                   return prev.map((m, idx) => idx === prev.length - 1 ? { ...m, content: assistantSoFar } : m);
                 });
               }
-            } catch {}
+            } catch {
+              textBuffer = line + "\n" + textBuffer;
+              break;
+            }
           }
         }
       }
