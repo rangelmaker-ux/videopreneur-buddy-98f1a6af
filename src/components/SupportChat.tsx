@@ -15,7 +15,7 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 const INITIAL: Msg = {
   role: "assistant",
   content:
-    "Olá, sou o suporte do **Videomaker Inteligente**. Como posso te ajudar com dúvidas sobre a calculadora, orçamentos ou configurações?",
+    "Olá! Sou o **Roteirista Pro**. Minha missão é transformar suas ideias em roteiros memoráveis e te ajudar com o que precisar no app.\n\nQual o tema do seu próximo vídeo?",
 };
 
 export function SupportChat() {
