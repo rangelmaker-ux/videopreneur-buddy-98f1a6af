@@ -17,6 +17,13 @@ export default function QuotesTab() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<QuoteStatus | "all">("all");
   const [detail, setDetail] = useState<Quote | null>(null);
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const handleStorage = () => setTick(t => t + 1);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
