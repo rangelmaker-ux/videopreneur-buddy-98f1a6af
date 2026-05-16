@@ -10,6 +10,7 @@ import ConfigTab from "@/components/tabs/ConfigTab";
 import QuotesTab from "@/components/tabs/QuotesTab";
 import FixedClientsTab from "@/components/tabs/FixedClientsTab";
 import ResultsTab from "@/components/tabs/ResultsTab";
+import ScriptWriterTab from "@/components/tabs/ScriptWriterTab";
 import { ParticlesBg } from "@/components/ParticlesBg";
 import { UserAvatarMenu } from "@/components/UserAvatarMenu";
 import { WelcomeOverlay } from "@/components/WelcomeOverlay";
