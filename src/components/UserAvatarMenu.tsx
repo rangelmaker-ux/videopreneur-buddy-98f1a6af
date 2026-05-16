@@ -43,6 +43,7 @@ export function UserAvatarMenu() {
 
   const initials = (user?.user_metadata?.display_name || user?.email || "U")
     .split(" ")
+    .filter(Boolean)
     .map((p: string) => p[0])
     .join("")
     .slice(0, 2)
