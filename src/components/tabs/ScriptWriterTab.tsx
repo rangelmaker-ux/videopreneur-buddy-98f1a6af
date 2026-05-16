@@ -196,7 +196,8 @@ export default function ScriptWriterTab() {
       // Auto-save removed as per user request
 
     } catch (e) {
-      toast.error("Erro ao gerar roteiro.");
+      console.error("Script writer error:", e);
+      toast.error(`Erro ao gerar roteiro: ${e instanceof Error ? e.message : 'Falha na conexão'}`);
     } finally {
       setLoading(false);
     }

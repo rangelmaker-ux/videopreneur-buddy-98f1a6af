@@ -231,7 +231,7 @@ export function SupportChat() {
             apikey: PUBLISHABLE_KEY,
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ messages: next }),
+          body: JSON.stringify({ messages: next, agentType: 'support' }),
         });
 
         if (resp.status === 401) {
@@ -304,8 +304,8 @@ export function SupportChat() {
           }
         }
       } catch (e) {
-        console.error(e);
-        toast.error("Erro ao falar com o suporte. Tente novamente.");
+        console.error("Support chat error:", e);
+        toast.error(`Erro ao falar com o suporte: ${e instanceof Error ? e.message : 'Falha na conexão'}`);
       } finally {
         setLoading(false);
       }
