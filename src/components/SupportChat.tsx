@@ -369,7 +369,20 @@ export function SupportChat() {
 
           {/* Input */}
           <div className="border-t border-border/50 p-2.5 bg-background/40">
-            <div className="flex items-end gap-2">
+            <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={toggleListening}
+                className={`shrink-0 rounded-xl transition-all ${
+                  isListening 
+                    ? "bg-red-500/20 text-red-500 hover:bg-red-500/30 animate-pulse" 
+                    : "text-muted-foreground hover:bg-muted/60"
+                }`}
+                aria-label={isListening ? "Parar de ouvir" : "Falar pelo microfone"}
+              >
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              </Button>
               <textarea
                 ref={inputRef}
                 value={input}
