@@ -122,7 +122,9 @@ serve(async (req) => {
       });
     }
 
-    const { messages } = await req.json();
+    const { messages, agentType } = await req.json();
+    const activePrompt = agentType === 'script' ? SCRIPT_PROMPT : SYSTEM_PROMPT;
+
     if (!Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: "messages must be an array" }), {
         status: 400,
