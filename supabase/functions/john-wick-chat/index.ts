@@ -148,7 +148,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: "gemini-2.0-flash",
-        messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+        messages: [{ role: "system", content: activePrompt }, ...messages],
         stream: true,
       }),
     });
