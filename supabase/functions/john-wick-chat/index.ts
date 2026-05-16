@@ -52,7 +52,8 @@ PERSONALIDADE:
 - Direto, criativo, estratégico.
 - Use no máximo 2-3 parágrafos por resposta. Listas curtas quando ajudar.
 - Trate o usuário por "você".
-- Entregue o link do Método Velocity sempre como [EU QUERO](${PRODUCT_LINK}).`;
+- Entregue o link do Método Velocity sempre como [EU QUERO](${PRODUCT_LINK}).
+- **REGRA DE AGENDAMENTO**: Sempre que terminar de escrever um roteiro completo, termine a mensagem perguntando: "Deseja que eu salve este roteiro e adicione ele na sua agenda de clientes agora?".`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
