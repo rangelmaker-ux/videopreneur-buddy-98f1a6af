@@ -1,6 +1,6 @@
 import { useEffect, useState, FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth, STRIPE_MENSAL } from "@/contexts/AuthContext";
+import { useAuth, STRIPE_MENSAL, STRIPE_ANUAL } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -201,16 +201,29 @@ export default function Auth() {
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
                       <div className="flex-1 space-y-2">
-                        <p className="font-semibold text-foreground">Acesso expirado</p>
+                        <p className="font-semibold text-foreground text-sm">Acesso suspenso</p>
                         <p className="text-xs text-muted-foreground">
                           {PAUSED_MESSAGE}
                         </p>
-                        <Button
-                          onClick={() => setPricingOpen(true)}
-                          className="mt-1 bg-green-600 px-3 py-2 text-xs font-medium text-white hover:bg-green-700 h-auto"
-                        >
-                          Escolher plano <ExternalLink className="h-3 w-3" />
-                        </Button>
+                        <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                          <Button
+                            asChild
+                            className="bg-green-600 px-3 py-2 text-[10px] font-bold text-white hover:bg-green-700 h-8 w-full sm:w-auto uppercase tracking-wider"
+                          >
+                            <a href={STRIPE_MENSAL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
+                              Pagamento Mensal <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </Button>
+                          <Button
+                            asChild
+                            variant="outline"
+                            className="border-primary/40 bg-primary/5 px-3 py-2 text-[10px] font-bold text-primary hover:bg-primary/10 h-8 w-full sm:w-auto uppercase tracking-wider"
+                          >
+                            <a href={STRIPE_ANUAL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-1.5">
+                              Pagamento Anual <CheckCircle2 className="h-3 w-3 text-primary" />
+                            </a>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </AlertDescription>
@@ -416,7 +429,7 @@ export default function Auth() {
                 {isPausedError
                   ? (
                     <>
-                      <span className="font-semibold text-foreground">Acesso suspenso.</span>{" "}
+                      <span className="font-semibold text-foreground text-sm leading-tight">Acesso suspenso.</span>{" "}
                       <span>{PAUSED_MESSAGE}</span>
                     </>
                   )
