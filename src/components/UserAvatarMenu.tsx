@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, CreditCard, ExternalLink, HelpCircle, Loader2, LogOut, Shield, Trash2, User as UserIcon } from "lucide-react";
+import { Camera, CreditCard, ExternalLink, HelpCircle, Loader2, LogOut, Shield, Trash2, User as UserIcon, Save, Edit2 } from "lucide-react";
 import { useAuth, STRIPE_MENSAL, STRIPE_ANUAL } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
