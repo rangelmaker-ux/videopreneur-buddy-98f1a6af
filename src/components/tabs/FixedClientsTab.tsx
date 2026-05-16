@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useFixedClients, Delivery } from "@/hooks/useFixedClients";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Loader2, CalendarDays, Users } from "lucide-react";
+import { toast } from "sonner";
 import CalendarView from "@/components/fixed-clients/CalendarView";
 import ClientsView from "@/components/fixed-clients/ClientsView";
 import DeliveryEditor from "@/components/fixed-clients/DeliveryEditor";
