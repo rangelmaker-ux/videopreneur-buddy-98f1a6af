@@ -155,7 +155,7 @@ export default function Auth() {
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
       <PricingModal open={pricingOpen} onOpenChange={setPricingOpen} />
       {showSuccessAnimation && (
-        <LoginSuccessAnimation onComplete={handleAnimationComplete} />
+        <LoginSuccessAnimation onComplete={handleAnimationComplete} userName={user?.user_metadata?.display_name || signupName || null} />
       )}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-32 top-10 h-96 w-96 rounded-full bg-primary/20 blur-[120px] animate-float" />
