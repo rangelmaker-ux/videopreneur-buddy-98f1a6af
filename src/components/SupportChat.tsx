@@ -43,65 +43,65 @@ export function SupportChat() {
   useEffect(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
-    if (SpeechRecognition) {
+    if (SpeechRecognition && !recognitionRef.current) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = "pt-BR";
 
+      recognition.onstart = () => {
+        setIsListening(true);
+        setIsProcessing(false);
+        setMicError(false);
+      };
+
       recognition.onresult = (event: any) => {
-        let currentTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const transcriptChunk = event.results[i][0].transcript;
+        let interimTranscript = "";
+        let finalTranscript = "";
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
           if (event.results[i].isFinal) {
-            setInput(prev => {
-              const base = prev.trim();
-              return base ? `${base} ${transcriptChunk.trim()}` : transcriptChunk.trim();
-            });
+            finalTranscript += event.results[i][0].transcript;
           } else {
-            currentTranscript += transcriptChunk;
+            interimTranscript += event.results[i][0].transcript;
           }
         }
+
+        if (finalTranscript) {
+          setInput(prev => {
+            const base = prev.trim();
+            return base ? `${base} ${finalTranscript.trim()}` : finalTranscript.trim();
+          });
+        }
         
-        // Se quisermos mostrar o texto parcial enquanto fala:
-        if (currentTranscript) {
-          // Opcional: feedback visual de transcrição em tempo real
+        // Feedback visual imediato no campo de texto para resultados provisórios
+        if (interimTranscript && inputRef.current) {
+          // Não alteramos o estado 'input' com interim para evitar cursor pulando
+          // mas podemos usar uma ref ou outro estado se necessário.
+          // Para simplicidade e estabilidade UX, focamos no finalTranscript
         }
       };
 
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error", event.error);
         if (event.error === 'not-allowed') {
-          toast.error("Permissão de microfone negada.");
           setMicError(true);
-        } else {
+          toast.error("Permissão de microfone negada. Verifique as configurações do navegador.");
+        } else if (event.error !== 'no-speech') {
           toast.error("Erro no reconhecimento de voz.");
         }
         setIsListening(false);
+        setIsProcessing(false);
       };
 
       recognition.onend = () => {
-        if (isListening) {
-          try {
-            recognition.start(); // Garante continuidade em pausas longas se ainda ativo
-          } catch {
-            setIsListening(false);
-          }
-        }
+        setIsListening(false);
+        setIsProcessing(false);
       };
 
       recognitionRef.current = recognition;
     }
-
-    return () => {
-      if (recognitionRef.current) {
-        recognitionRef.current.stop();
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-    };
-  }, [isListening]);
+  }, []);
 
   const toggleListening = useCallback(async () => {
     if (!recognitionRef.current) {
@@ -110,31 +110,31 @@ export function SupportChat() {
     }
 
     if (isListening) {
+      setIsProcessing(true);
       recognitionRef.current.stop();
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-        streamRef.current = null;
-      }
-      setIsListening(false);
-      toast.success("Gravação encerrada.");
-    } else {
-      try {
-        setMicError(false);
-        // Solicita permissão explicitamente via getUserMedia para garantir feedback do navegador
+      return;
+    }
+
+    try {
+      setMicError(false);
+      setIsProcessing(true);
+      
+      // Solicita permissão e mantém o stream para evitar novos prompts
+      if (!streamRef.current) {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         streamRef.current = stream;
-        
-        recognitionRef.current.start();
-        setIsListening(true);
-        toast.info("Ouvindo... Pode falar.");
-      } catch (err: any) {
-        console.error("Mic access error", err);
-        setMicError(true);
-        if (err.name === 'NotAllowedError') {
-          toast.error("Permissão de microfone bloqueada pelo navegador.");
-        } else {
-          toast.error("Não foi possível acessar o microfone.");
-        }
+      }
+      
+      recognitionRef.current.start();
+      toast.info("Ouvindo... Pode falar.");
+    } catch (err: any) {
+      console.error("Mic access error", err);
+      setMicError(true);
+      setIsProcessing(false);
+      if (err.name === 'NotAllowedError') {
+        toast.error("Permissão de microfone bloqueada.");
+      } else {
+        toast.error("Não foi possível acessar o microfone.");
       }
     }
   }, [isListening]);
