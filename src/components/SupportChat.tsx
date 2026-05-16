@@ -231,7 +231,7 @@ export function SupportChat() {
             apikey: PUBLISHABLE_KEY,
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ messages: next }),
+          body: JSON.stringify({ messages: next, agentType: 'support' }),
         });
 
         if (resp.status === 401) {
