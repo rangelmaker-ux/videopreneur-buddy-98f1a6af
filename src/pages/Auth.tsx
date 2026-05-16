@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo3D } from "@/components/Logo3D";
 import { LoginSuccessAnimation } from "@/components/LoginSuccessAnimation";
+import { PricingModal } from "@/components/PricingModal";
 
 const PAUSED_MESSAGE = "Seu período de acesso gratuito expirou ou a assinatura foi pausada. Para continuar usando a plataforma, escolha um plano.";
 const PAUSED_NOTICE_KEY = "vmi:pausedNotice";
