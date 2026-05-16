@@ -33,6 +33,13 @@ export default function ConfigTab() {
   const [selectedKey, setSelectedKey] = useState<string>("");
   const [newName, setNewName] = useState("");
   const [addOpen, setAddOpen] = useState(false);
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const handleStorage = () => setTick(t => t + 1);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const cfg = configs.find((c) => c.video_type_key === (selectedKey || configs[0]?.video_type_key));
 
