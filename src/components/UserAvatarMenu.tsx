@@ -31,6 +31,7 @@ const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 export function UserAvatarMenu() {
   const { user, signOut, accessStatus, trialDaysRemaining } = useAuth();
   const [profileOpen, setProfileOpen] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
   const navigate = useNavigate();
   const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
