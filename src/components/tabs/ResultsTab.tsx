@@ -52,6 +52,13 @@ export default function ResultsTab() {
   const { quotes, loading } = useQuotes();
   const { clients } = useFixedClients();
   const [range, setRange] = useState<Range>("90d");
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const handleStorage = () => setTick(t => t + 1);
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
 
   const filtered = useMemo(() => {
     if (range === "all") return quotes;
