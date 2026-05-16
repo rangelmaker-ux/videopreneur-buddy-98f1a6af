@@ -37,7 +37,7 @@ export function UserAvatarMenu() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isEditingName, setIsListeningName] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(user?.user_metadata?.display_name || "");
   const [savingName, setSavingName] = useState(false);
 
@@ -149,7 +149,7 @@ export function UserAvatarMenu() {
       });
       if (error) throw error;
       
-      setIsListeningName(false);
+      setIsEditingName(false);
       toast.success("Nome atualizado com sucesso!");
     } catch (err) {
       console.error(err);
@@ -283,7 +283,7 @@ export function UserAvatarMenu() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsListeningName(true)}>
+                      <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsEditingName(true)}>
                         <span className="font-semibold truncate">{user?.user_metadata?.display_name || "Usuário"}</span>
                         <Edit2 className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
