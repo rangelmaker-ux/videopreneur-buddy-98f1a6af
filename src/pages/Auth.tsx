@@ -201,7 +201,7 @@ export default function Auth() {
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
                       <div className="flex-1 space-y-2">
-                        <p className="font-semibold text-foreground">Acesso expirado</p>
+                        <p className="font-semibold text-foreground text-sm">Acesso suspenso</p>
                         <p className="text-xs text-muted-foreground">
                           {PAUSED_MESSAGE}
                         </p>
