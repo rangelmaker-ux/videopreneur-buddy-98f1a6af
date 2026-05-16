@@ -185,7 +185,7 @@ function NumberField({ label, value, onChange, suffix, step = 1 }: {
       <Label className="text-xs">{label}</Label>
       <div className="relative">
         <Input
-          type="number"
+          type={typeof window !== 'undefined' && localStorage.getItem("vmi:values_hidden") === "true" ? "password" : "number"}
           step={step}
           min={0}
           value={Number.isFinite(value) ? value : 0}
