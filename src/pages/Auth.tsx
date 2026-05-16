@@ -41,6 +41,7 @@ export default function Auth() {
   >(null);
 
   const [paused, setPaused] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
 
   useEffect(() => {
     try {
