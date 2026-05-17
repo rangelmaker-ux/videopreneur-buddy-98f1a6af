@@ -254,7 +254,7 @@ export default function ScriptWriterTab() {
     try {
       // 1. Ensure we have a chat session
       if (!chatId) {
-        chatId = await createNewChat(userMsg.slice(0, 30) + (userMsg.length > 30 ? "..." : ""));
+        chatId = await createNewChat(userMsg.slice(0, 30) + (userMsg.length > 30 ? "..." : ""), null);
         if (!chatId) return;
       }
 
