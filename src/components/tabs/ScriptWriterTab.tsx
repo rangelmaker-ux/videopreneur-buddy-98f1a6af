@@ -295,7 +295,7 @@ export default function ScriptWriterTab() {
           )}
         </div>
         
-        <div className="p-3">
+        <div className="p-3 space-y-2">
           <Button 
             onClick={() => createNewChat()}
             className="w-full justify-start gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
@@ -304,33 +304,100 @@ export default function ScriptWriterTab() {
             <Plus className="h-4 w-4" />
             Novo Roteiro
           </Button>
+          <Button 
+            onClick={createNewFolder}
+            className="w-full justify-start gap-2 hover:bg-muted text-muted-foreground border border-dashed border-primary/20"
+            variant="ghost"
+          >
+            <FolderPlus className="h-4 w-4" />
+            Novo Cliente
+          </Button>
         </div>
 
         <ScrollArea className="flex-1 px-3 pb-4">
-          <div className="space-y-1">
-            {chats.map((chat) => (
-              <div
-                key={chat.id}
-                onClick={() => {
-                  setCurrentChatId(chat.id);
-                  if (isMobile) setIsSidebarOpen(false);
-                }}
-                className={cn(
-                  "group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all text-sm",
-                  currentChatId === chat.id 
-                    ? "bg-primary/20 text-primary font-medium border border-primary/20 shadow-sm" 
-                    : "hover:bg-muted text-muted-foreground"
-                )}
-              >
-                <span className="truncate flex-1 pr-2">{chat.title}</span>
-                <button
-                  onClick={(e) => deleteChat(e, chat.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
+          <div className="space-y-4">
+            {/* Folders Accordion */}
+            <Accordion type="multiple" value={openFolders} onValueChange={setOpenFolders} className="space-y-1">
+              {folders.map(folder => (
+                <AccordionItem key={folder.id} value={folder.id} className="border-none">
+                  <div className="group flex items-center gap-1 hover:bg-muted/50 rounded-lg pr-2 transition-colors">
+                    <AccordionTrigger className="flex-1 py-2 px-2 hover:no-underline [&[data-state=open]>svg]:rotate-90">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <Folder className="h-4 w-4 text-primary/60" />
+                        <span className="truncate max-w-[120px]">{folder.name}</span>
+                      </div>
+                    </AccordionTrigger>
+                    
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => createNewChat("Novo Roteiro", folder.id)}
+                        className="p-1.5 hover:text-primary transition-colors"
+                        title="Novo chat nesta pasta"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </button>
+                      
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button className="p-1.5 hover:text-destructive transition-colors" title="Deletar pasta">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir pasta?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Isso excluirá a pasta "{folder.name}". Os roteiros dentro dela se tornarão "soltos", mas não serão apagados.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteFolder(folder.id)} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">Excluir</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                  
+                  <AccordionContent className="pt-1 pb-2 pl-4 space-y-1">
+                    {chats.filter(c => c.folder_id === folder.id).map(chat => (
+                      <ChatListItem 
+                        key={chat.id} 
+                        chat={chat} 
+                        isActive={currentChatId === chat.id} 
+                        onClick={() => {
+                          setCurrentChatId(chat.id);
+                          if (isMobile) setIsSidebarOpen(false);
+                        }}
+                        onDelete={() => deleteChat(chat.id)}
+                      />
+                    ))}
+                    {chats.filter(c => c.folder_id === folder.id).length === 0 && (
+                      <p className="text-[10px] text-muted-foreground italic px-2 py-1">Vazio</p>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+
+            {/* Uncategorized Chats */}
+            <div className="space-y-1">
+              <div className="px-2 py-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Sem pasta</span>
               </div>
-            ))}
+              {chats.filter(c => !c.folder_id).map((chat) => (
+                <ChatListItem 
+                  key={chat.id} 
+                  chat={chat} 
+                  isActive={currentChatId === chat.id} 
+                  onClick={() => {
+                    setCurrentChatId(chat.id);
+                    if (isMobile) setIsSidebarOpen(false);
+                  }}
+                  onDelete={() => deleteChat(chat.id)}
+                />
+              ))}
+            </div>
           </div>
         </ScrollArea>
       </aside>
