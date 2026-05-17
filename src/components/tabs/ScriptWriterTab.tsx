@@ -485,7 +485,24 @@ export default function ScriptWriterTab() {
             {/* Folders Accordion */}
             <Accordion type="multiple" value={openFolders} onValueChange={setOpenFolders} className="space-y-1">
               {folders.map(folder => (
-                <AccordionItem key={folder.id} value={folder.id} className="border-none">
+                <AccordionItem 
+                  key={folder.id} 
+                  value={folder.id} 
+                  className="border-none transition-colors"
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.add("bg-primary/5");
+                  }}
+                  onDragLeave={(e) => {
+                    e.currentTarget.classList.remove("bg-primary/5");
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove("bg-primary/5");
+                    const chatId = e.dataTransfer.getData("chatId");
+                    if (chatId) moveChatToFolder(chatId, folder.id);
+                  }}
+                >
                   <div className="group flex items-center gap-1 hover:bg-muted/50 rounded-lg pr-2 transition-colors">
                     <AccordionTrigger className="flex-1 py-2 px-2 hover:no-underline [&[data-state=open]>svg]:rotate-90">
                       <div className="flex items-center gap-2 text-sm font-medium">
