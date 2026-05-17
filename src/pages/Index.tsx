@@ -4,14 +4,13 @@ import { VideoConfigsProvider, useVideoConfigs } from "@/contexts/VideoConfigsCo
 import { SyncBadge } from "@/components/SyncBadge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, Eye, EyeOff, Clapperboard } from "lucide-react";
+import { Calculator, FileText, Users, BarChart3, Settings, Plus, Eye, EyeOff, Clapperboard } from "lucide-react";
 import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
 import QuotesTab from "@/components/tabs/QuotesTab";
 import FixedClientsTab from "@/components/tabs/FixedClientsTab";
 import ResultsTab from "@/components/tabs/ResultsTab";
 import ScriptWriterTab from "@/components/tabs/ScriptWriterTab";
-import { ParticlesBg } from "@/components/ParticlesBg";
 import { UserAvatarMenu } from "@/components/UserAvatarMenu";
 import { WelcomeOverlay } from "@/components/WelcomeOverlay";
 import logoUrl from "@/assets/logo.png";
