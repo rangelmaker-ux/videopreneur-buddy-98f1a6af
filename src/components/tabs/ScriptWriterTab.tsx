@@ -32,6 +32,49 @@ interface Message {
 
 const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?q=80&w=200&h=200&auto=format&fit=crop";
 
+function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isActive: boolean, onClick: () => void, onDelete: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all text-sm",
+        isActive 
+          ? "bg-primary/20 text-primary font-medium border border-primary/20 shadow-sm" 
+          : "hover:bg-muted/70 text-muted-foreground"
+      )}
+    >
+      <div className="flex items-center gap-2 truncate flex-1 min-w-0">
+        <MessageSquare className={cn("h-3.5 w-3.5 shrink-0", isActive ? "text-primary" : "text-muted-foreground/50")} />
+        <span className="truncate pr-2">{chat.title}</span>
+      </div>
+      
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="opacity-0 group-hover:opacity-100 p-1.5 hover:text-destructive transition-all shrink-0"
+            title="Excluir roteiro"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </AlertDialogTrigger>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir roteiro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Todo o histórico de mensagens deste roteiro será removido.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={(e) => { e.stopPropagation(); onDelete(); }} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">Excluir</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
 export default function ScriptWriterTab() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
