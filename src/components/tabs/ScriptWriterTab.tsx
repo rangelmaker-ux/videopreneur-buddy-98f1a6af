@@ -63,7 +63,7 @@ interface Message {
 
 const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?q=80&w=200&h=200&auto=format&fit=crop";
 
-function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isActive: boolean, onClick: () => void, onDelete: () => void }) {
+function ChatListItem({ chat, isActive, onClick }: { chat: Chat, isActive: boolean, onClick: () => void }) {
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("chatId", chat.id);
     e.dataTransfer.effectAllowed = "move";
@@ -85,30 +85,6 @@ function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isAct
         <MessageSquare className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-muted-foreground/60 group-hover:text-primary/70")} />
         <span className="truncate">{chat.title}</span>
       </div>
-      
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <button
-            onClick={(e) => e.stopPropagation()}
-            className="p-1.5 hover:text-destructive transition-all duration-200 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100"
-            title="Excluir roteiro"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </AlertDialogTrigger>
-        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir roteiro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Todo o histórico de mensagens deste roteiro será removido.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={(e) => { e.stopPropagation(); onDelete(); }} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">Excluir</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
@@ -208,7 +184,7 @@ function SidebarContent({
                         <AlertDialogHeader>
                           <AlertDialogTitle>Excluir pasta?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Isso excluirá a pasta "{folder.name}". Os roteiros dentro dela se tornarão "soltos", mas não serão apagados.
+                            Isso excluirá a pasta "{folder.name}" e todos os roteiros dentro dela permanentemente.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -227,7 +203,6 @@ function SidebarContent({
                       chat={chat} 
                       isActive={currentChatId === chat.id} 
                       onClick={() => onChatSelect(chat.id)}
-                      onDelete={() => deleteChat(chat.id)}
                     />
                   ))}
                   {chats.filter(c => c.folder_id === folder.id).length === 0 && (
@@ -258,13 +233,12 @@ function SidebarContent({
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Sem pasta</span>
             </div>
             {chats.filter(c => !c.folder_id).map((chat) => (
-              <ChatListItem 
-                key={chat.id} 
-                chat={chat} 
-                isActive={currentChatId === chat.id} 
-                onClick={() => onChatSelect(chat.id)}
-                onDelete={() => deleteChat(chat.id)}
-              />
+                    <ChatListItem 
+                      key={chat.id} 
+                      chat={chat} 
+                      isActive={currentChatId === chat.id} 
+                      onClick={() => onChatSelect(chat.id)}
+                    />
             ))}
           </div>
         </div>
@@ -469,8 +443,8 @@ export default function ScriptWriterTab() {
       
       if (error) throw error;
       setFolders(folders.filter(f => f.id !== folderId));
-      setChats(chats.map(c => c.folder_id === folderId ? { ...c, folder_id: null } : c));
-      toast.success("Pasta removida");
+      setChats(chats.filter(c => c.folder_id !== folderId));
+      toast.success("Pasta e roteiros removidos");
     } catch (err) {
       toast.error("Erro ao remover pasta");
     }
@@ -693,6 +667,34 @@ export default function ScriptWriterTab() {
                 <p className="text-[10px] text-muted-foreground mt-1">Especialista em Viralização</p>
               </div>
             </div>
+
+            {currentChatId && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-2">
+                    <Trash2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Excluir Roteiro</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir roteiro?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. Todo o histórico de mensagens deste roteiro será removido permanentemente.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={() => deleteChat(currentChatId)} 
+                      className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                    >
+                      Excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </div>
 
           {/* Messages */}
