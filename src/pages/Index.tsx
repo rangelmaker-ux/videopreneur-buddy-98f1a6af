@@ -91,11 +91,11 @@ function IndexInner() {
               </div>
             </div>
 
-            <div className="flex items-center justify-center pb-2 pt-0 sm:pb-3 overflow-x-auto no-scrollbar">
-              <TabsList className="inline-flex h-10 items-center justify-center rounded-xl bg-muted/40 p-1 text-muted-foreground w-full max-w-2xl">
+            <div className="flex items-center justify-start sm:justify-center pb-2 pt-0 sm:pb-3 overflow-x-auto no-scrollbar w-full whitespace-nowrap">
+              <TabsList className="inline-flex h-10 items-center justify-center rounded-xl bg-muted/40 p-1 text-muted-foreground w-fit sm:w-full max-w-2xl">
                 <TabsTrigger 
                   value="calculator" 
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial shrink-0"
                 >
                   <Calculator className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Calculadora</span>
@@ -103,28 +103,28 @@ function IndexInner() {
                 </TabsTrigger>
                 <TabsTrigger 
                   value="scripts" 
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial shrink-0"
                 >
                   <Clapperboard className="h-3.5 w-3.5" />
                   <span>Roteiros</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="quotes" 
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial shrink-0"
                 >
                   <FileText className="h-3.5 w-3.5" />
                   <span>Orçamentos</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="clients" 
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial shrink-0"
                 >
                   <Users className="h-3.5 w-3.5" />
                   <span>Clientes</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="results" 
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial shrink-0"
                 >
                   <BarChart3 className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Resultados</span>
@@ -132,7 +132,7 @@ function IndexInner() {
                 </TabsTrigger>
                 <TabsTrigger 
                   value="config" 
-                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial"
+                  className="inline-flex items-center justify-center whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm gap-2 flex-1 sm:flex-initial shrink-0"
                 >
                   <Settings className="h-3.5 w-3.5" />
                   <span>Config</span>
