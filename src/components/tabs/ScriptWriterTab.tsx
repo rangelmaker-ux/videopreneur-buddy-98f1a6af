@@ -189,7 +189,7 @@ export default function ScriptWriterTab() {
 
   const createNewFolder = async () => {
     const name = prompt("Nome da pasta/cliente:");
-    if (!name) return;
+    if (!name?.trim()) return;
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -197,12 +197,13 @@ export default function ScriptWriterTab() {
 
       const { data, error } = await supabase
         .from("roteirista_folders")
-        .insert({ name, user_id: user.id })
+        .insert({ name: name.trim(), user_id: user.id })
         .select()
         .single();
 
       if (error) throw error;
       setFolders([...folders, data]);
+      setOpenFolders([...openFolders, data.id]);
       toast.success("Pasta criada");
     } catch (err) {
       toast.error("Erro ao criar pasta");
