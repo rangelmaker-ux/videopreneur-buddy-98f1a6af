@@ -118,7 +118,7 @@ export default function ScriptWriterTab() {
     })) || []);
   };
 
-  const createNewChat = async (title: string = "Novo Roteiro") => {
+  const createNewChat = async (title: string = "Novo Roteiro", folderId: string | null = null) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -128,7 +128,7 @@ export default function ScriptWriterTab() {
 
       const { data, error } = await supabase
         .from("roteirista_chats")
-        .insert({ title, user_id: user.id })
+        .insert({ title, user_id: user.id, folder_id: folderId })
         .select()
         .single();
       
@@ -144,8 +144,45 @@ export default function ScriptWriterTab() {
     }
   };
 
-  const deleteChat = async (e: React.MouseEvent, chatId: string) => {
-    e.stopPropagation();
+  const createNewFolder = async () => {
+    const name = prompt("Nome da pasta/cliente:");
+    if (!name) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("roteirista_folders")
+        .insert({ name, user_id: user.id })
+        .select()
+        .single();
+
+      if (error) throw error;
+      setFolders([...folders, data]);
+      toast.success("Pasta criada");
+    } catch (err) {
+      toast.error("Erro ao criar pasta");
+    }
+  };
+
+  const deleteFolder = async (folderId: string) => {
+    try {
+      const { error } = await supabase
+        .from("roteirista_folders")
+        .delete()
+        .eq("id", folderId);
+      
+      if (error) throw error;
+      setFolders(folders.filter(f => f.id !== folderId));
+      setChats(chats.map(c => c.folder_id === folderId ? { ...c, folder_id: null } : c));
+      toast.success("Pasta removida");
+    } catch (err) {
+      toast.error("Erro ao remover pasta");
+    }
+  };
+
+  const deleteChat = async (chatId: string) => {
     try {
       const { error } = await supabase
         .from("roteirista_chats")
