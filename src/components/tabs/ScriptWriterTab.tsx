@@ -203,7 +203,6 @@ function SidebarContent({
                       chat={chat} 
                       isActive={currentChatId === chat.id} 
                       onClick={() => onChatSelect(chat.id)}
-                      onDelete={() => deleteChat(chat.id)}
                     />
                   ))}
                   {chats.filter(c => c.folder_id === folder.id).length === 0 && (
