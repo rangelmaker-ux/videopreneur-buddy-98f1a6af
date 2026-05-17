@@ -453,19 +453,24 @@ export default function ScriptWriterTab() {
       </aside>
 
       {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col min-w-0">
-        <Card className="flex flex-col flex-1 overflow-hidden border-primary/20 bg-background/50 backdrop-blur-sm shadow-xl rounded-2xl">
+      <main className={cn(
+        "flex-1 flex flex-col min-w-0 transition-all duration-300",
+        !isMobile && !isSidebarOpen && "pl-0"
+      )}>
+        <Card className="flex flex-col flex-1 overflow-hidden border-primary/20 bg-background/50 backdrop-blur-sm shadow-xl md:rounded-2xl rounded-none border-x-0 md:border-x">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-primary/10 bg-muted/30">
+          <div className="flex items-center justify-between p-3 md:p-4 border-b border-primary/10 bg-muted/30">
             <div className="flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="md:hidden"
-                onClick={() => setIsSidebarOpen(true)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+              {!isSidebarOpen && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="shrink-0"
+                  onClick={() => setIsSidebarOpen(true)}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              )}
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10 overflow-hidden border border-primary/20 shadow-lg">
                 <img 
                   src={ROBOT_AVATAR_URL} 
