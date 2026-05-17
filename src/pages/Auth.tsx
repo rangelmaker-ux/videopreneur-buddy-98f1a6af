@@ -194,7 +194,7 @@ export default function Auth() {
               <TabsTrigger value="signup">Criar Conta</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="signin" className="mt-6 space-y-4">
+            <TabsContent value="signin" className="mt-4 space-y-3">
               {paused && (
                 <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
                   <AlertDescription className="text-sm">
