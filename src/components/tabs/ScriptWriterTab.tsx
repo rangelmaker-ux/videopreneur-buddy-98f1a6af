@@ -703,7 +703,7 @@ export default function ScriptWriterTab() {
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full py-12 text-center space-y-4 opacity-80">
                   <div className="h-20 w-20 rounded-full bg-primary/5 flex items-center justify-center overflow-hidden border border-primary/10 shadow-inner">
-                    <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover" />
+                    <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover scale-150 origin-center" />
                   </div>
                   <div className="space-y-2 max-w-md">
                     <h4 className="text-lg font-bold text-primary">Pronto para viralizar?</h4>
