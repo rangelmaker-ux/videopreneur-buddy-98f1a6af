@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.roteirista-pro-chat]
 verify_jwt = false
+
+[functions.roteirista-pro]
+verify_jwt = false
