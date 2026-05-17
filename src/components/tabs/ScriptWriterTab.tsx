@@ -178,6 +178,10 @@ export default function ScriptWriterTab() {
         throw functionError;
       }
 
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
       const assistantMessage = data?.choices?.[0]?.message;
       if (assistantMessage) {
         // 4. Save assistant message to DB
@@ -193,6 +197,7 @@ export default function ScriptWriterTab() {
 
         setMessages([...newMessages, assistantMessage]);
       } else {
+        console.error("Data received from Edge Function:", data);
         throw new Error("A IA não retornou uma resposta válida.");
       }
     } catch (err: any) {
