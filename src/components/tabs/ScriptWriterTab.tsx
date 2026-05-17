@@ -90,10 +90,10 @@ function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isAct
         <AlertDialogTrigger asChild>
           <button
             onClick={(e) => e.stopPropagation()}
-            className="p-1.5 hover:text-destructive transition-all shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100"
+            className="p-1.5 hover:text-destructive transition-all duration-200 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100"
             title="Excluir roteiro"
           >
-            <Trash2 className="h-3.5 w-3.5" />
+            <Trash2 className="h-4 w-4" />
           </button>
         </AlertDialogTrigger>
         <AlertDialogContent onClick={(e) => e.stopPropagation()}>
