@@ -659,7 +659,7 @@ export default function ScriptWriterTab() {
                 <img 
                   src={ROBOT_AVATAR_URL} 
                   alt="Roteirista Pro" 
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover scale-150 origin-center"
                 />
               </div>
               <div>
@@ -703,7 +703,7 @@ export default function ScriptWriterTab() {
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full py-12 text-center space-y-4 opacity-80">
                   <div className="h-20 w-20 rounded-full bg-primary/5 flex items-center justify-center overflow-hidden border border-primary/10 shadow-inner">
-                    <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover" />
+                    <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover scale-150 origin-center" />
                   </div>
                   <div className="space-y-2 max-w-md">
                     <h4 className="text-lg font-bold text-primary">Pronto para viralizar?</h4>
@@ -733,7 +733,7 @@ export default function ScriptWriterTab() {
                     {m.role === "user" ? (
                       <User className="h-4 w-4" />
                     ) : (
-                      <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover" />
+                      <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover scale-150 origin-center" />
                     )}
                   </div>
                   <div
@@ -753,7 +753,7 @@ export default function ScriptWriterTab() {
               {isLoading && (
                 <div className="flex items-start gap-3 animate-fade-in">
                   <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted border border-primary/10 overflow-hidden">
-                    <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover opacity-50" />
+                    <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover opacity-50 scale-150 origin-center" />
                   </div>
                   <div className="bg-muted/80 backdrop-blur-sm border border-primary/5 rounded-2xl rounded-tl-none px-5 py-4">
                     <Loader2 className="h-4 w-4 animate-spin text-primary" />
