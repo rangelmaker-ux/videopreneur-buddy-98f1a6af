@@ -184,7 +184,7 @@ function SidebarContent({
                         <AlertDialogHeader>
                           <AlertDialogTitle>Excluir pasta?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Isso excluirá a pasta "{folder.name}". Os roteiros dentro dela se tornarão "soltos", mas não serão apagados.
+                            Isso excluirá a pasta "{folder.name}" e todos os roteiros dentro dela permanentemente.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
