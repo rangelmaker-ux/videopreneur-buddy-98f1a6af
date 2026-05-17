@@ -85,7 +85,10 @@ export default function ScriptWriterTab() {
       console.error("Error fetching messages:", error);
       return;
     }
-    setMessages(data || []);
+    setMessages((data as any[])?.map(m => ({
+      ...m,
+      role: m.role as "user" | "assistant"
+    })) || []);
   };
 
   const createNewChat = async (title: string = "Novo Roteiro") => {
