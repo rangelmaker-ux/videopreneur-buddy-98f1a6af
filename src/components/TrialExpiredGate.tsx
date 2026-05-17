@@ -58,7 +58,7 @@ export function TrialExpiredGate() {
           <ul className="space-y-3">
             {[
               "Calculadora de precificação profissional",
-              "Assistente John Wick IA",
+              "Assistente Roteirista Pro IA",
               "Gestão de clientes fixos",
               "Histórico de orçamentos",
               "Suporte prioritário",
