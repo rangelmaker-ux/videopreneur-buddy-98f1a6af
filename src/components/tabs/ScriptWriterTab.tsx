@@ -71,8 +71,12 @@ export default function ScriptWriterTab() {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-primary/10 bg-muted/30">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10 text-primary shadow-inner">
-              <Sparkles className="h-5 w-5 animate-pulse" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10 overflow-hidden border border-primary/20 shadow-lg">
+              <img 
+                src={ROBOT_AVATAR_URL} 
+                alt="Roteirista Pro" 
+                className="h-full w-full object-cover transition-transform hover:scale-110"
+              />
             </div>
             <div>
               <h3 className="font-display text-base font-bold leading-none">Roteirista Pro</h3>
