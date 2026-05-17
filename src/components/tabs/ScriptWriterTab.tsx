@@ -443,8 +443,8 @@ export default function ScriptWriterTab() {
       
       if (error) throw error;
       setFolders(folders.filter(f => f.id !== folderId));
-      setChats(chats.map(c => c.folder_id === folderId ? { ...c, folder_id: null } : c));
-      toast.success("Pasta removida");
+      setChats(chats.filter(c => c.folder_id !== folderId));
+      toast.success("Pasta e roteiros removidos");
     } catch (err) {
       toast.error("Erro ao remover pasta");
     }
