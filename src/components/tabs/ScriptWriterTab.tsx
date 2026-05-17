@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Plus, MessageSquare, Trash2, User, Loader2, Menu, X, Sparkles } from "lucide-react";
+import { Send, Plus, MessageSquare, Trash2, User, Loader2, Menu, X, Sparkles, FolderPlus, ChevronRight, ChevronDown, MoreVertical, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,11 +9,19 @@ import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
+interface Folder {
+  id: string;
+  name: string;
+}
 
 interface Chat {
   id: string;
   title: string;
   created_at: string;
+  folder_id: string | null;
 }
 
 interface Message {
