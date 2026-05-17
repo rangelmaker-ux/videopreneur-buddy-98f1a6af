@@ -52,12 +52,12 @@ Deno.serve(async (req) => {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + apiKey,
-        'HTTP-Referer': 'https://lovable.dev',
+        'HTTP-Referer': 'https://id-preview--7db7a9d3-ae4d-4148-8d76-029955051250.lovable.app',
         'X-Title': 'Roteirista Pro',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'meta-llama/llama-3.1-8b-instruct:free',
+        model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           ...messages,
