@@ -659,7 +659,7 @@ export default function ScriptWriterTab() {
                 <img 
                   src={ROBOT_AVATAR_URL} 
                   alt="Roteirista Pro" 
-                  className="h-full w-full object-cover"
+                  className="h-full w-full object-cover scale-150 origin-center"
                 />
               </div>
               <div>
