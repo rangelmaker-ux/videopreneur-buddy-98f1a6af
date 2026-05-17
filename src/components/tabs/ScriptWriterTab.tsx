@@ -317,26 +317,32 @@ export default function ScriptWriterTab() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-10rem)] w-full max-w-6xl mx-auto gap-4 animate-fade-in overflow-hidden">
+    <div className="flex h-[calc(100vh-11rem)] md:h-[calc(100vh-10rem)] w-full max-w-6xl mx-auto gap-0 md:gap-4 animate-fade-in relative">
+      {/* Overlay para mobile quando o menu está aberto */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[35] animate-in fade-in duration-200"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
       {/* Sidebar - Chat History */}
       <aside 
         className={cn(
-          "flex flex-col border border-primary/20 bg-background/50 backdrop-blur-sm rounded-2xl transition-all duration-300 overflow-hidden",
-          isSidebarOpen ? "w-64" : "w-0 md:w-0",
-          isMobile && !isSidebarOpen ? "hidden" : "flex",
-          isMobile && "fixed inset-0 z-50 w-full rounded-none"
+          "flex flex-col border-r border-primary/20 bg-background/95 backdrop-blur-md transition-all duration-300 ease-in-out z-[40]",
+          isSidebarOpen ? "w-72" : "w-0 overflow-hidden border-none",
+          isMobile 
+            ? "fixed inset-y-0 left-0 w-[85%] shadow-2xl" 
+            : "relative rounded-2xl border bg-background/50 h-full"
         )}
       >
-        <div className="p-4 border-b border-primary/10 flex items-center justify-between">
+        <div className="p-4 border-b border-primary/10 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2 font-bold text-sm">
             <MessageSquare className="h-4 w-4 text-primary" />
-            <span>Histórico</span>
+            <span>Meus Projetos</span>
           </div>
-          {isMobile && (
-            <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+          <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)} className={cn(!isMobile && "hover:bg-primary/10")}>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
         
         <div className="p-3 space-y-2">
@@ -447,19 +453,24 @@ export default function ScriptWriterTab() {
       </aside>
 
       {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col min-w-0">
-        <Card className="flex flex-col flex-1 overflow-hidden border-primary/20 bg-background/50 backdrop-blur-sm shadow-xl rounded-2xl">
+      <main className={cn(
+        "flex-1 flex flex-col min-w-0 transition-all duration-300",
+        !isMobile && !isSidebarOpen && "pl-0"
+      )}>
+        <Card className="flex flex-col flex-1 overflow-hidden border-primary/20 bg-background/50 backdrop-blur-sm shadow-xl md:rounded-2xl rounded-none border-x-0 md:border-x">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-primary/10 bg-muted/30">
+          <div className="flex items-center justify-between p-3 md:p-4 border-b border-primary/10 bg-muted/30">
             <div className="flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="md:hidden"
-                onClick={() => setIsSidebarOpen(true)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+              {!isSidebarOpen && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="shrink-0"
+                  onClick={() => setIsSidebarOpen(true)}
+                >
+                  <Menu className="h-5 w-5" />
+                </Button>
+              )}
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/10 overflow-hidden border border-primary/20 shadow-lg">
                 <img 
                   src={ROBOT_AVATAR_URL} 
@@ -557,7 +568,7 @@ export default function ScriptWriterTab() {
           </ScrollArea>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-primary/10 bg-muted/20">
+          <div className="p-3 md:p-4 border-t border-primary/10 bg-muted/20">
             <div className="relative max-w-4xl mx-auto flex items-end gap-2">
               <textarea
                 value={input}
@@ -569,14 +580,14 @@ export default function ScriptWriterTab() {
                   }
                 }}
                 placeholder="Qual sua ideia hoje? Ex: Dicas de edição, Vlog, Review..."
-                className="flex min-h-[60px] max-h-[200px] w-full rounded-2xl border border-primary/20 bg-background/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all duration-200"
+                className="flex min-h-[50px] md:min-h-[60px] max-h-[200px] w-full rounded-2xl border border-primary/20 bg-background/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all duration-200"
                 disabled={isLoading}
               />
               <Button
                 size="icon"
                 onClick={() => handleSend()}
                 disabled={!input.trim() || isLoading}
-                className="h-[60px] w-[60px] shrink-0 rounded-2xl shadow-lg bg-gradient-to-tr from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-200"
+                className="h-[50px] w-[50px] md:h-[60px] md:w-[60px] shrink-0 rounded-2xl shadow-lg bg-gradient-to-tr from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 <Send className="h-5 w-5" />
               </Button>
