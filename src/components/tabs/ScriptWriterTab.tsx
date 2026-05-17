@@ -34,17 +34,36 @@ const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d
 
 export default function ScriptWriterTab() {
   const [chats, setChats] = useState<Chat[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [openFolders, setOpenFolders] = useState<string[]>([]);
   const isMobile = useIsMobile();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchChats();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    await Promise.all([fetchChats(), fetchFolders()]);
+  };
+
+  const fetchFolders = async () => {
+    const { data, error } = await supabase
+      .from("roteirista_folders")
+      .select("*")
+      .order("name", { ascending: true });
+    
+    if (error) {
+      console.error("Error fetching folders:", error);
+      return;
+    }
+    setFolders(data || []);
+  };
 
   useEffect(() => {
     if (currentChatId) {
