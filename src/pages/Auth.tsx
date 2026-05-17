@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo3D } from "@/components/Logo3D";
@@ -32,6 +32,8 @@ export default function Auth() {
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+  const [showSigninPassword, setShowSigninPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
 
   const [firstAccessOpen, setFirstAccessOpen] = useState(false);
   const [firstAccessEmail, setFirstAccessEmail] = useState("");
@@ -240,24 +242,38 @@ export default function Auth() {
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="signin-password" font-size="text-xs">Senha</Label>
-                  <Input
-                    id="signin-password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={signinPassword}
-                    onChange={(e) => {
-                      setSigninPassword(e.target.value);
-                      if (paused) {
-                        setPaused(false);
-                        setError(null);
-                        try {
-                          sessionStorage.removeItem(PAUSED_NOTICE_KEY);
-                        } catch {}
-                      }
-                    }}
-                    required
-                    autoComplete="current-password"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="signin-password"
+                      type={showSigninPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={signinPassword}
+                      onChange={(e) => {
+                        setSigninPassword(e.target.value);
+                        if (paused) {
+                          setPaused(false);
+                          setError(null);
+                          try {
+                            sessionStorage.removeItem(PAUSED_NOTICE_KEY);
+                          } catch {}
+                        }
+                      }}
+                      required
+                      autoComplete="current-password"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowSigninPassword(!showSigninPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showSigninPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Entrar"}
@@ -382,17 +398,31 @@ export default function Auth() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label htmlFor="signup-password" className="text-xs">Senha</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    placeholder="Mínimo 6 caracteres"
-                    value={signupPassword}
-                    onChange={(e) => setSignupPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    autoComplete="new-password"
-                  />
+                  <Label htmlFor="signup-password" font-size="text-xs">Senha</Label>
+                  <div className="relative">
+                    <Input
+                      id="signup-password"
+                      type={showSignupPassword ? "text" : "password"}
+                      placeholder="Mínimo 6 caracteres"
+                      value={signupPassword}
+                      onChange={(e) => setSignupPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      autoComplete="new-password"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowSignupPassword(!showSignupPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showSignupPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
                 <Button type="submit" disabled={submitting} className="w-full bg-gradient-primary text-primary-foreground hover:opacity-90 transition-opacity">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Criar conta"}
