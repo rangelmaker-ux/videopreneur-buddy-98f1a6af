@@ -740,7 +740,7 @@ export default function ScriptWriterTab() {
                 >
                   <div
                     className={cn(
-                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm overflow-hidden",
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm overflow-hidden",
                       m.role === "user"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground border border-primary/10"
