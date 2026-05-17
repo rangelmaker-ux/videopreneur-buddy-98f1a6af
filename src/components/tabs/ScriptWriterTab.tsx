@@ -543,7 +543,7 @@ export default function ScriptWriterTab() {
 
       const assistantMessage = data?.choices?.[0]?.message;
       if (assistantMessage) {
-        setMessages([...newMessages, assistantMessage]);
+        setMessages(prev => [...prev, assistantMessage]);
       } else {
         console.error("Data received from Edge Function:", data);
         throw new Error("A IA não retornou uma resposta válida.");
