@@ -568,7 +568,7 @@ export default function ScriptWriterTab() {
           </ScrollArea>
 
           {/* Input Area */}
-          <div className="p-4 border-t border-primary/10 bg-muted/20">
+          <div className="p-3 md:p-4 border-t border-primary/10 bg-muted/20">
             <div className="relative max-w-4xl mx-auto flex items-end gap-2">
               <textarea
                 value={input}
@@ -580,14 +580,14 @@ export default function ScriptWriterTab() {
                   }
                 }}
                 placeholder="Qual sua ideia hoje? Ex: Dicas de edição, Vlog, Review..."
-                className="flex min-h-[60px] max-h-[200px] w-full rounded-2xl border border-primary/20 bg-background/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all duration-200"
+                className="flex min-h-[50px] md:min-h-[60px] max-h-[200px] w-full rounded-2xl border border-primary/20 bg-background/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all duration-200"
                 disabled={isLoading}
               />
               <Button
                 size="icon"
                 onClick={() => handleSend()}
                 disabled={!input.trim() || isLoading}
-                className="h-[60px] w-[60px] shrink-0 rounded-2xl shadow-lg bg-gradient-to-tr from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-200"
+                className="h-[50px] w-[50px] md:h-[60px] md:w-[60px] shrink-0 rounded-2xl shadow-lg bg-gradient-to-tr from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 <Send className="h-5 w-5" />
               </Button>
