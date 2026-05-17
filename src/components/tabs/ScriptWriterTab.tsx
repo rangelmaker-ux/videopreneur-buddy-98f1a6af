@@ -667,6 +667,34 @@ export default function ScriptWriterTab() {
                 <p className="text-[10px] text-muted-foreground mt-1">Especialista em Viralização</p>
               </div>
             </div>
+
+            {currentChatId && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-2">
+                    <Trash2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">Excluir Roteiro</span>
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Excluir roteiro?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Esta ação não pode ser desfeita. Todo o histórico de mensagens deste roteiro será removido permanentemente.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction 
+                      onClick={() => deleteChat(currentChatId)} 
+                      className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                    >
+                      Excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </div>
 
           {/* Messages */}
