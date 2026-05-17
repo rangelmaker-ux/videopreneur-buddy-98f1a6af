@@ -317,7 +317,14 @@ export default function ScriptWriterTab() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-10rem)] w-full max-w-6xl mx-auto gap-4 animate-fade-in overflow-hidden">
+    <div className="flex h-[calc(100vh-11rem)] md:h-[calc(100vh-10rem)] w-full max-w-6xl mx-auto gap-0 md:gap-4 animate-fade-in relative">
+      {/* Overlay para mobile quando o menu está aberto */}
+      {isMobile && isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[35] animate-in fade-in duration-200"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
       {/* Sidebar - Chat History */}
       <aside 
         className={cn(
