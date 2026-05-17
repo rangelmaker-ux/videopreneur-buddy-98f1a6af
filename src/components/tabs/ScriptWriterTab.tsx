@@ -63,7 +63,7 @@ interface Message {
 
 const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?q=80&w=200&h=200&auto=format&fit=crop";
 
-function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isActive: boolean, onClick: () => void, onDelete: () => void }) {
+function ChatListItem({ chat, isActive, onClick }: { chat: Chat, isActive: boolean, onClick: () => void }) {
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData("chatId", chat.id);
     e.dataTransfer.effectAllowed = "move";
@@ -85,30 +85,6 @@ function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isAct
         <MessageSquare className={cn("h-4 w-4 shrink-0", isActive ? "text-primary" : "text-muted-foreground/60 group-hover:text-primary/70")} />
         <span className="truncate">{chat.title}</span>
       </div>
-      
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <button
-            onClick={(e) => e.stopPropagation()}
-            className="p-1.5 hover:text-destructive transition-all duration-200 shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100"
-            title="Excluir roteiro"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </AlertDialogTrigger>
-        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Excluir roteiro?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não pode ser desfeita. Todo o histórico de mensagens deste roteiro será removido.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={(e) => { e.stopPropagation(); onDelete(); }} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">Excluir</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
