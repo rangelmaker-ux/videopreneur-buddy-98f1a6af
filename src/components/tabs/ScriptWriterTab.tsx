@@ -63,14 +63,21 @@ interface Message {
 const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?q=80&w=200&h=200&auto=format&fit=crop";
 
 function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isActive: boolean, onClick: () => void, onDelete: () => void }) {
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData("chatId", chat.id);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
   return (
     <div
       onClick={onClick}
+      draggable
+      onDragStart={handleDragStart}
       className={cn(
-        "group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all text-sm",
+        "group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all text-sm relative",
         isActive 
           ? "bg-primary/20 text-primary font-medium border border-primary/20 shadow-sm" 
-          : "hover:bg-muted/70 text-muted-foreground"
+          : "hover:bg-muted/70 text-muted-foreground hover:translate-x-1"
       )}
     >
       <div className="flex items-center gap-2 truncate flex-1 min-w-0">
@@ -82,7 +89,7 @@ function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isAct
         <AlertDialogTrigger asChild>
           <button
             onClick={(e) => e.stopPropagation()}
-            className="opacity-0 group-hover:opacity-100 p-1.5 hover:text-destructive transition-all shrink-0"
+            className="p-1.5 hover:text-destructive transition-all shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100"
             title="Excluir roteiro"
           >
             <Trash2 className="h-3.5 w-3.5" />
