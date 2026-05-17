@@ -68,7 +68,7 @@ function IndexInner() {
                 />
                 <div className="min-w-0 flex flex-col justify-center">
                   <p className="font-display text-sm font-bold leading-none truncate tracking-tight text-foreground/90">
-                    Roteirista Pro
+                    Videomaker Inteligente
                   </p>
                   <div className="mt-0.5">
                     <SyncBadge status={syncStatus} />
