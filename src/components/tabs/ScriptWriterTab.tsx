@@ -594,7 +594,7 @@ export default function ScriptWriterTab() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-11rem)] md:h-[calc(100vh-10rem)] w-full max-w-6xl mx-auto gap-0 md:gap-4 animate-fade-in relative">
+    <div className="flex h-[calc(100dvh-11rem)] md:h-[calc(100vh-10rem)] w-full max-w-6xl mx-auto gap-0 md:gap-4 animate-fade-in relative">
       {/* Mobile Drawer (Sheet) */}
       <Sheet open={isMobile && isSidebarOpen} onOpenChange={setIsSidebarOpen}>
         <SheetContent side="left" className="p-0 w-[85%] sm:max-w-sm border-r border-primary/20 bg-background/95 backdrop-blur-md">
@@ -778,7 +778,7 @@ export default function ScriptWriterTab() {
           </ScrollArea>
 
           {/* Input Area */}
-          <div className="p-3 md:p-4 border-t border-primary/10 bg-muted/20">
+          <div className="p-3 md:p-4 border-t border-primary/10 bg-muted/20 pb-8 md:pb-4">
             <div className="relative max-w-4xl mx-auto flex items-end gap-2">
               <div className="relative flex-1">
                 <textarea
