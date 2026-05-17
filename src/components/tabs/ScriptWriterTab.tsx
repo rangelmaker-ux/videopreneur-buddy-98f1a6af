@@ -81,9 +81,9 @@ function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isAct
           : "hover:bg-muted/70 text-muted-foreground hover:translate-x-1"
       )}
     >
-      <div className="flex items-center gap-2 truncate flex-1 min-w-0">
+      <div className="flex items-center gap-2 truncate min-w-0 flex-1">
         <MessageSquare className={cn("h-3.5 w-3.5 shrink-0", isActive ? "text-primary" : "text-muted-foreground/50")} />
-        <span className="truncate pr-2">{chat.title}</span>
+        <span className="truncate">{chat.title}</span>
       </div>
       
       <AlertDialog>
