@@ -234,13 +234,12 @@ function SidebarContent({
               <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Sem pasta</span>
             </div>
             {chats.filter(c => !c.folder_id).map((chat) => (
-              <ChatListItem 
-                key={chat.id} 
-                chat={chat} 
-                isActive={currentChatId === chat.id} 
-                onClick={() => onChatSelect(chat.id)}
-                onDelete={() => deleteChat(chat.id)}
-              />
+                    <ChatListItem 
+                      key={chat.id} 
+                      chat={chat} 
+                      isActive={currentChatId === chat.id} 
+                      onClick={() => onChatSelect(chat.id)}
+                    />
             ))}
           </div>
         </div>
