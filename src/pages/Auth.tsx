@@ -381,8 +381,8 @@ export default function Auth() {
                     autoComplete="email"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Senha</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="signup-password" className="text-xs">Senha</Label>
                   <Input
                     id="signup-password"
                     type="password"
