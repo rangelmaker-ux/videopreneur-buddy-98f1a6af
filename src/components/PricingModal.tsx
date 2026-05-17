@@ -1,4 +1,4 @@
-import { Check, ExternalLink } from "lucide-react";
+import { Check, ExternalLink, Calculator, Sparkles, FileText, BarChart3, Calendar, Smartphone, RefreshCw, Zap } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,100 +16,107 @@ interface PricingModalProps {
 }
 
 export function PricingModal({ open, onOpenChange }: PricingModalProps) {
+  const commonFeatures = [
+    { icon: <Calculator className="h-3.5 w-3.5" />, text: "Calculadora de Precificação Avançada" },
+    { icon: <Sparkles className="h-3.5 w-3.5" />, text: "Assistente 'Roteirista Pro IA'" },
+    { icon: <FileText className="h-3.5 w-3.5" />, text: "Geração e Exportação de Orçamentos" },
+    { icon: <BarChart3 className="h-3.5 w-3.5" />, text: "Dashboard de Indicadores e Gráficos" },
+    { icon: <Calendar className="h-3.5 w-3.5" />, text: "Agenda Inteligente e Gestão de Clientes" },
+    { icon: <Smartphone className="h-3.5 w-3.5" />, text: "Acesso Multiplataforma" },
+    { icon: <RefreshCw className="h-3.5 w-3.5" />, text: "Atualizações e Melhorias Constantes" },
+    { icon: <Zap className="h-3.5 w-3.5" />, text: "Suporte Prioritário" },
+  ];
+
   const plans = [
     {
       name: "Plano Mensal",
       price: "R$ 57",
       period: "/mês",
-      description: "Ideal para quem quer testar por pouco tempo.",
-      features: [
-        "Acesso completo à plataforma",
-        "Cálculo de precificação ilimitado",
-        "Assistente Roteirista Pro IA",
-        "Suporte prioritário",
-        "Atualizações constantes",
-      ],
+      description: "Ideal para quem quer flexibilidade total.",
+      features: commonFeatures,
       link: STRIPE_MENSAL,
-      buttonText: "Assinar Mensal",
+      buttonText: "Assinar Agora",
       highlight: false,
     },
     {
       name: "Plano Anual",
       price: "R$ 399",
       period: "/ano",
-      description: "A melhor opção para quem quer economizar.",
-      features: [
-        "Economia de R$ 285/ano",
-        "Equivale a R$ 33,25/mês",
-        "Acesso completo à plataforma",
-        "Assistente Roteirista Pro IA",
-        "Parcelamento em até 6x",
-        "Suporte prioritário",
-      ],
+      description: "A escolha premium para profissionais de elite.",
+      features: commonFeatures,
       link: STRIPE_ANUAL,
-      buttonText: "Assinar Anual (Melhor Valor)",
+      buttonText: "Assinar Agora",
       highlight: true,
-      badge: "6x sem juros",
+      badge: "Mais Popular",
+      savings: "Economize R$ 285",
     },
   ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl bg-slate-950 border-slate-800 text-white p-0 overflow-hidden">
-        <div className="p-6 sm:p-8">
-          <DialogHeader className="mb-6">
-            <DialogTitle className="text-2xl font-bold text-center sm:text-3xl">
-              Escolha o plano ideal para você
+      <DialogContent className="sm:max-w-3xl bg-slate-950/95 border-slate-800 text-white p-0 overflow-hidden backdrop-blur-xl">
+        <div className="p-6 sm:p-10 relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+          
+          <DialogHeader className="mb-8">
+            <DialogTitle className="text-3xl font-bold text-center sm:text-4xl tracking-tight">
+              Transforme sua <span className="text-primary">Carreira</span>
             </DialogTitle>
-            <DialogDescription className="text-center text-slate-400">
-              Tenha acesso completo à ferramenta e profissionalize sua precificação hoje mesmo.
+            <DialogDescription className="text-center text-slate-400 text-base max-w-lg mx-auto">
+              Escolha o plano ideal para profissionalizar sua gestão e multiplicar seus resultados com IA.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-4">
             {plans.map((plan) => (
               <div
                 key={plan.name}
-                className={`relative flex flex-col p-6 rounded-2xl border transition-all duration-300 ${
+                className={`relative flex flex-col p-8 rounded-3xl border transition-all duration-500 group ${
                   plan.highlight
-                    ? "bg-slate-900/50 border-primary shadow-[0_0_30px_-10px_rgba(34,197,94,0.3)] ring-1 ring-primary/20"
-                    : "bg-slate-900/20 border-slate-800 hover:border-slate-700"
-                }`}
+                    ? "bg-slate-900/40 border-primary shadow-[0_0_40px_-10px_rgba(34,197,94,0.2)] ring-1 ring-primary/20 scale-[1.02]"
+                    : "bg-slate-900/20 border-slate-800 hover:border-slate-700 shadow-xl"
+                } backdrop-blur-md`}
               >
                 {plan.badge && (
-                  <Badge className="absolute -top-2.5 right-4 bg-primary text-primary-foreground font-bold">
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground font-bold px-4 py-1 shadow-lg shadow-primary/20 animate-pulse">
                     {plan.badge}
                   </Badge>
                 )}
 
-                <div className="mb-4">
-                  <h3 className="text-lg font-bold">{plan.name}</h3>
-                  <div className="mt-2 flex items-baseline gap-1">
-                    <span className="text-3xl font-bold tracking-tight">{plan.price}</span>
+                <div className="mb-6">
+                  <h3 className={`text-xl font-bold ${plan.highlight ? "text-primary" : "text-white"}`}>{plan.name}</h3>
+                  <div className="mt-3 flex items-baseline gap-1">
+                    <span className="text-4xl font-black tracking-tight">{plan.price}</span>
                     <span className="text-sm text-slate-400 font-medium">{plan.period}</span>
                   </div>
-                  <p className="mt-2 text-sm text-slate-400 leading-relaxed">
+                  {plan.savings && (
+                    <div className="mt-1 text-xs font-bold text-primary flex items-center gap-1">
+                      <Zap className="h-3 w-3 fill-primary" />
+                      {plan.savings}
+                    </div>
+                  )}
+                  <p className="mt-4 text-sm text-slate-400 leading-relaxed italic">
                     {plan.description}
                   </p>
                 </div>
 
-                <div className="space-y-3 mb-8 flex-1">
-                  {plan.features.map((feature) => (
-                    <div key={feature} className="flex items-start gap-2.5">
-                      <div className="mt-1 rounded-full bg-primary/20 p-0.5">
-                        <Check className="h-3 w-3 text-primary" />
+                <div className="space-y-3.5 mb-10 flex-1">
+                  {plan.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-start gap-3 group/item">
+                      <div className={`mt-0.5 rounded-lg p-1 transition-colors ${plan.highlight ? "bg-primary/15 text-primary" : "bg-slate-800 text-slate-400 group-hover/item:text-primary group-hover/item:bg-primary/10"}`}>
+                        {feature.icon}
                       </div>
-                      <span className="text-sm text-slate-300">{feature}</span>
+                      <span className="text-sm text-slate-300 group-hover/item:text-white transition-colors">{feature.text}</span>
                     </div>
                   ))}
                 </div>
 
                 <Button
                   asChild
-                  className={`w-full font-bold h-11 transition-all duration-300 ${
+                  className={`w-full font-black h-14 rounded-2xl text-base transition-all duration-500 shadow-xl ${
                     plan.highlight
-                      ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                      : "bg-slate-800 hover:bg-slate-700 text-white"
+                      ? "bg-primary hover:bg-primary/90 text-primary-foreground hover:scale-[1.03] hover:shadow-primary/20 active:scale-95 glow-button"
+                      : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
                   }`}
                 >
                   <a href={plan.link} target="_blank" rel="noopener noreferrer">
@@ -120,6 +127,7 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
               </div>
             ))}
           </div>
+
 
           <p className="mt-8 text-center text-xs text-slate-500">
             Pagamento seguro processado pelo Stripe. Cancele quando quiser.
