@@ -199,7 +199,7 @@ export default function ScriptWriterTab() {
             />
             <Button
               size="icon"
-              onClick={handleSend}
+              onClick={() => handleSend()}
               disabled={!input.trim() || isLoading}
               className="h-[50px] w-[50px] shrink-0 rounded-xl shadow-lg bg-gradient-to-tr from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-200"
             >
