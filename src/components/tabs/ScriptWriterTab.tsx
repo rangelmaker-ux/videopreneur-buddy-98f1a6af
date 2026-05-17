@@ -733,7 +733,7 @@ export default function ScriptWriterTab() {
                     {m.role === "user" ? (
                       <User className="h-4 w-4" />
                     ) : (
-                      <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover" />
+                      <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover scale-150 origin-center" />
                     )}
                   </div>
                   <div
