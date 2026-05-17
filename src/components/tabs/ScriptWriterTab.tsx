@@ -31,30 +31,40 @@ export default function ScriptWriterTab() {
     }
   }, [messages, isLoading]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (overrideMsg?: string) => {
+    const userMsg = overrideMsg || input.trim();
+    if (!userMsg || isLoading) return;
 
-    const userMsg = input.trim();
-    setInput("");
+    if (!overrideMsg) setInput("");
+    
     const newMessages: Message[] = [...messages, { role: "user", content: userMsg }];
     setMessages(newMessages);
     setIsLoading(true);
 
     try {
+      console.log("Calling roteirista-pro-chat with messages:", newMessages);
       const { data, error } = await supabase.functions.invoke("roteirista-pro-chat", {
         body: { messages: newMessages },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw error;
+      }
+
+      console.log("Received data from roteirista-pro-chat:", data);
 
       if (data?.choices?.[0]?.message) {
         setMessages([...newMessages, data.choices[0].message]);
       } else if (data?.error) {
-        throw new Error(data.error);
+        throw new Error(data.error.message || data.error);
+      } else {
+        console.error("Unexpected response structure:", data);
+        throw new Error("Resposta da IA em formato inesperado.");
       }
     } catch (err: any) {
-      console.error("Erro ao gerar roteiro:", err);
-      toast.error("Erro ao falar com o Roteirista Pro. Tente novamente.");
+      console.error("Erro detalhado ao falar com Roteirista Pro:", err);
+      toast.error(`Erro: ${err.message || "Tente novamente."}`);
     } finally {
       setIsLoading(false);
     }
@@ -110,13 +120,13 @@ export default function ScriptWriterTab() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
                   <button 
-                    onClick={() => setInput("Quero criar um vídeo sobre dicas de edição para Reels")}
+                    onClick={() => handleSend("Quero criar um vídeo sobre dicas de edição para Reels")}
                     className="text-[10px] p-2 rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors text-left"
                   >
                     "Dicas de edição para Reels"
                   </button>
                   <button 
-                    onClick={() => setInput("Roteiro para vlog de um dia de trabalho como videomaker")}
+                    onClick={() => handleSend("Roteiro para vlog de um dia de trabalho como videomaker")}
                     className="text-[10px] p-2 rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors text-left"
                   >
                     "Vlog de videomaker"
@@ -189,7 +199,7 @@ export default function ScriptWriterTab() {
             />
             <Button
               size="icon"
-              onClick={handleSend}
+              onClick={() => handleSend()}
               disabled={!input.trim() || isLoading}
               className="h-[50px] w-[50px] shrink-0 rounded-xl shadow-lg bg-gradient-to-tr from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-200"
             >
