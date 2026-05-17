@@ -61,7 +61,7 @@ interface Message {
   content: string;
 }
 
-const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?q=80&w=200&h=200&auto=format&fit=crop";
+const ROBOT_AVATAR_URL = "https://rmetppilvfrxosvxzhgj.supabase.co/storage/v1/object/public/message-attachments/209c78c7-5f85-4fcb-a4ee-6c7dd71e3717/1778985046548_l0qcxh_minimalist_agent_avatar_1778984933239.png";
 
 function ChatListItem({ chat, isActive, onClick }: { chat: Chat, isActive: boolean, onClick: () => void }) {
   const handleDragStart = (e: React.DragEvent) => {
@@ -702,7 +702,7 @@ export default function ScriptWriterTab() {
             <div className="space-y-6 max-w-4xl mx-auto pb-4">
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full py-12 text-center space-y-4 opacity-80">
-                  <div className="h-20 w-20 rounded-3xl bg-primary/5 flex items-center justify-center overflow-hidden border border-primary/10 shadow-inner">
+                  <div className="h-20 w-20 rounded-full bg-primary/5 flex items-center justify-center overflow-hidden border border-primary/10 shadow-inner">
                     <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover" />
                   </div>
                   <div className="space-y-2 max-w-md">
@@ -740,7 +740,7 @@ export default function ScriptWriterTab() {
                 >
                   <div
                     className={cn(
-                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm overflow-hidden",
+                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm overflow-hidden",
                       m.role === "user"
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground border border-primary/10"
@@ -768,7 +768,7 @@ export default function ScriptWriterTab() {
               ))}
               {isLoading && (
                 <div className="flex items-start gap-3 animate-fade-in">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted border border-primary/10 overflow-hidden">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted border border-primary/10 overflow-hidden">
                     <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover opacity-50" />
                   </div>
                   <div className="bg-muted/80 backdrop-blur-sm border border-primary/5 rounded-2xl rounded-tl-none px-5 py-4">
