@@ -711,22 +711,6 @@ export default function ScriptWriterTab() {
                       Me conte sua ideia de vídeo e eu transformarei em um roteiro estratégico, emocional e altamente assistível.
                     </p>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8 w-full max-w-lg px-4">
-                    <button 
-                      onClick={() => handleSend("Crie um roteiro sobre 3 erros comuns de iniciantes no Reels")}
-                      className="text-xs p-4 rounded-xl border border-primary/10 bg-muted/40 hover:bg-primary/5 hover:border-primary/30 transition-all text-left flex items-start gap-2 group"
-                    >
-                      <Sparkles className="h-4 w-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
-                      <span>"3 erros comuns de iniciantes no Reels"</span>
-                    </button>
-                    <button 
-                      onClick={() => handleSend("Roteiro para vlog dinâmico de 30 segundos mostrando bastidores")}
-                      className="text-xs p-4 rounded-xl border border-primary/10 bg-muted/40 hover:bg-primary/5 hover:border-primary/30 transition-all text-left flex items-start gap-2 group"
-                    >
-                      <Sparkles className="h-4 w-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
-                      <span>"Vlog dinâmico de bastidores"</span>
-                    </button>
-                  </div>
                 </div>
               )}
 
