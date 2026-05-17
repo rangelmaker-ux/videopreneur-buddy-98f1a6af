@@ -546,8 +546,22 @@ export default function ScriptWriterTab() {
               ))}
             </Accordion>
 
-            {/* Uncategorized Chats */}
-            <div className="space-y-1">
+            <div 
+              className="space-y-1 transition-colors"
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add("bg-muted/30");
+              }}
+              onDragLeave={(e) => {
+                e.currentTarget.classList.remove("bg-muted/30");
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove("bg-muted/30");
+                const chatId = e.dataTransfer.getData("chatId");
+                if (chatId) moveChatToFolder(chatId, null);
+              }}
+            >
               <div className="px-2 py-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Sem pasta</span>
               </div>
