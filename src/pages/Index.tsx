@@ -59,18 +59,18 @@ function IndexInner() {
       <Tabs value={tab} onValueChange={setTab} className="w-full">
         <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md transition-all duration-300">
           <div className="container px-4">
-            <div className="flex h-14 items-center justify-between gap-4">
-              <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-12 items-center justify-between gap-4">
+              <div className="flex items-center gap-4 min-w-0">
                 <img 
                   src={logoUrl} 
                   alt="Videomaker Inteligente" 
-                  className="h-8 w-8 shrink-0 rounded-lg object-contain shadow-sm" 
+                  className="h-9 w-9 shrink-0 rounded-lg object-contain shadow-sm" 
                 />
                 <div className="min-w-0 flex flex-col justify-center">
-                  <p className="font-display text-sm font-bold leading-none truncate tracking-tight text-foreground/90">
+                  <p className="font-display text-base font-bold leading-none truncate tracking-tight text-foreground/90">
                     Videomaker Inteligente
                   </p>
-                  <div className="mt-0.5">
+                  <div className="mt-1">
                     <SyncBadge status={syncStatus} />
                   </div>
                 </div>
