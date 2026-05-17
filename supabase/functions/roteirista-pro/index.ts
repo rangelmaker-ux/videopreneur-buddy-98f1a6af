@@ -44,11 +44,14 @@ Deno.serve(async (req) => {
     const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
     if (!apiKey) {
+      console.error("Erro: OPENROUTER_API_KEY não configurada.");
       return new Response(
         JSON.stringify({ error: 'OPENROUTER_API_KEY não encontrada.' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    console.log(`Iniciando chamada para OpenRouter para o chat: ${chatId}`);
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
@@ -80,7 +83,8 @@ Deno.serve(async (req) => {
 
     const assistantMessage = data?.choices?.[0]?.message;
     
-    if (assistantMessage && chatId && supabaseUrl && supabaseServiceRoleKey) {
+    if (assistantMessage?.content && chatId && supabaseUrl && supabaseServiceRoleKey) {
+      console.log(`Salvando resposta no banco para o chat: ${chatId}`);
       const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
       
       const { error: saveError } = await supabase
@@ -92,15 +96,20 @@ Deno.serve(async (req) => {
         });
       
       if (saveError) {
-        console.error("Erro ao salvar mensagem no banco:", saveError);
+        console.error("Erro CRÍTICO ao salvar mensagem no banco:", saveError);
+        // Mesmo se falhar ao salvar, retornamos a mensagem para o usuário não ficar sem resposta no UI
+      } else {
+        console.log("Mensagem salva com sucesso.");
       }
+    } else {
+      console.warn("Aviso: Mensagem do assistente ou chatId ausentes. Não foi possível salvar no banco.");
     }
 
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error("Erro na Edge Function:", error);
+    console.error("Erro na Edge Function roteirista-pro:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
