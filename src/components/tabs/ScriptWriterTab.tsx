@@ -527,7 +527,7 @@ export default function ScriptWriterTab() {
 
       // 3. Call Edge Function
       const { data, error: functionError } = await supabase.functions.invoke("roteirista-pro", {
-        body: { messages: newMessages },
+        body: { messages: newMessages, chatId },
       });
 
       if (functionError) {
@@ -543,17 +543,6 @@ export default function ScriptWriterTab() {
 
       const assistantMessage = data?.choices?.[0]?.message;
       if (assistantMessage) {
-        // 4. Save assistant message to DB
-        const { error: saveError } = await supabase
-          .from("roteirista_messages")
-          .insert({
-            chat_id: chatId,
-            role: "assistant",
-            content: assistantMessage.content
-          });
-        
-        if (saveError) throw saveError;
-
         setMessages([...newMessages, assistantMessage]);
       } else {
         console.error("Data received from Edge Function:", data);
