@@ -768,7 +768,7 @@ export default function ScriptWriterTab() {
               ))}
               {isLoading && (
                 <div className="flex items-start gap-3 animate-fade-in">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted border border-primary/10 overflow-hidden">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted border border-primary/10 overflow-hidden">
                     <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover opacity-50" />
                   </div>
                   <div className="bg-muted/80 backdrop-blur-sm border border-primary/5 rounded-2xl rounded-tl-none px-5 py-4">
