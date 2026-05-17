@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Plus, MessageSquare, Trash2, User, Loader2, Menu, X, Sparkles } from "lucide-react";
+import { Send, Plus, MessageSquare, Trash2, User, Loader2, Menu, X, Sparkles, FolderPlus, ChevronRight, ChevronDown, MoreVertical, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,11 +9,19 @@ import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
+interface Folder {
+  id: string;
+  name: string;
+}
 
 interface Chat {
   id: string;
   title: string;
   created_at: string;
+  folder_id: string | null;
 }
 
 interface Message {
@@ -24,19 +32,81 @@ interface Message {
 
 const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?q=80&w=200&h=200&auto=format&fit=crop";
 
+function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isActive: boolean, onClick: () => void, onDelete: () => void }) {
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all text-sm",
+        isActive 
+          ? "bg-primary/20 text-primary font-medium border border-primary/20 shadow-sm" 
+          : "hover:bg-muted/70 text-muted-foreground"
+      )}
+    >
+      <div className="flex items-center gap-2 truncate flex-1 min-w-0">
+        <MessageSquare className={cn("h-3.5 w-3.5 shrink-0", isActive ? "text-primary" : "text-muted-foreground/50")} />
+        <span className="truncate pr-2">{chat.title}</span>
+      </div>
+      
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <button
+            onClick={(e) => e.stopPropagation()}
+            className="opacity-0 group-hover:opacity-100 p-1.5 hover:text-destructive transition-all shrink-0"
+            title="Excluir roteiro"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </button>
+        </AlertDialogTrigger>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir roteiro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Todo o histórico de mensagens deste roteiro será removido.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={(e) => { e.stopPropagation(); onDelete(); }} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">Excluir</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+
 export default function ScriptWriterTab() {
   const [chats, setChats] = useState<Chat[]>([]);
+  const [folders, setFolders] = useState<Folder[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [openFolders, setOpenFolders] = useState<string[]>([]);
   const isMobile = useIsMobile();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetchChats();
+    fetchData();
   }, []);
+
+  const fetchData = async () => {
+    await Promise.all([fetchChats(), fetchFolders()]);
+  };
+
+  const fetchFolders = async () => {
+    const { data, error } = await supabase
+      .from("roteirista_folders")
+      .select("*")
+      .order("name", { ascending: true });
+    
+    if (error) {
+      console.error("Error fetching folders:", error);
+      return;
+    }
+    setFolders(data || []);
+  };
 
   useEffect(() => {
     if (currentChatId) {
@@ -91,7 +161,7 @@ export default function ScriptWriterTab() {
     })) || []);
   };
 
-  const createNewChat = async (title: string = "Novo Roteiro") => {
+  const createNewChat = async (title: string = "Novo Roteiro", folderId: string | null = null) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -101,7 +171,7 @@ export default function ScriptWriterTab() {
 
       const { data, error } = await supabase
         .from("roteirista_chats")
-        .insert({ title, user_id: user.id })
+        .insert({ title, user_id: user.id, folder_id: folderId })
         .select()
         .single();
       
@@ -117,8 +187,45 @@ export default function ScriptWriterTab() {
     }
   };
 
-  const deleteChat = async (e: React.MouseEvent, chatId: string) => {
-    e.stopPropagation();
+  const createNewFolder = async () => {
+    const name = prompt("Nome da pasta/cliente:");
+    if (!name) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("roteirista_folders")
+        .insert({ name, user_id: user.id })
+        .select()
+        .single();
+
+      if (error) throw error;
+      setFolders([...folders, data]);
+      toast.success("Pasta criada");
+    } catch (err) {
+      toast.error("Erro ao criar pasta");
+    }
+  };
+
+  const deleteFolder = async (folderId: string) => {
+    try {
+      const { error } = await supabase
+        .from("roteirista_folders")
+        .delete()
+        .eq("id", folderId);
+      
+      if (error) throw error;
+      setFolders(folders.filter(f => f.id !== folderId));
+      setChats(chats.map(c => c.folder_id === folderId ? { ...c, folder_id: null } : c));
+      toast.success("Pasta removida");
+    } catch (err) {
+      toast.error("Erro ao remover pasta");
+    }
+  };
+
+  const deleteChat = async (chatId: string) => {
     try {
       const { error } = await supabase
         .from("roteirista_chats")
@@ -147,7 +254,7 @@ export default function ScriptWriterTab() {
     try {
       // 1. Ensure we have a chat session
       if (!chatId) {
-        chatId = await createNewChat(userMsg.slice(0, 30) + (userMsg.length > 30 ? "..." : ""));
+        chatId = await createNewChat(userMsg.slice(0, 30) + (userMsg.length > 30 ? "..." : ""), null);
         if (!chatId) return;
       }
 
@@ -231,7 +338,7 @@ export default function ScriptWriterTab() {
           )}
         </div>
         
-        <div className="p-3">
+        <div className="p-3 space-y-2">
           <Button 
             onClick={() => createNewChat()}
             className="w-full justify-start gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
@@ -240,33 +347,100 @@ export default function ScriptWriterTab() {
             <Plus className="h-4 w-4" />
             Novo Roteiro
           </Button>
+          <Button 
+            onClick={createNewFolder}
+            className="w-full justify-start gap-2 hover:bg-muted text-muted-foreground border border-dashed border-primary/20"
+            variant="ghost"
+          >
+            <FolderPlus className="h-4 w-4" />
+            Novo Cliente
+          </Button>
         </div>
 
         <ScrollArea className="flex-1 px-3 pb-4">
-          <div className="space-y-1">
-            {chats.map((chat) => (
-              <div
-                key={chat.id}
-                onClick={() => {
-                  setCurrentChatId(chat.id);
-                  if (isMobile) setIsSidebarOpen(false);
-                }}
-                className={cn(
-                  "group flex items-center justify-between p-3 rounded-xl cursor-pointer transition-all text-sm",
-                  currentChatId === chat.id 
-                    ? "bg-primary/20 text-primary font-medium border border-primary/20 shadow-sm" 
-                    : "hover:bg-muted text-muted-foreground"
-                )}
-              >
-                <span className="truncate flex-1 pr-2">{chat.title}</span>
-                <button
-                  onClick={(e) => deleteChat(e, chat.id)}
-                  className="opacity-0 group-hover:opacity-100 p-1 hover:text-destructive transition-all"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </button>
+          <div className="space-y-4">
+            {/* Folders Accordion */}
+            <Accordion type="multiple" value={openFolders} onValueChange={setOpenFolders} className="space-y-1">
+              {folders.map(folder => (
+                <AccordionItem key={folder.id} value={folder.id} className="border-none">
+                  <div className="group flex items-center gap-1 hover:bg-muted/50 rounded-lg pr-2 transition-colors">
+                    <AccordionTrigger className="flex-1 py-2 px-2 hover:no-underline [&[data-state=open]>svg]:rotate-90">
+                      <div className="flex items-center gap-2 text-sm font-medium">
+                        <Folder className="h-4 w-4 text-primary/60" />
+                        <span className="truncate max-w-[120px]">{folder.name}</span>
+                      </div>
+                    </AccordionTrigger>
+                    
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button 
+                        onClick={() => createNewChat("Novo Roteiro", folder.id)}
+                        className="p-1.5 hover:text-primary transition-colors"
+                        title="Novo chat nesta pasta"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                      </button>
+                      
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button className="p-1.5 hover:text-destructive transition-colors" title="Deletar pasta">
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Excluir pasta?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Isso excluirá a pasta "{folder.name}". Os roteiros dentro dela se tornarão "soltos", mas não serão apagados.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteFolder(folder.id)} className="bg-destructive hover:bg-destructive/90 text-destructive-foreground">Excluir</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                  
+                  <AccordionContent className="pt-1 pb-2 pl-4 space-y-1">
+                    {chats.filter(c => c.folder_id === folder.id).map(chat => (
+                      <ChatListItem 
+                        key={chat.id} 
+                        chat={chat} 
+                        isActive={currentChatId === chat.id} 
+                        onClick={() => {
+                          setCurrentChatId(chat.id);
+                          if (isMobile) setIsSidebarOpen(false);
+                        }}
+                        onDelete={() => deleteChat(chat.id)}
+                      />
+                    ))}
+                    {chats.filter(c => c.folder_id === folder.id).length === 0 && (
+                      <p className="text-[10px] text-muted-foreground italic px-2 py-1">Vazio</p>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+
+            {/* Uncategorized Chats */}
+            <div className="space-y-1">
+              <div className="px-2 py-1">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Sem pasta</span>
               </div>
-            ))}
+              {chats.filter(c => !c.folder_id).map((chat) => (
+                <ChatListItem 
+                  key={chat.id} 
+                  chat={chat} 
+                  isActive={currentChatId === chat.id} 
+                  onClick={() => {
+                    setCurrentChatId(chat.id);
+                    if (isMobile) setIsSidebarOpen(false);
+                  }}
+                  onDelete={() => deleteChat(chat.id)}
+                />
+              ))}
+            </div>
           </div>
         </ScrollArea>
       </aside>
