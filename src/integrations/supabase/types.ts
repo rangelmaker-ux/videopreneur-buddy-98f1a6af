@@ -311,20 +311,55 @@ export type Database = {
       roteirista_chats: {
         Row: {
           created_at: string
+          folder_id: string | null
           id: string
           title: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          folder_id?: string | null
           id?: string
           title: string
           user_id: string
         }
         Update: {
           created_at?: string
+          folder_id?: string | null
           id?: string
           title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roteirista_chats_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "roteirista_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roteirista_folders: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
