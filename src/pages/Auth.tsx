@@ -354,10 +354,10 @@ export default function Auth() {
               </form>
             </TabsContent>
 
-            <TabsContent value="signup" className="mt-6 space-y-4">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Seu nome</Label>
+            <TabsContent value="signup" className="mt-4 space-y-3">
+              <form onSubmit={handleSignUp} className="space-y-3">
+                <div className="space-y-1">
+                  <Label htmlFor="signup-name" className="text-xs">Seu nome</Label>
                   <Input
                     id="signup-name"
                     type="text"
