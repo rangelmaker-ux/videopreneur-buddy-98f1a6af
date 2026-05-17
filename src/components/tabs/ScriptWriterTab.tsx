@@ -31,30 +31,40 @@ export default function ScriptWriterTab() {
     }
   }, [messages, isLoading]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (overrideMsg?: string) => {
+    const userMsg = overrideMsg || input.trim();
+    if (!userMsg || isLoading) return;
 
-    const userMsg = input.trim();
-    setInput("");
+    if (!overrideMsg) setInput("");
+    
     const newMessages: Message[] = [...messages, { role: "user", content: userMsg }];
     setMessages(newMessages);
     setIsLoading(true);
 
     try {
+      console.log("Calling roteirista-pro-chat with messages:", newMessages);
       const { data, error } = await supabase.functions.invoke("roteirista-pro-chat", {
         body: { messages: newMessages },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw error;
+      }
+
+      console.log("Received data from roteirista-pro-chat:", data);
 
       if (data?.choices?.[0]?.message) {
         setMessages([...newMessages, data.choices[0].message]);
       } else if (data?.error) {
-        throw new Error(data.error);
+        throw new Error(data.error.message || data.error);
+      } else {
+        console.error("Unexpected response structure:", data);
+        throw new Error("Resposta da IA em formato inesperado.");
       }
     } catch (err: any) {
-      console.error("Erro ao gerar roteiro:", err);
-      toast.error("Erro ao falar com o Roteirista Pro. Tente novamente.");
+      console.error("Erro detalhado ao falar com Roteirista Pro:", err);
+      toast.error(`Erro: ${err.message || "Tente novamente."}`);
     } finally {
       setIsLoading(false);
     }
