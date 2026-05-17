@@ -181,15 +181,15 @@ function SidebarContent({
                   if (chatId) moveChatToFolder(chatId, folder.id);
                 }}
               >
-                <div className="group flex items-center gap-1 hover:bg-muted/50 rounded-lg pr-2 transition-colors">
-                  <AccordionTrigger className="flex-1 py-2 px-2 hover:no-underline [&[data-state=open]>svg]:rotate-90">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Folder className="h-4 w-4 text-primary/60" />
-                      <span className="truncate max-w-[120px]">{folder.name}</span>
+                <div className="group flex items-center gap-1 hover:bg-slate-100/80 rounded-xl pr-2 transition-all duration-200 mb-0.5">
+                  <AccordionTrigger className="flex-1 py-2.5 px-3 hover:no-underline [&[data-state=open]>svg]:rotate-90">
+                    <div className="flex items-center gap-2.5 text-sm font-medium">
+                      <Folder className="h-4 w-4 text-primary/70" />
+                      <span className="truncate max-w-[140px]">{folder.name}</span>
                     </div>
                   </AccordionTrigger>
                   
-                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all duration-200">
                     <button 
                       onClick={() => createNewChat("Novo Roteiro", folder.id)}
                       className="p-1.5 hover:text-primary transition-colors"
