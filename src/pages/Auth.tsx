@@ -32,6 +32,8 @@ export default function Auth() {
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
+  const [showSigninPassword, setShowSigninPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
 
   const [firstAccessOpen, setFirstAccessOpen] = useState(false);
   const [firstAccessEmail, setFirstAccessEmail] = useState("");
