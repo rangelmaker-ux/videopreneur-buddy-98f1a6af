@@ -195,13 +195,13 @@ function SidebarContent({
                       className="p-1.5 hover:text-primary transition-colors"
                       title="Novo chat nesta pasta"
                     >
-                      <Plus className="h-3.5 w-3.5" />
+                      <Plus className="h-4 w-4" />
                     </button>
                     
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <button className="p-1.5 hover:text-destructive transition-colors" title="Deletar pasta">
-                          <Trash2 className="h-3.5 w-3.5" />
+                          <Trash2 className="h-4 w-4" />
                         </button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
