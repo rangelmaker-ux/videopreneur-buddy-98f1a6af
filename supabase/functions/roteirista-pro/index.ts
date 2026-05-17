@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
+        model: 'meta-llama/llama-3-8b-instruct:free',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           ...messages,
@@ -67,6 +67,17 @@ Deno.serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log("Resposta bruta da OpenRouter:", JSON.stringify(data, null, 2));
+
+    if (!response.ok) {
+      const errorMessage = data.error?.message || data.message || 'Erro desconhecido na OpenRouter';
+      console.error("Erro da OpenRouter:", errorMessage);
+      return new Response(
+        JSON.stringify({ error: errorMessage, details: data }),
+        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
