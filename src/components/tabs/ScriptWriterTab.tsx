@@ -321,22 +321,21 @@ export default function ScriptWriterTab() {
       {/* Sidebar - Chat History */}
       <aside 
         className={cn(
-          "flex flex-col border border-primary/20 bg-background/50 backdrop-blur-sm rounded-2xl transition-all duration-300 overflow-hidden",
-          isSidebarOpen ? "w-64" : "w-0 md:w-0",
-          isMobile && !isSidebarOpen ? "hidden" : "flex",
-          isMobile && "fixed inset-0 z-50 w-full rounded-none"
+          "flex flex-col border-r border-primary/20 bg-background/95 backdrop-blur-md transition-all duration-300 ease-in-out z-[40]",
+          isSidebarOpen ? "w-72" : "w-0 overflow-hidden border-none",
+          isMobile 
+            ? "fixed inset-y-0 left-0 w-[85%] shadow-2xl" 
+            : "relative rounded-2xl border bg-background/50 h-full"
         )}
       >
-        <div className="p-4 border-b border-primary/10 flex items-center justify-between">
+        <div className="p-4 border-b border-primary/10 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2 font-bold text-sm">
             <MessageSquare className="h-4 w-4 text-primary" />
-            <span>Histórico</span>
+            <span>Meus Projetos</span>
           </div>
-          {isMobile && (
-            <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          )}
+          <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(false)} className={cn(!isMobile && "hover:bg-primary/10")}>
+            <X className="h-4 w-4" />
+          </Button>
         </div>
         
         <div className="p-3 space-y-2">
