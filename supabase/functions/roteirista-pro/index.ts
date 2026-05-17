@@ -38,8 +38,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, chatId } = await req.json();
     const apiKey = Deno.env.get('OPENROUTER_API_KEY');
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     
     if (!apiKey) {
       return new Response(
@@ -52,12 +54,11 @@ Deno.serve(async (req) => {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + apiKey,
-        'HTTP-Referer': 'https://id-preview--7db7a9d3-ae4d-4148-8d76-029955051250.lovable.app',
         'X-Title': 'Roteirista Pro',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'openrouter/free',
+        model: 'anthropic/claude-3-haiku',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           ...messages,
@@ -67,7 +68,6 @@ Deno.serve(async (req) => {
     });
 
     const data = await response.json();
-    console.log("Resposta bruta da OpenRouter:", JSON.stringify(data, null, 2));
 
     if (!response.ok) {
       const errorMessage = data.error?.message || data.message || 'Erro desconhecido na OpenRouter';
@@ -78,10 +78,29 @@ Deno.serve(async (req) => {
       );
     }
 
+    const assistantMessage = data?.choices?.[0]?.message;
+    
+    if (assistantMessage && chatId && supabaseUrl && supabaseServiceRoleKey) {
+      const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
+      
+      const { error: saveError } = await supabase
+        .from("roteirista_messages")
+        .insert({
+          chat_id: chatId,
+          role: "assistant",
+          content: assistantMessage.content
+        });
+      
+      if (saveError) {
+        console.error("Erro ao salvar mensagem no banco:", saveError);
+      }
+    }
+
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    console.error("Erro na Edge Function:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
