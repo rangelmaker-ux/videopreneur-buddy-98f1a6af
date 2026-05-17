@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-lite-preview-02-05:free',
+        model: 'openrouter/auto',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           ...messages,
