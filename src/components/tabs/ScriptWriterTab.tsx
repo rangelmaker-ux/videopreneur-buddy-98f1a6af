@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { Send, Plus, MessageSquare, Trash2, User, Loader2, Menu, X, Sparkles, FolderPlus, ChevronRight, ChevronDown, MoreVertical, Folder } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Send, Plus, MessageSquare, Trash2, User, Loader2, Menu, X, Sparkles, FolderPlus, ChevronRight, ChevronDown, MoreVertical, Folder, Mic, MicOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,6 +11,36 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+
+// Tipagem para a Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionResultList {
+  readonly length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  readonly length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+  isFinal: boolean;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 
 interface Folder {
   id: string;
@@ -84,8 +114,60 @@ export default function ScriptWriterTab() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [openFolders, setOpenFolders] = useState<string[]>([]);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const isMobile = useIsMobile();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Initialize Speech Recognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = "pt-BR";
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0].transcript)
+          .join("");
+        setInput(transcript);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error:", event.error);
+        setIsListening(false);
+        if (event.error !== "no-speech") {
+          toast.error("Erro no reconhecimento de voz");
+        }
+      };
+
+      recognitionRef.current = recognition;
+    }
+  }, []);
+
+  const toggleListening = useCallback(() => {
+    if (!recognitionRef.current) {
+      toast.error("Reconhecimento de voz não suportado neste navegador");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error("Start recognition error:", err);
+      }
+    }
+  }, [isListening]);
 
   useEffect(() => {
     fetchData();
@@ -570,19 +652,36 @@ export default function ScriptWriterTab() {
           {/* Input Area */}
           <div className="p-3 md:p-4 border-t border-primary/10 bg-muted/20">
             <div className="relative max-w-4xl mx-auto flex items-end gap-2">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSend();
-                  }
-                }}
-                placeholder="Qual sua ideia hoje? Ex: Dicas de edição, Vlog, Review..."
-                className="flex min-h-[50px] md:min-h-[60px] max-h-[200px] w-full rounded-2xl border border-primary/20 bg-background/50 px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all duration-200"
-                disabled={isLoading}
-              />
+              <div className="relative flex-1">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSend();
+                    }
+                  }}
+                  placeholder={isListening ? "Ouvindo..." : "Qual sua ideia hoje? Ex: Dicas de edição, Vlog, Review..."}
+                  className={cn(
+                    "flex min-h-[50px] md:min-h-[60px] max-h-[200px] w-full rounded-2xl border border-primary/20 bg-background/50 px-4 py-3 pr-12 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all duration-200",
+                    isListening && "border-primary ring-2 ring-primary/20"
+                  )}
+                  disabled={isLoading}
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleListening}
+                  className={cn(
+                    "absolute right-2 bottom-2 h-9 w-9 rounded-xl transition-all duration-300",
+                    isListening ? "text-destructive bg-destructive/10 animate-pulse hover:bg-destructive/20" : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+                  )}
+                  title={isListening ? "Parar gravação" : "Falar ideia"}
+                >
+                  <Mic className="h-5 w-5" />
+                </Button>
+              </div>
               <Button
                 size="icon"
                 onClick={() => handleSend()}
