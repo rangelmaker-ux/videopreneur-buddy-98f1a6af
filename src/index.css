@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .glow-button {
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+    transition: all 0.3s ease;
+  }
+  .glow-button:hover {
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.6);
+  }
+}
+
 /* ============================================================
    Videomaker Inteligente — Design System
    Corporativo claro minimalista (estilo Linear/Vercel/Notion).
