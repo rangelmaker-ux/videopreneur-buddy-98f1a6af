@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, ExternalLink, ShieldCheck, KeyRound, CheckCircle2, AlertTriangle, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo3D } from "@/components/Logo3D";
