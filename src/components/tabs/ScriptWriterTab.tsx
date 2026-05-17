@@ -42,29 +42,35 @@ export default function ScriptWriterTab() {
     setIsLoading(true);
 
     try {
-      console.log("Calling roteirista-pro-chat with messages:", newMessages);
+      console.log("Iniciando chamada da Edge Function roteirista-pro-chat...");
+      
       const { data, error } = await supabase.functions.invoke("roteirista-pro-chat", {
         body: { messages: newMessages },
       });
 
       if (error) {
-        console.error("Supabase function error:", error);
+        console.error("Erro retornado pelo supabase.functions.invoke:", error);
+        
+        // Tentar identificar se é erro de rede ou resposta do servidor
+        if (error.message?.includes("Failed to fetch")) {
+          throw new Error("Erro de rede: Não foi possível alcançar o servidor. Verifique sua internet ou se as funções estão publicadas.");
+        }
         throw error;
       }
 
-      console.log("Received data from roteirista-pro-chat:", data);
+      console.log("Dados recebidos da Edge Function:", data);
 
       if (data?.choices?.[0]?.message) {
         setMessages([...newMessages, data.choices[0].message]);
       } else if (data?.error) {
-        throw new Error(data.error.message || data.error);
+        throw new Error(data.error.message || data.error || "Erro desconhecido na resposta da IA.");
       } else {
-        console.error("Unexpected response structure:", data);
-        throw new Error("Resposta da IA em formato inesperado.");
+        console.error("Resposta em formato inesperado:", data);
+        throw new Error("A IA respondeu em um formato que não consegui entender.");
       }
     } catch (err: any) {
-      console.error("Erro detalhado ao falar com Roteirista Pro:", err);
-      toast.error(`Erro: ${err.message || "Tente novamente."}`);
+      console.error("Erro detalhado no handleSend:", err);
+      toast.error(`Erro ao falar com o Roteirista Pro: ${err.message || "Tente novamente."}`);
     } finally {
       setIsLoading(false);
     }
