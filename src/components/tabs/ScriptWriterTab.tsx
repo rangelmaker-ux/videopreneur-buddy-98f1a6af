@@ -332,6 +332,33 @@ export default function ScriptWriterTab() {
     }
   };
 
+  const moveChatToFolder = async (chatId: string, folderId: string | null) => {
+    try {
+      const { error } = await supabase
+        .from("roteirista_chats")
+        .update({ folder_id: folderId })
+        .eq("id", chatId);
+
+      if (error) throw error;
+
+      setChats(prev => prev.map(chat => 
+        chat.id === chatId ? { ...chat, folder_id: folderId } : chat
+      ));
+
+      if (folderId) {
+        if (!openFolders.includes(folderId)) {
+          setOpenFolders(prev => [...prev, folderId]);
+        }
+        const folderName = folders.find(f => f.id === folderId)?.name;
+        toast.success(`Movido para ${folderName}`);
+      } else {
+        toast.success("Movido para fora da pasta");
+      }
+    } catch (err) {
+      toast.error("Erro ao mover chat");
+    }
+  };
+
   const handleSend = async (overrideMsg?: string) => {
     const userMsg = overrideMsg || input.trim();
     if (!userMsg || isLoading) return;
