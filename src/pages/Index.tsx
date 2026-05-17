@@ -4,7 +4,7 @@ import { VideoConfigsProvider, useVideoConfigs } from "@/contexts/VideoConfigsCo
 import { SyncBadge } from "@/components/SyncBadge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, Eye, EyeOff } from "lucide-react";
+import { Sparkles, LogOut, Calculator, FileText, Users, BarChart3, Settings, Plus, Eye, EyeOff, Clapperboard } from "lucide-react";
 import CalculatorTab from "@/components/tabs/CalculatorTab";
 import ConfigTab from "@/components/tabs/ConfigTab";
 import QuotesTab from "@/components/tabs/QuotesTab";
@@ -93,7 +93,7 @@ function IndexInner() {
               <Calculator className="h-4 w-4" /><span className="hidden sm:inline">Calculadora</span><span className="sm:hidden">Calc</span>
             </TabsTrigger>
             <TabsTrigger value="scripts" className="flex flex-col gap-1 py-2 text-[10px] sm:text-xs sm:flex-row">
-              <Sparkles className="h-4 w-4 text-primary" /><span>Roteiros</span>
+              <Clapperboard className="h-4 w-4 text-primary" strokeWidth={2.5} /><span>Roteiros</span>
             </TabsTrigger>
             <TabsTrigger value="quotes" className="flex flex-col gap-1 py-2 text-[10px] sm:text-xs sm:flex-row">
               <FileText className="h-4 w-4" /><span>Orçamentos</span>
