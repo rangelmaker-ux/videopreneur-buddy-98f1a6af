@@ -369,8 +369,8 @@ export default function Auth() {
                     autoComplete="name"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">E-mail (mesmo da compra)</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="signup-email" className="text-xs">E-mail (mesmo da compra)</Label>
                   <Input
                     id="signup-email"
                     type="email"
