@@ -136,6 +136,3 @@ export function PricingModal({ open, onOpenChange }: PricingModalProps) {
     </Dialog>
   );
 }
-    </Dialog>
-  );
-}
