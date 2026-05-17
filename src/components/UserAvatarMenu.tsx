@@ -171,15 +171,15 @@ export function UserAvatarMenu() {
       />
       <DropdownMenu>
         <DropdownMenuTrigger
-          className="relative flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-xs font-semibold text-secondary-foreground border border-border overflow-hidden hover:ring-2 hover:ring-primary/40 transition-all"
+          className="relative flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-sm font-semibold text-secondary-foreground border border-border overflow-hidden hover:ring-2 hover:ring-primary/40 transition-all"
           aria-label="Menu de perfil"
         >
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt="Foto de perfil"
-              width={36}
-              height={36}
+              width={40}
+              height={40}
               loading="lazy"
               className="h-full w-full object-cover"
             />
