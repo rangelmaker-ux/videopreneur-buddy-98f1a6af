@@ -120,13 +120,13 @@ export default function ScriptWriterTab() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-4">
                   <button 
-                    onClick={() => setInput("Quero criar um vídeo sobre dicas de edição para Reels")}
+                    onClick={() => handleSend("Quero criar um vídeo sobre dicas de edição para Reels")}
                     className="text-[10px] p-2 rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors text-left"
                   >
                     "Dicas de edição para Reels"
                   </button>
                   <button 
-                    onClick={() => setInput("Roteiro para vlog de um dia de trabalho como videomaker")}
+                    onClick={() => handleSend("Roteiro para vlog de um dia de trabalho como videomaker")}
                     className="text-[10px] p-2 rounded-lg border border-primary/10 hover:bg-primary/5 transition-colors text-left"
                   >
                     "Vlog de videomaker"
