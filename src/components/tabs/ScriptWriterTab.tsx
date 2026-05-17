@@ -99,8 +99,8 @@ export default function ScriptWriterTab() {
           <div className="space-y-6 max-w-3xl mx-auto">
             {messages.length === 0 && (
               <div className="flex flex-col items-center justify-center h-full py-12 text-center space-y-4 opacity-60">
-                <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center">
-                  <Bot className="h-8 w-8 text-primary/40" />
+                <div className="h-16 w-16 rounded-2xl bg-muted flex items-center justify-center overflow-hidden border border-primary/10">
+                  <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover" />
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium">Olá! Eu sou o Roteirista Pro.</p>
@@ -133,13 +133,17 @@ export default function ScriptWriterTab() {
                 } animate-fade-in`}
               >
                 <div
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm ${
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg shadow-sm overflow-hidden ${
                     m.role === "user"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground border border-primary/10"
                   }`}
                 >
-                  {m.role === "user" ? <User className="h-4 w-4" /> : <Bot className="h-4 w-4" />}
+                  {m.role === "user" ? (
+                    <User className="h-4 w-4" />
+                  ) : (
+                    <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover" />
+                  )}
                 </div>
                 <div
                   className={`relative max-w-[85%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
@@ -156,8 +160,8 @@ export default function ScriptWriterTab() {
             ))}
             {isLoading && (
               <div className="flex items-start gap-3 animate-fade-in">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground border border-primary/10">
-                  <Bot className="h-4 w-4" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground border border-primary/10 overflow-hidden">
+                  <img src={ROBOT_AVATAR_URL} alt="Bot" className="h-full w-full object-cover opacity-50" />
                 </div>
                 <div className="bg-muted/80 backdrop-blur-sm border border-primary/5 rounded-2xl rounded-tl-none px-4 py-3">
                   <Loader2 className="h-4 w-4 animate-spin text-primary" />
