@@ -216,9 +216,9 @@ export default function Auth() {
                   </AlertDescription>
                 </Alert>
               )}
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">E-mail</Label>
+              <form onSubmit={handleSignIn} className="space-y-3">
+                <div className="space-y-1">
+                  <Label htmlFor="signin-email" className="text-xs">E-mail</Label>
                   <Input
                     id="signin-email"
                     type="email"
