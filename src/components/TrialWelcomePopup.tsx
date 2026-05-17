@@ -51,7 +51,7 @@ export const TrialWelcomePopup = () => {
             </div>
             <div className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300">
               <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
-              <span>Assistente IA John Wick</span>
+              <span>Assistente Roteirista Pro IA</span>
             </div>
             <div className="flex items-center gap-3 text-sm text-zinc-700 dark:text-zinc-300">
               <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
