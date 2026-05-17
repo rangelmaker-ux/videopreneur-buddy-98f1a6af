@@ -152,7 +152,7 @@ export default function Auth() {
   };
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
+    <main className="fixed inset-0 flex items-center justify-center overflow-hidden px-4 bg-background">
       <PricingModal open={pricingOpen} onOpenChange={setPricingOpen} />
       {showSuccessAnimation && (
         <LoginSuccessAnimation onComplete={handleAnimationComplete} userName={user?.user_metadata?.display_name || signupName || null} />
@@ -163,21 +163,21 @@ export default function Auth() {
         <div className="absolute left-1/2 top-1/2 h-[20rem] w-[20rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/10 blur-[100px] animate-float" style={{ animationDelay: "4s" }} />
       </div>
 
-      <div className="relative z-10 w-full max-w-md">
-        <div className="mb-6 text-center animate-fade-in" style={{ animationDuration: "0.7s" }}>
-          <div className="relative mx-auto mb-3 flex items-center justify-center">
-            <div className="absolute inset-0 -z-10 mx-auto h-40 w-40 rounded-full bg-primary/30 blur-3xl animate-pulse-glow" />
-            <Logo3D size={170} spin />
+      <div className="relative z-10 w-full max-w-md flex flex-col items-center">
+        <div className="mb-4 text-center animate-fade-in" style={{ animationDuration: "0.7s" }}>
+          <div className="relative mx-auto mb-2 flex items-center justify-center">
+            <div className="absolute inset-0 -z-10 mx-auto h-32 w-32 rounded-full bg-primary/30 blur-3xl animate-pulse-glow" />
+            <Logo3D size={140} spin />
           </div>
           <h1
-            className="font-display text-3xl font-bold tracking-tight animate-fade-in"
+            className="font-display text-2xl font-bold tracking-tight animate-fade-in"
             style={{ animationDelay: "0.25s", animationFillMode: "backwards" }}
           >
             <span className="gradient-text">Videomaker</span>{" "}
             <span className="text-foreground">Inteligente</span>
           </h1>
           <p
-            className="mt-2 text-sm text-muted-foreground animate-fade-in"
+            className="mt-1 text-xs text-muted-foreground animate-fade-in"
             style={{ animationDelay: "0.4s", animationFillMode: "backwards" }}
           >
             Calculadora de Precificação
@@ -185,7 +185,7 @@ export default function Auth() {
         </div>
 
         <div
-          className="glass rounded-2xl p-6 sm:p-8 animate-scale-in"
+          className="glass rounded-2xl p-6 sm:p-7 animate-scale-in w-full shadow-2xl"
           style={{ animationDelay: "0.5s", animationFillMode: "backwards" }}
         >
           <Tabs value={tab} onValueChange={(v) => { setTab(v as any); setError(null); setSuccess(null); }} className="w-full">
@@ -194,7 +194,7 @@ export default function Auth() {
               <TabsTrigger value="signup">Criar Conta</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="signin" className="mt-6 space-y-4">
+            <TabsContent value="signin" className="mt-4 space-y-3">
               {paused && (
                 <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
                   <AlertDescription className="text-sm">
@@ -216,9 +216,9 @@ export default function Auth() {
                   </AlertDescription>
                 </Alert>
               )}
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">E-mail</Label>
+              <form onSubmit={handleSignIn} className="space-y-3">
+                <div className="space-y-1">
+                  <Label htmlFor="signin-email" className="text-xs">E-mail</Label>
                   <Input
                     id="signin-email"
                     type="email"
@@ -238,8 +238,8 @@ export default function Auth() {
                     autoComplete="email"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signin-password">Senha</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="signin-password" font-size="text-xs">Senha</Label>
                   <Input
                     id="signin-password"
                     type="password"
@@ -354,10 +354,10 @@ export default function Auth() {
               </form>
             </TabsContent>
 
-            <TabsContent value="signup" className="mt-6 space-y-4">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-name">Seu nome</Label>
+            <TabsContent value="signup" className="mt-4 space-y-3">
+              <form onSubmit={handleSignUp} className="space-y-3">
+                <div className="space-y-1">
+                  <Label htmlFor="signup-name" className="text-xs">Seu nome</Label>
                   <Input
                     id="signup-name"
                     type="text"
@@ -369,8 +369,8 @@ export default function Auth() {
                     autoComplete="name"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">E-mail (mesmo da compra)</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="signup-email" className="text-xs">E-mail (mesmo da compra)</Label>
                   <Input
                     id="signup-email"
                     type="email"
@@ -381,8 +381,8 @@ export default function Auth() {
                     autoComplete="email"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Senha</Label>
+                <div className="space-y-1">
+                  <Label htmlFor="signup-password" className="text-xs">Senha</Label>
                   <Input
                     id="signup-password"
                     type="password"
