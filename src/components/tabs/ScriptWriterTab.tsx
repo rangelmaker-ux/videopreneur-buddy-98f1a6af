@@ -63,14 +63,21 @@ interface Message {
 const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?q=80&w=200&h=200&auto=format&fit=crop";
 
 function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isActive: boolean, onClick: () => void, onDelete: () => void }) {
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData("chatId", chat.id);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
   return (
     <div
       onClick={onClick}
+      draggable
+      onDragStart={handleDragStart}
       className={cn(
-        "group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all text-sm",
+        "group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all text-sm relative",
         isActive 
           ? "bg-primary/20 text-primary font-medium border border-primary/20 shadow-sm" 
-          : "hover:bg-muted/70 text-muted-foreground"
+          : "hover:bg-muted/70 text-muted-foreground hover:translate-x-1"
       )}
     >
       <div className="flex items-center gap-2 truncate flex-1 min-w-0">
@@ -82,7 +89,7 @@ function ChatListItem({ chat, isActive, onClick, onDelete }: { chat: Chat, isAct
         <AlertDialogTrigger asChild>
           <button
             onClick={(e) => e.stopPropagation()}
-            className="opacity-0 group-hover:opacity-100 p-1.5 hover:text-destructive transition-all shrink-0"
+            className="p-1.5 hover:text-destructive transition-all shrink-0 opacity-0 group-hover:opacity-100 focus:opacity-100"
             title="Excluir roteiro"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -325,6 +332,33 @@ export default function ScriptWriterTab() {
     }
   };
 
+  const moveChatToFolder = async (chatId: string, folderId: string | null) => {
+    try {
+      const { error } = await supabase
+        .from("roteirista_chats")
+        .update({ folder_id: folderId })
+        .eq("id", chatId);
+
+      if (error) throw error;
+
+      setChats(prev => prev.map(chat => 
+        chat.id === chatId ? { ...chat, folder_id: folderId } : chat
+      ));
+
+      if (folderId) {
+        if (!openFolders.includes(folderId)) {
+          setOpenFolders(prev => [...prev, folderId]);
+        }
+        const folderName = folders.find(f => f.id === folderId)?.name;
+        toast.success(`Movido para ${folderName}`);
+      } else {
+        toast.success("Movido para fora da pasta");
+      }
+    } catch (err) {
+      toast.error("Erro ao mover chat");
+    }
+  };
+
   const handleSend = async (overrideMsg?: string) => {
     const userMsg = overrideMsg || input.trim();
     if (!userMsg || isLoading) return;
@@ -451,7 +485,24 @@ export default function ScriptWriterTab() {
             {/* Folders Accordion */}
             <Accordion type="multiple" value={openFolders} onValueChange={setOpenFolders} className="space-y-1">
               {folders.map(folder => (
-                <AccordionItem key={folder.id} value={folder.id} className="border-none">
+                <AccordionItem 
+                  key={folder.id} 
+                  value={folder.id} 
+                  className="border-none transition-colors"
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.add("bg-primary/5");
+                  }}
+                  onDragLeave={(e) => {
+                    e.currentTarget.classList.remove("bg-primary/5");
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.classList.remove("bg-primary/5");
+                    const chatId = e.dataTransfer.getData("chatId");
+                    if (chatId) moveChatToFolder(chatId, folder.id);
+                  }}
+                >
                   <div className="group flex items-center gap-1 hover:bg-muted/50 rounded-lg pr-2 transition-colors">
                     <AccordionTrigger className="flex-1 py-2 px-2 hover:no-underline [&[data-state=open]>svg]:rotate-90">
                       <div className="flex items-center gap-2 text-sm font-medium">
@@ -512,8 +563,22 @@ export default function ScriptWriterTab() {
               ))}
             </Accordion>
 
-            {/* Uncategorized Chats */}
-            <div className="space-y-1">
+            <div 
+              className="space-y-1 transition-colors"
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.add("bg-muted/30");
+              }}
+              onDragLeave={(e) => {
+                e.currentTarget.classList.remove("bg-muted/30");
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                e.currentTarget.classList.remove("bg-muted/30");
+                const chatId = e.dataTransfer.getData("chatId");
+                if (chatId) moveChatToFolder(chatId, null);
+              }}
+            >
               <div className="px-2 py-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">Sem pasta</span>
               </div>
