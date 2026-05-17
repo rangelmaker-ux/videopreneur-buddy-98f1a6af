@@ -13,6 +13,8 @@ interface Message {
   content: string;
 }
 
+const ROBOT_AVATAR_URL = "https://images.unsplash.com/photo-1546776310-eef45dd6d63c?q=80&w=200&h=200&auto=format&fit=crop";
+
 export default function ScriptWriterTab() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
