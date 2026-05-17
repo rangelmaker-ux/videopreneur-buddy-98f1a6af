@@ -49,7 +49,6 @@ function IndexInner() {
   }, []);
 
   return (
-  return (
     <div className="min-h-screen pb-20 relative animate-fade-in bg-background">
       {showWelcome && (
         <WelcomeOverlay
