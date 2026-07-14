@@ -211,10 +211,6 @@ export function useFixedClients() {
   const createDelivery = useCallback(
     async (input: DeliveryInput) => {
       if (!user) return null;
-      if (!input.fixed_client_id && !input.quote_id) {
-        toast.error("Selecione um cliente ou um orçamento");
-        return null;
-      }
       const ref = input.recording_at
         ? new Date(input.recording_at)
         : input.delivery_date

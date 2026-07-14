@@ -102,11 +102,15 @@ export default function DeliveryCard({
                 Não Cobrado
               </span>
             )}
-            {client && (
-              <span className="text-[11px] text-muted-foreground truncate">
+            {client ? (
+              <span className="text-[11px] text-muted-foreground truncate font-medium">
                 {client.name}
               </span>
-            )}
+            ) : !delivery.quote_id ? (
+              <span className="text-[11px] text-slate-400 truncate italic bg-slate-500/10 px-1.5 py-0.5 rounded border border-slate-500/20">
+                Compromisso Interno
+              </span>
+            ) : null}
           </div>
           <p className="font-medium text-sm mt-1 truncate">
             {delivery.title || (

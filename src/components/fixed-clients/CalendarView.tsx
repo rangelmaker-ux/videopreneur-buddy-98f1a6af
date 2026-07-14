@@ -320,7 +320,7 @@ function DayCell({
                 d.title ||
                 c?.name ||
                 d.quote_customer_name ||
-                (isQuote ? "Orçamento" : "Entrega");
+                (isQuote ? "Orçamento" : "Compromisso Interno");
               return (
                 <span
                   key={d.id}
@@ -435,7 +435,8 @@ function DayCell({
                         (isQuote &&
                           (d.quote_customer_name
                             ? `Orçamento · ${d.quote_customer_name}`
-                            : "Orçamento aprovado"))}
+                            : "Orçamento aprovado")) ||
+                        "Compromisso Interno"}
                       {d.recording_at &&
                         " · " +
                           new Date(d.recording_at).toLocaleTimeString("pt-BR", {

@@ -193,11 +193,13 @@ export default function DeliveryEditor({
     } else if (v.startsWith(QUOTE_PREFIX)) {
       setQuoteId(v.slice(QUOTE_PREFIX.length));
       setClientId("");
+    } else {
+      setClientId("");
+      setQuoteId(null);
     }
   };
 
   const handleSave = async () => {
-    if (!clientId && !quoteId) return;
     setSaving(true);
     
     const basePayload = {
@@ -304,10 +306,13 @@ export default function DeliveryEditor({
                   <SelectValue placeholder="Selecione um cliente" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="">
+                    Compromisso Interno / Sem Cliente
+                  </SelectItem>
                   {clients.length > 0 && (
                     <>
-                      <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-                        Clientes fixos
+                      <div className="px-2 py-1 text-[10px] uppercase tracking-wider text-muted-foreground border-t border-border">
+                        Clientes
                       </div>
                       {clients.map((c) => (
                         <SelectItem
@@ -597,7 +602,7 @@ export default function DeliveryEditor({
             </Button>
             <Button
               onClick={handleSave}
-              disabled={(!clientId && !quoteId) || saving}
+              disabled={saving}
               className="bg-gradient-primary text-primary-foreground"
             >
               <Save className="h-4 w-4 mr-1.5" />
