@@ -1,6 +1,6 @@
 {
-  "name": "Videopreneur Buddy",
-  "short_name": "Videopreneur",
+  "name": "Calculadora Videomaker",
+  "short_name": "Calculadora Videomaker",
   "description": "Ferramenta de gestão e agenda para videomakers inteligentes.",
   "start_url": "/",
   "display": "standalone",
