@@ -266,7 +266,7 @@ export default function ScriptWriterTab() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
-      recognition.continuous = false;
+      recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = "pt-BR";
 
@@ -499,6 +499,16 @@ export default function ScriptWriterTab() {
   };
 
   const handleSend = async (overrideMsg?: string) => {
+    // Stop recording on send for privacy
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (err) {
+        console.error(err);
+      }
+      setIsListening(false);
+    }
+
     const userMsg = overrideMsg || input.trim();
     if (!userMsg || isLoading) return;
 
