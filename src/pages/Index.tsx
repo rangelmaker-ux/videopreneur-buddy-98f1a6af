@@ -58,7 +58,10 @@ function IndexInner() {
       )}
 
       <Tabs value={tab} onValueChange={setTab} className="w-full">
-        <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md transition-all duration-300">
+        <header 
+          className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md transition-all duration-300"
+          style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}
+        >
           <div className="container px-4">
             <div className="flex h-14 items-center justify-between gap-4">
               <div className="flex items-center gap-4 min-w-0">
