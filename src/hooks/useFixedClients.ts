@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
-export type FixedClientType = "fixed" | "freelance" | "prospect";
+export type FixedClientType = "fixed" | "freelance" | "prospect" | "meeting" | "appointment";
 
 export type FixedClient = {
   id: string;

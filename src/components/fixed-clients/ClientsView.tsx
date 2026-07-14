@@ -156,6 +156,8 @@ export default function ClientsView({
                     <SelectItem value="fixed">Fixo (Contrato mensal)</SelectItem>
                     <SelectItem value="freelance">Frila (Avulso / Projeto)</SelectItem>
                     <SelectItem value="prospect">1º Trabalho (Prospecção / Teste)</SelectItem>
+                    <SelectItem value="meeting">Reunião</SelectItem>
+                    <SelectItem value="appointment">Compromisso</SelectItem>
                   </SelectContent>
                 </Select>
               </FormField>
@@ -437,6 +439,16 @@ function ClientCard({
             {client.client_type === "prospect" && (
               <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
                 1º Trabalho
+              </span>
+            )}
+            {client.client_type === "meeting" && (
+              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-slate-500/10 text-slate-400 border border-slate-500/20">
+                Reunião
+              </span>
+            )}
+            {client.client_type === "appointment" && (
+              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-500 border border-sky-500/20">
+                Compromisso
               </span>
             )}
             {client.client_type === "fixed" && (
