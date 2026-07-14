@@ -184,7 +184,7 @@ export default function DeliveryEditor({
     ? `${FIXED_PREFIX}${clientId}`
     : quoteId
     ? `${QUOTE_PREFIX}${quoteId}`
-    : "";
+    : "none";
 
   const handleSourceChange = (v: string) => {
     if (v.startsWith(FIXED_PREFIX)) {
@@ -306,7 +306,7 @@ export default function DeliveryEditor({
                   <SelectValue placeholder="Selecione um cliente" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">
+                  <SelectItem value="none">
                     Compromisso Interno / Sem Cliente
                   </SelectItem>
                   {clients.length > 0 && (
