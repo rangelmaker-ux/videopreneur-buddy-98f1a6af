@@ -284,8 +284,12 @@ export default function ScriptWriterTab() {
       recognition.onerror = (event: any) => {
         console.error("Speech recognition error:", event.error);
         setIsListening(false);
-        if (event.error !== "no-speech") {
-          toast.error("Erro no reconhecimento de voz");
+        if (event.error === "not-allowed") {
+          toast.error("Acesso ao microfone negado. Verifique as permissões de privacidade no ajuste do seu celular ou navegador.");
+        } else if (event.error === "audio-capture") {
+          toast.error("Erro ao capturar áudio. Verifique se o microfone está em uso por outro aplicativo.");
+        } else if (event.error !== "no-speech") {
+          toast.error(`Erro no microfone: ${event.error}`);
         }
       };
 
