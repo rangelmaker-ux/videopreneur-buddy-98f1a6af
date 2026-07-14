@@ -336,10 +336,18 @@ function DayCell({
                   }
                   title={`${
                     c?.name || d.quote_customer_name || ""
-                  } · ${d.title || "Sem título"} · ${STATUS_META[d.status].label}`}
+                  } · ${d.title || "Sem título"} · ${STATUS_META[d.status].label} · ${
+                    d.delivery_type === "meeting" ? "Reunião" : "Serviço"
+                  } ${!d.is_charged ? "(Não Cobrado)" : ""}`}
                 >
                   {isQuote && (
                     <DollarSign className="h-2 w-2 shrink-0" aria-hidden />
+                  )}
+                  {d.delivery_type === "meeting" && (
+                    <span className="shrink-0 text-[8px] font-bold px-0.5 bg-slate-500/20 text-slate-400 rounded">R</span>
+                  )}
+                  {!d.is_charged && (
+                    <span className="shrink-0 text-[8px] font-bold px-0.5 bg-amber-500/20 text-amber-500 rounded">NC</span>
                   )}
                   <span className="truncate">{label}</span>
                 </span>
@@ -402,11 +410,21 @@ function DayCell({
                           style={{ background: col.dot }}
                         />
                       )}
-                      <span className="text-xs font-medium truncate flex-1 inline-flex items-center gap-1">
+                      <span className="text-xs font-medium truncate flex-1 inline-flex items-center gap-1.5 flex-wrap">
                         {isQuote && (
                           <DollarSign className="h-3 w-3 shrink-0" />
                         )}
-                        {d.title || "Sem título"}
+                        {d.delivery_type === "meeting" && (
+                          <span className="text-[9px] font-semibold px-1 rounded bg-slate-500/15 text-slate-400 border border-slate-500/25 shrink-0">
+                            Reunião
+                          </span>
+                        )}
+                        {!d.is_charged && (
+                          <span className="text-[9px] font-semibold px-1 rounded bg-amber-500/15 text-amber-500 border border-amber-500/25 shrink-0">
+                            Não Cobrado
+                          </span>
+                        )}
+                        <span className="truncate">{d.title || "Sem título"}</span>
                       </span>
                       <span className="text-[9px] uppercase text-muted-foreground">
                         {STATUS_META[d.status].label}

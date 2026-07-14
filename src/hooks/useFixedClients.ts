@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
+export type FixedClientType = "fixed" | "freelance" | "prospect";
+
 export type FixedClient = {
   id: string;
   user_id: string;
@@ -13,6 +15,7 @@ export type FixedClient = {
   monthly_value: number;
   renewal_day: number;
   active: boolean;
+  client_type: FixedClientType;
   created_at: string;
 };
 
@@ -22,6 +25,8 @@ export type DeliveryStatus =
   | "editing"
   | "delivered"
   | "posted";
+
+export type DeliveryType = "service" | "meeting";
 
 export type Delivery = {
   id: string;
@@ -33,6 +38,8 @@ export type Delivery = {
   location: string;
   notes: string;
   status: DeliveryStatus;
+  delivery_type: DeliveryType;
+  is_charged: boolean;
   recording_at: string | null;
   delivery_date: string | null;
   delivered_at: string | null;
@@ -156,6 +163,7 @@ export function useFixedClients() {
           monthly_value: payload.monthly_value ?? 0,
           renewal_day: payload.renewal_day ?? 1,
           active: payload.active ?? true,
+          client_type: payload.client_type || "fixed",
         })
         .select()
         .single();
@@ -165,7 +173,7 @@ export function useFixedClients() {
         return;
       }
       setClients((p) => [normalizeClient(data), ...p]);
-      toast.success("Cliente fixo criado");
+      toast.success("Cliente criado");
     },
     [user]
   );
@@ -204,7 +212,7 @@ export function useFixedClients() {
     async (input: DeliveryInput) => {
       if (!user) return null;
       if (!input.fixed_client_id && !input.quote_id) {
-        toast.error("Selecione um cliente fixo ou um orçamento");
+        toast.error("Selecione um cliente ou um orçamento");
         return null;
       }
       const ref = input.recording_at
@@ -223,6 +231,8 @@ export function useFixedClients() {
           location: input.location || "",
           notes: input.notes || "",
           status: input.status || "scheduled",
+          delivery_type: input.delivery_type || "service",
+          is_charged: input.is_charged !== false,
           recording_at: input.recording_at || null,
           delivery_date: input.delivery_date || null,
           cycle_year: ref.getFullYear(),
@@ -443,6 +453,7 @@ function normalizeClient(row: any): FixedClient {
     monthly_value: Number(row.monthly_value || 0),
     renewal_day: Number(row.renewal_day || 1),
     active: !!row.active,
+    client_type: (row.client_type || "fixed") as FixedClientType,
     created_at: row.created_at,
   };
 }
@@ -458,6 +469,8 @@ function normalizeDelivery(row: any): Delivery {
     location: row.location || "",
     notes: row.notes || "",
     status: (row.status || "scheduled") as DeliveryStatus,
+    delivery_type: (row.delivery_type || "service") as DeliveryType,
+    is_charged: row.is_charged !== false,
     recording_at: row.recording_at,
     delivery_date: row.delivery_date,
     delivered_at: row.delivered_at,

@@ -88,6 +88,20 @@ export default function DeliveryCard({
             >
               {meta.label}
             </span>
+            {delivery.delivery_type === "meeting" ? (
+              <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-slate-500/15 text-slate-400 border border-slate-500/25">
+                Reunião
+              </span>
+            ) : (
+              <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 border border-blue-500/25">
+                Serviço
+              </span>
+            )}
+            {!delivery.is_charged && (
+              <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-500 border border-amber-500/25">
+                Não Cobrado
+              </span>
+            )}
             {client && (
               <span className="text-[11px] text-muted-foreground truncate">
                 {client.name}

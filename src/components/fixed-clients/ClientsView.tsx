@@ -2,9 +2,17 @@ import { useState } from "react";
 import {
   Delivery,
   FixedClient,
+  FixedClientType,
   QuoteClient,
   useFixedClients,
 } from "@/hooks/useFixedClients";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,18 +80,33 @@ export default function ClientsView({
   const { createClient, updateClient, removeClient, cycleMonth, cycleYear } =
     hook;
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    name: string;
+    contact: string;
+    notes: string;
+    videos_per_month: number;
+    monthly_value: number;
+    renewal_day: number;
+    client_type: FixedClientType;
+  }>({
     name: "",
     contact: "",
     notes: "",
     videos_per_month: 4,
     monthly_value: 0,
     renewal_day: 1,
+    client_type: "fixed",
   });
 
   const handleCreate = async () => {
     if (!form.name.trim()) return;
-    await createClient(form);
+    const isFixed = form.client_type === "fixed";
+    await createClient({
+      ...form,
+      videos_per_month: isFixed ? form.videos_per_month : 0,
+      monthly_value: isFixed ? form.monthly_value : 0,
+      renewal_day: isFixed ? form.renewal_day : 1,
+    });
     setForm({
       name: "",
       contact: "",
@@ -91,6 +114,7 @@ export default function ClientsView({
       videos_per_month: 4,
       monthly_value: 0,
       renewal_day: 1,
+      client_type: "fixed",
     });
     setOpen(false);
   };
@@ -115,14 +139,32 @@ export default function ClientsView({
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Novo cliente fixo</DialogTitle>
+              <DialogTitle>Novo cliente</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
+              <FormField label="Tipo de Cliente">
+                <Select
+                  value={form.client_type}
+                  onValueChange={(val: FixedClientType) =>
+                    setForm({ ...form, client_type: val })
+                  }
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione o tipo de cliente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fixed">Fixo (Contrato mensal)</SelectItem>
+                    <SelectItem value="freelance">Frila (Avulso / Projeto)</SelectItem>
+                    <SelectItem value="prospect">1º Trabalho (Prospecção / Teste)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormField>
               <FormField label="Nome / Empresa">
                 <Input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   maxLength={120}
+                  placeholder="Nome do cliente ou da empresa"
                 />
               </FormField>
               <FormField label="Contato (telefone, e-mail)">
@@ -132,59 +174,63 @@ export default function ClientsView({
                     setForm({ ...form, contact: e.target.value })
                   }
                   maxLength={120}
+                  placeholder="Telefone, e-mail ou link de rede social"
                 />
               </FormField>
-              <div className="grid grid-cols-3 gap-3">
-                <FormField label="Vídeos/mês">
-                  <Input
-                    type="number"
-                    min={0}
-                    value={form.videos_per_month}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        videos_per_month: parseInt(e.target.value || "0"),
-                      })
-                    }
-                  />
-                </FormField>
-                <FormField label="Valor mensal">
-                  <Input
-                    type="number"
-                    min={0}
-                    step={0.01}
-                    value={form.monthly_value}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        monthly_value: parseFloat(e.target.value || "0"),
-                      })
-                    }
-                  />
-                </FormField>
-                <FormField label="Dia renovação">
-                  <Input
-                    type="number"
-                    min={1}
-                    max={28}
-                    value={form.renewal_day}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        renewal_day: Math.max(
-                          1,
-                          Math.min(28, parseInt(e.target.value || "1"))
-                        ),
-                      })
-                    }
-                  />
-                </FormField>
-              </div>
+              {form.client_type === "fixed" && (
+                <div className="grid grid-cols-3 gap-3 animate-fade-in">
+                  <FormField label="Vídeos/mês">
+                    <Input
+                      type="number"
+                      min={0}
+                      value={form.videos_per_month}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          videos_per_month: parseInt(e.target.value || "0"),
+                        })
+                      }
+                    />
+                  </FormField>
+                  <FormField label="Valor mensal">
+                    <Input
+                      type="number"
+                      min={0}
+                      step={0.01}
+                      value={form.monthly_value}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          monthly_value: parseFloat(e.target.value || "0"),
+                        })
+                      }
+                    />
+                  </FormField>
+                  <FormField label="Dia renovação">
+                    <Input
+                      type="number"
+                      min={1}
+                      max={28}
+                      value={form.renewal_day}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          renewal_day: Math.max(
+                            1,
+                            Math.min(28, parseInt(e.target.value || "1"))
+                          ),
+                        })
+                      }
+                    />
+                  </FormField>
+                </div>
+              )}
               <FormField label="Notas">
                 <Textarea
                   rows={2}
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
+                  placeholder="Informações adicionais..."
                   maxLength={500}
                 />
               </FormField>
@@ -383,6 +429,21 @@ function ClientCard({
             <p className="font-display font-semibold text-base truncate">
               {client.name}
             </p>
+            {client.client_type === "freelance" && (
+              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                Frila
+              </span>
+            )}
+            {client.client_type === "prospect" && (
+              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                1º Trabalho
+              </span>
+            )}
+            {client.client_type === "fixed" && (
+              <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-500 border border-indigo-500/20">
+                Fixo
+              </span>
+            )}
             {!client.active && (
               <span className="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                 Inativo
@@ -393,14 +454,16 @@ function ClientCard({
             {client.contact || "Sem contato cadastrado"}
           </p>
         </div>
-        <div className="text-right shrink-0">
-          <p className="font-display text-base font-bold tabular-nums">
-            {brl(client.monthly_value)}
-          </p>
-          <p className="text-[11px] text-muted-foreground">
-            renova dia {client.renewal_day}
-          </p>
-        </div>
+        {client.client_type === "fixed" && (
+          <div className="text-right shrink-0">
+            <p className="font-display text-base font-bold tabular-nums">
+              {brl(client.monthly_value)}
+            </p>
+            <p className="text-[11px] text-muted-foreground">
+              renova dia {client.renewal_day}
+            </p>
+          </div>
+        )}
       </header>
 
       {/* Seletor de ciclo */}
@@ -426,25 +489,27 @@ function ClientCard({
         </Button>
       </div>
 
-      <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-xs">
-          <span className="text-muted-foreground">Entregues no ciclo</span>
-          <span className="font-medium tabular-nums">
-            {delivered} / {client.videos_per_month}
-          </span>
+      {client.client_type === "fixed" && (
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-muted-foreground">Entregues no ciclo</span>
+            <span className="font-medium tabular-nums">
+              {delivered} / {client.videos_per_month}
+            </span>
+          </div>
+          <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full bg-gradient-primary transition-all"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <p className="text-[11px] text-muted-foreground">
+            {remaining > 0
+              ? `${remaining} restante(s) para fechar o pacote`
+              : "Pacote concluído ✓"}
+          </p>
         </div>
-        <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-          <div
-            className="h-full bg-gradient-primary transition-all"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
-        <p className="text-[11px] text-muted-foreground">
-          {remaining > 0
-            ? `${remaining} restante(s) para fechar o pacote`
-            : "Pacote concluído ✓"}
-        </p>
-      </div>
+      )}
 
       <div className="flex items-center gap-2 flex-wrap">
         <Button size="sm" variant="outline" onClick={onCreateDelivery}>

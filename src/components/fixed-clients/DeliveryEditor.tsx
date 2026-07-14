@@ -29,11 +29,13 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Copy, Save, Trash2, ListTree } from "lucide-react";
 import {
   Delivery,
   DeliveryStatus,
+  DeliveryType,
   FixedClient,
   QuoteClient,
   STATUS_META,
@@ -124,6 +126,12 @@ export default function DeliveryEditor({
   const [status, setStatus] = useState<DeliveryStatus>(
     (initial?.status as DeliveryStatus) || "scheduled"
   );
+  const [deliveryType, setDeliveryType] = useState<DeliveryType>(
+    (initial?.delivery_type as DeliveryType) || "service"
+  );
+  const [isCharged, setIsCharged] = useState<boolean>(
+    initial?.is_charged !== false
+  );
   const [repeatWeekly, setRepeatWeekly] = useState(false);
   const [repeatGroup, setRepeatGroup] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -159,6 +167,8 @@ export default function DeliveryEditor({
     setScript(init?.script || "");
     setNotes(init?.notes || "");
     setStatus((init?.status as DeliveryStatus) || "scheduled");
+    setDeliveryType((init?.delivery_type as DeliveryType) || "service");
+    setIsCharged(init?.is_charged !== false);
     setRepeatWeekly(false);
     setRepeatGroup(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -200,6 +210,8 @@ export default function DeliveryEditor({
       script,
       notes,
       status,
+      delivery_type: deliveryType,
+      is_charged: isCharged,
     };
 
     if (isEdit && repeatGroup && onBulkSave) {
@@ -333,14 +345,43 @@ export default function DeliveryEditor({
             </Field>
           )}
 
-          <Field label="Título do vídeo">
+          <Field label="Título do vídeo / assunto">
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Ex.: Reels semanal · institucional · review produto"
+              placeholder="Ex.: Reels semanal · Reunião de briefing · institucional"
               maxLength={140}
             />
           </Field>
+
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Tipo de Agendamento">
+              <Select
+                value={deliveryType}
+                onValueChange={(v: DeliveryType) => setDeliveryType(v)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="service">Serviço (Vídeo/Produção)</SelectItem>
+                  <SelectItem value="meeting">Reunião / Alinhamento</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
+            <Field label="Cobrança">
+              <div className="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <span className="text-xs text-muted-foreground">Cobrado?</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-medium tabular-nums">{isCharged ? "Sim" : "Não"}</span>
+                  <Switch
+                    checked={isCharged}
+                    onCheckedChange={setIsCharged}
+                  />
+                </div>
+              </div>
+            </Field>
+          </div>
 
           <div className="grid grid-cols-2 gap-3">
             <Field label="Gravação (data + hora)">

@@ -75,8 +75,10 @@ export type Database = {
           cycle_year: number
           delivered_at: string | null
           delivery_date: string | null
+          delivery_type: string
           fixed_client_id: string | null
           id: string
+          is_charged: boolean
           location: string
           notes: string
           quote_id: string | null
@@ -92,8 +94,10 @@ export type Database = {
           cycle_year: number
           delivered_at?: string | null
           delivery_date?: string | null
+          delivery_type?: string
           fixed_client_id?: string | null
           id?: string
+          is_charged?: boolean
           location?: string
           notes?: string
           quote_id?: string | null
@@ -109,8 +113,10 @@ export type Database = {
           cycle_year?: number
           delivered_at?: string | null
           delivery_date?: string | null
+          delivery_type?: string
           fixed_client_id?: string | null
           id?: string
+          is_charged?: boolean
           location?: string
           notes?: string
           quote_id?: string | null
@@ -140,6 +146,7 @@ export type Database = {
       fixed_clients: {
         Row: {
           active: boolean
+          client_type: string
           contact: string | null
           created_at: string
           id: string
@@ -153,6 +160,7 @@ export type Database = {
         }
         Insert: {
           active?: boolean
+          client_type?: string
           contact?: string | null
           created_at?: string
           id?: string
@@ -166,6 +174,7 @@ export type Database = {
         }
         Update: {
           active?: boolean
+          client_type?: string
           contact?: string | null
           created_at?: string
           id?: string
