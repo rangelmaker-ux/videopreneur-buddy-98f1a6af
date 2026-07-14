@@ -61,7 +61,7 @@ interface Message {
   content: string;
 }
 
-const ROBOT_AVATAR_URL = "https://rmetppilvfrxosvxzhgj.supabase.co/storage/v1/object/public/message-attachments/209c78c7-5f85-4fcb-a4ee-6c7dd71e3717/1778985046548_l0qcxh_minimalist_agent_avatar_1778984933239.png";
+const ROBOT_AVATAR_URL = "/agent-avatar.png";
 
 function ChatListItem({ chat, isActive, onClick }: { chat: Chat, isActive: boolean, onClick: () => void }) {
   const handleDragStart = (e: React.DragEvent) => {
