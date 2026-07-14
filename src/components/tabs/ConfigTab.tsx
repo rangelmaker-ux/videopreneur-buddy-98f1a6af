@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Plus, Trash2, RotateCcw, Building2 } from "lucide-react";
+import { Loader2, Plus, Trash2, RotateCcw, Building2, Bell, AlertTriangle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useNotifications } from "@/hooks/useNotifications";
 
 const COST_FIELDS: { key: keyof import("@/lib/pricing").VideoConfig; label: string; suffix?: string }[] = [
   { key: "base_rate", label: "Valor base por minuto", suffix: "R$/min" },
@@ -30,6 +31,7 @@ const MULT_FIELDS: { key: "basic_mult" | "inter_mult" | "adv_mult"; label: strin
 
 export default function ConfigTab() {
   const { configs, loading, professional, updateConfig, addConfig, removeConfig, updateProfessional, resetConfig } = useVideoConfigs();
+  const { permission, requestPermission, sendTestNotification } = useNotifications();
   const [selectedKey, setSelectedKey] = useState<string>("");
   const [newName, setNewName] = useState("");
   const [addOpen, setAddOpen] = useState(false);
@@ -170,6 +172,44 @@ export default function ConfigTab() {
             </div>
           </div>
         )}
+      </section>
+
+      {/* Notificações */}
+      <section className="glass rounded-2xl p-5 space-y-4">
+        <div className="flex items-center gap-2">
+          <Bell className="h-4 w-4 text-primary" />
+          <h3 className="font-display text-base font-semibold">Notificações do Sistema</h3>
+        </div>
+        <div className="space-y-4">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Permita que o aplicativo envie lembretes dos seus compromissos diretamente no seu celular ou computador. Você será alertado <strong>3 horas</strong> e <strong>15 minutos</strong> antes de cada evento.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {permission === "default" && (
+              <Button onClick={requestPermission} size="sm" className="bg-gradient-primary text-primary-foreground">
+                Ativar Notificações
+              </Button>
+            )}
+            {permission === "granted" && (
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-xs font-semibold text-emerald-500 bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/25 flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Notificações Ativas
+                </span>
+                <Button onClick={sendTestNotification} variant="outline" size="sm">
+                  Testar Notificação
+                </Button>
+              </div>
+            )}
+            {permission === "denied" && (
+              <span className="text-xs font-semibold text-destructive bg-destructive/10 px-3 py-1.5 rounded-full border border-destructive/25 flex items-center gap-1.5">
+                <AlertTriangle className="h-4 w-4" />
+                Permissão Bloqueada (Verifique as configurações do navegador)
+              </span>
+            )}
+          </div>
+        </div>
       </section>
     </div>
   );

@@ -14,8 +14,11 @@ import Auth from "./pages/Auth.tsx";
 import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
+import { useNotifications } from "@/hooks/useNotifications";
+
 const AppContent = () => {
   useAutoUpdate();
+  useNotifications();
   const { accessStatus } = useAuth();
   const isBlocked = accessStatus === "trial_expired" || accessStatus === "blocked";
   const isTrial = accessStatus === "trial";

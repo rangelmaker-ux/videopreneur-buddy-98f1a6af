@@ -13,6 +13,7 @@ import ResultsTab from "@/components/tabs/ResultsTab";
 import ScriptWriterTab from "@/components/tabs/ScriptWriterTab";
 import { UserAvatarMenu } from "@/components/UserAvatarMenu";
 import { WelcomeOverlay } from "@/components/WelcomeOverlay";
+import InstallPWA from "@/components/InstallPWA";
 import logoUrl from "@/assets/logo.png";
 
 function IndexInner() {
@@ -77,6 +78,7 @@ function IndexInner() {
               </div>
 
               <div className="flex items-center gap-2">
+                <InstallPWA />
                 <Button
                   variant="ghost"
                   size="icon"
